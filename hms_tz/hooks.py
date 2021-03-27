@@ -723,13 +723,14 @@ scheduler_events = {
     # 	"all": [
     # 		"hms_tz.tasks.all"
     # 	],
-    # "cron": {
-    #     "*/5 * * * *": [
-    #         "hms_tz.nhif.api.inpatient_record.daily_update_inpatient_occupancies"
-    #     ]
-    # },
+    "cron": {
+        "*/5 * * * *": [
+            # "hms_tz.nhif.api.inpatient_record.daily_update_inpatient_occupancies",
+            "hms_tz.nhif.api.inpatient_record.daily_update_inpatient_occupancies",
+        ]
+    },
     "daily": [
-        "hms_tz.nhif.api.inpatient_record.daily_update_inpatient_occupancies"
+        "hms_tz.nhif.api.service_order.real_auto_submit"
     ],
     # 	"hourly": [
     # 		"hms_tz.tasks.hourly"

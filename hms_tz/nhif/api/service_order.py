@@ -78,3 +78,16 @@ def auto_submit(kwargs):
     if doc.docstatus == 0 and doc.order_reference_name:
         doc.flags.ignore_permissions = True
         doc.submit()
+
+
+def real_auto_submit():
+    hso_list = frappe.get_all(
+        "Healthcare Service Order", filters={"docstatus": 0})
+    for hso in hso_list:
+        try:
+            doc = frappe.get_doc("Healthcare Service Order", hso.name)
+            if doc.docstatus == 0 and doc.order_reference_name:
+                doc.flags.ignore_permissions = True
+                doc.submit()
+        except Exception as e:
+            frappe.log_error(e)
