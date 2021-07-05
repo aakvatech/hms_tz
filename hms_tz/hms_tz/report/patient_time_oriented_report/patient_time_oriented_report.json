@@ -10,7 +10,7 @@
  "idx": 0,
  "is_standard": "Yes",
  "letter_head": "SHM-Hospital Letter Head",
- "modified": "2021-07-05 10:00:47.662471",
+ "modified": "2021-07-05 18:17:47.381787",
  "modified_by": "Administrator",
  "module": "Hms Tz",
  "name": "Patient Time Oriented Report",
@@ -18,7 +18,7 @@
  "prepared_report": 0,
  "query": "",
  "ref_doctype": "Patient Appointment",
- "reference_report": "Time Oriented Report",
+ "reference_report": "",
  "report_name": "Patient Time Oriented Report",
  "report_type": "Script Report",
  "roles": [
