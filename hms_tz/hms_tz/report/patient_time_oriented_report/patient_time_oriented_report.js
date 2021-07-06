@@ -8,17 +8,16 @@ frappe.query_reports["Patient Time Oriented Report"] = {
 			"fieldname": "from_date",
 			"label": __("From Date"),
 			"fieldtype": "Date",
-			//"default": frappe.datetime.get_today(),
+			"default": frappe.datetime.add_days(frappe.datetime.get_today(), -3),
 			"reqd": 1
 		},
 		{
 			"fieldname": "to_date",
 			"label": __("To Date"),
 			"fieldtype": "Date",
-			//"default": frappe.datetime.get_today(),
+			"default": frappe.datetime.get_date(),
 			"reqd": 1
 		}
 
 	]
 };
-//"default": frappe.datetime.str_to_obj(frappe.datetime.get_today()).getMonth() + 1
