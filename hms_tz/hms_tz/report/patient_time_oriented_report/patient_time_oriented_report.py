@@ -8,35 +8,35 @@ def execute(filters=None):
 	if not filters:
 		filter = {}
 
-	columns = get_columns()
+	columns = get_columns(filters)
 
 	data = get_data(filters)
 	if not data:
-		msgprint(_("No Record Found...!!"))
+		msgprint(_("No Record Found...!!, Please Check Your Date Filters and Try Again...!!"))
 		return columns, data
 	
 	return columns, data
 
-def get_columns():
+def get_columns(filters):
 	return [
 		{
 			"fieldname": "patient",
 			"label": _("Patient"),
 			"fieldtype": "link",
 			"option": "Patient",
-			"width": 100
+			"width": 150
 		},
 		{
 			"fieldname": "patient_name",
 			"label": _("Patient Name"),
 			"fieldtype": "Data",
-			"width": 100
+			"width": 150
 		},
 		{
 			"fieldname": "appointment_created",
 			"label": _("Appointment Created"),
 			"fieldtype": "Date",
-			"width": 100
+			"width": 150
 		},
 		{
 			"fieldname": "vital_created",
@@ -48,25 +48,25 @@ def get_columns():
 			"fieldname": "vital_submitted",
 			"label": _("Vital Submitted"),
 			"fieldtype": "Date",
-			"width": 100
+			"width": 150
 		},
 		{
-			"fieldname": "first_encounter_edited",
+			"fieldname": "first_time_encounter_edited",
 			"label": _("Practitioner Attends a Patient"),
 			"fieldtype": "Date",
-			"width": 100
+			"width": 150
 		},
 		{
-			"fieldname": "last_encounter_edited",
+			"fieldname": "last_time_encounter_edited",
 			"label": _("Practitioner Ends with Patient"),
 			"fieldtype": "Date",
-			"width": 100
+			"width": 150
 		},
 		{
-			"fieldname": "card",
+			"fieldname": "time_card_taken",
 			"label": _("Patient Takes Card"),
 			"fieldtype": "Date",
-			"width": 100
+			"width": 150
 		}
 	]
 
@@ -82,7 +82,7 @@ def get_conditions(filters):
 		conditions += " and appointment_created >= %(from_date)s"
 
 	if filters.get("to_date"):
-		conditions += " and card_taken <= %(to_date)s"
+		conditions += " and time_card_taken <= %(to_date)s"
 	
 	return conditions
 
@@ -93,7 +93,7 @@ def get_data(filters):
 	return frappe.db.sql("""select pa.patient as patient, pa.patient_name as patient_name, pa.creation as appointment_created, 
 								vs.creation as vital_created, vs.modified as vital_submitted, 
 								min(ver.modified) as first_time_encounter_edited,  max(ver.modified)  as last_time_encounter_edited, 
-								npc.creation as card_taken
+								npc.creation as time_card_taken
 								from `tabPatient Appointment`pa  inner join `tabVital Signs` vs on pa.name = vs.appointment
 								inner join `tabPatient Encounter` pe on pe.appointment = pa.name
 								inner join `tabVersion` ver on pe.name = ver.docname  
