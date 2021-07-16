@@ -18,6 +18,11 @@ frappe.query_reports["Patient Time Oriented Report"] = {
 			"default": frappe.datetime.get_today(),
 			"reqd": 1
 		}
-
 	]
+	
 };
+
+frappe.show_alert({
+    message:__('Hi, Please be Patient... The report contains alot of data... so it may take some time to complete...!!'),
+    indicator:'green'
+}, 10);
