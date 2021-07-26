@@ -1,0 +1,93 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2021-07-24 20:41:16.865953",
+ "disable_prepared_report": 0,
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "SHM-Hospital Letter Head",
+ "modified": "2021-07-24 20:41:29.364819",
+ "modified_by": "Administrator",
+ "module": "Hms Tz",
+ "name": "Service Unit Report",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Inpatient Occupancy",
+ "report_name": "Service Unit Report",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Healthcare Administrator"
+  },
+  {
+   "role": "Physician"
+  },
+  {
+   "role": "Nursing User"
+  },
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Healthcare Physiotherapy"
+  },
+  {
+   "role": "Healthcare Receptionist"
+  },
+  {
+   "role": "Healthcare Nursing"
+  },
+  {
+   "role": "Healthcare Triage"
+  },
+  {
+   "role": "Healthcare Lab Tech"
+  },
+  {
+   "role": "Healthcare Head Lab Tech"
+  },
+  {
+   "role": "Healthcare Radiographer"
+  },
+  {
+   "role": "Healthcare Practitioner"
+  },
+  {
+   "role": "Healthcare Clinical Procedures"
+  },
+  {
+   "role": "Healthcare Invoicing"
+  },
+  {
+   "role": "Direct Cash"
+  },
+  {
+   "role": "Healthcare Pre-Operative"
+  },
+  {
+   "role": "Lab Reports-TV"
+  },
+  {
+   "role": "Hemo Department"
+  },
+  {
+   "role": "Visting Consultant Reports"
+  },
+  {
+   "role": "Insurance Head and NHIF Patient Claim"
+  },
+  {
+   "role": "SHMH Statistician"
+  },
+  {
+   "role": "Healthcare Head Pharmacist"
+  },
+  {
+   "role": "Accounts Manager"
+  }
+ ]
+}
