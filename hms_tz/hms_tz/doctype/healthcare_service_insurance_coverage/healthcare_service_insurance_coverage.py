@@ -17,6 +17,7 @@ class HealthcareServiceInsuranceCoverage(Document):
 											'healthcare_insurance_coverage_plan': self.healthcare_insurance_coverage_plan,
 											'is_active': 1,
 											'healthcare_service_template' : self.healthcare_service_template,
+											'name':['!=', self.name],
 											'end_date':['<=', self.end_date]
 											})
 		if len(service_insurance_coverages) > 0:

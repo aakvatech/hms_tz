@@ -137,6 +137,7 @@ function update_patient_info(frm, card) {
     frm.set_value("sex", card.Gender);
     frm.set_value("dob", card.DateOfBirth);
     frm.set_value("product_code", card.ProductCode);
+    frm.set_value("nhif_employername", card.EmployerName);
     frm.set_value("membership_no", card.MembershipNo);
     frm.save();
     frappe.show_alert({

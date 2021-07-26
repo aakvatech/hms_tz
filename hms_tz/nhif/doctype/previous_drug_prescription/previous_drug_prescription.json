@@ -38,7 +38,12 @@
   "occurence_period",
   "note",
   "section_break_25",
-  "drug_prescription_created"
+  "drug_prescription_created",
+  "delivered_quantity",
+  "column_break_34",
+  "sales_invoice_number",
+  "reference_journal_entry",
+  "cancelled"
  ],
  "fields": [
   {
@@ -61,6 +66,7 @@
   },
   {
    "fetch_from": "drug_code.default_prescription_dosage",
+   "fetch_if_empty": 1,
    "fieldname": "dosage",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
@@ -71,6 +77,7 @@
   },
   {
    "fetch_from": "drug_code.default_prescription_duration",
+   "fetch_if_empty": 1,
    "fieldname": "period",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
@@ -81,6 +88,7 @@
   },
   {
    "fetch_from": "drug_code.default_dosage_form",
+   "fetch_if_empty": 1,
    "fieldname": "dosage_form",
    "fieldtype": "Link",
    "ignore_user_permissions": 1,
@@ -261,11 +269,36 @@
    "fieldtype": "Check",
    "label": "Is Not Available Inhouse",
    "read_only": 1
+  },
+  {
+   "fieldname": "delivered_quantity",
+   "fieldtype": "Float",
+   "label": "Delivered Quantity"
+  },
+  {
+   "fieldname": "column_break_34",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sales_invoice_number",
+   "fieldtype": "Data",
+   "label": "Sales Invoice Number"
+  },
+  {
+   "default": "0",
+   "fieldname": "cancelled",
+   "fieldtype": "Check",
+   "label": "Cancelled"
+  },
+  {
+   "fieldname": "reference_journal_entry",
+   "fieldtype": "Data",
+   "label": "Reference Journal Entry"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2021-03-22 19:22:15.401201",
+ "modified": "2021-06-06 16:09:02.581763",
  "modified_by": "Administrator",
  "module": "NHIF",
  "name": "Previous Drug Prescription",

@@ -71,7 +71,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2020-12-12 00:23:39.356434",
+ "modified": "2021-05-08 12:57:52.841756",
  "modified_by": "Administrator",
  "module": "NHIF",
  "name": "NHIF Excluded Services",
@@ -92,6 +92,5 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "title_field": "itemcode",
- "track_changes": 1
+ "title_field": "itemcode"
 }

@@ -22,6 +22,15 @@ def validate(doc, method):
                 ).format(item.item_name)
             )
     update_dimensions(doc)
+    validate_create_delivery_note(doc)
+
+
+def validate_create_delivery_note(doc):
+    if not doc.patient:
+        return
+    inpatient_record = frappe.get_value("Patient", doc.patient, "inpatient_record")
+    if inpatient_record:
+        doc.enabled_auto_create_delivery_notes = 0
 
 
 @frappe.whitelist()
@@ -44,23 +53,32 @@ def on_submit(doc, method):
 
 
 def create_healthcare_docs(doc, method):
-    if doc.docstatus != 1:
+    if doc.docstatus != 1 or method not in ["on_submit", "From Front End"]:
         return
-    for item in doc.items:
-        if item.reference_dt:
-            if item.reference_dt == "Healthcare Service Order":
-                hso_doc = frappe.get_doc("Healthcare Service Order", item.reference_dn)
-                if hso_doc.insurance_subscription and not hso_doc.prescribed:
-                    return
-                if not hso_doc.order:
-                    frappe.msgprint(_("HSO order not found..."), alert=True)
-                    return
-                child = frappe.get_doc(
-                    hso_doc.order_reference_doctype, hso_doc.order_reference_name
+    if doc.get("items"):
+        for item in doc.items:
+            if item.reference_dt and item.reference_dt in [
+                "Lab Prescription",
+                "Radiology Procedure Prescription",
+                "Procedure Prescription",
+            ]:
+                child = frappe.get_doc(item.reference_dt, item.reference_dn)
+                patient_encounter_doc = frappe.get_doc(
+                    "Patient Encounter", child.parent
                 )
-                if hso_doc.order_doctype == "Lab Test Template":
-                    create_individual_lab_test(hso_doc, child)
-                elif hso_doc.order_doctype == "Radiology Examination Template":
-                    create_individual_radiology_examination(hso_doc, child)
-                elif hso_doc.order_doctype == "Clinical Procedure Template":
-                    create_individual_procedure_prescription(hso_doc, child)
+                if child.doctype == "Lab Prescription":
+                    create_individual_lab_test(patient_encounter_doc, child)
+                elif child.doctype == "Radiology Procedure Prescription":
+                    create_individual_radiology_examination(
+                        patient_encounter_doc, child
+                    )
+                elif child.doctype == "Procedure Prescription":
+                    create_individual_procedure_prescription(
+                        patient_encounter_doc, child
+                    )
+                child.invoiced = 1
+                child.sales_invoice_number = doc.name
+                child.save(ignore_permissions=True)
+
+    if method == "From Front End":
+        frappe.db.commit()

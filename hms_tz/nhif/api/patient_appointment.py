@@ -21,6 +21,7 @@ from hms_tz.nhif.doctype.nhif_scheme.nhif_scheme import add_scheme
 from hms_tz.nhif.doctype.nhif_response_log.nhif_response_log import add_log
 from hms_tz.nhif.api.healthcare_utils import get_item_rate
 from frappe.utils import date_diff, getdate
+from csf_tz import console
 
 
 @frappe.whitelist()
@@ -81,6 +82,23 @@ def get_item_price(item_code, price_list, company):
 @frappe.whitelist()
 def invoice_appointment(name):
     appointment_doc = frappe.get_doc("Patient Appointment", name)
+    if appointment_doc.billing_item:
+        if appointment_doc.mode_of_payment:
+            appointment_doc.paid_amount = get_mop_amount(
+                appointment_doc.billing_item,
+                appointment_doc.mode_of_payment,
+                appointment_doc.company,
+                appointment_doc.patient,
+            )
+        else:
+            appointment_doc.paid_amount = get_insurance_amount(
+                appointment_doc.insurance_subscription,
+                appointment_doc.billing_item,
+                appointment_doc.company,
+                appointment_doc.insurance_company,
+            )
+        appointment_doc.save()
+        appointment_doc.reload()
     set_follow_up(appointment_doc, "invoice_appointment")
     automate_invoicing = frappe.db.get_single_value(
         "Healthcare Settings", "automate_appointment_invoicing"
@@ -91,6 +109,7 @@ def invoice_appointment(name):
         and not appointment_doc.insurance_subscription
         and appointment_doc.mode_of_payment
         and not appointment_doc.invoiced
+        and not appointment_doc.ref_sales_invoice
         and not appointment_doc.follow_up
     ):
         sales_invoice = frappe.new_doc("Sales Invoice")
@@ -147,9 +166,18 @@ def get_consulting_charge_item(appointment_type, practitioner):
 def create_vital(appointment):
     appointment_doc = frappe.get_doc("Patient Appointment", appointment)
     make_vital(appointment_doc, "patient_appointment")
+    appointment_doc.save()
+    appointment_doc.reload()
 
 
 def make_vital(appointment_doc, method):
+    if appointment_doc.insurance_subscription and appointment_doc.billing_item:
+        appointment_doc.paid_amount = get_insurance_amount(
+            appointment_doc.insurance_subscription,
+            appointment_doc.billing_item,
+            appointment_doc.company,
+            appointment_doc.insurance_company,
+        )
     set_follow_up(appointment_doc, "invoice_appointment")
     if (not appointment_doc.ref_vital_signs) and (
         appointment_doc.invoiced
@@ -356,7 +384,12 @@ def make_next_doc(doc, method):
         )
     if doc.is_new():
         return
+    if doc.ref_sales_invoice:
+        doc.invoiced = 1
+    # fix: followup appointments still require authorization number
+    if doc.follow_up and doc.insurance_subscription and not doc.authorization_number:
+        return
     if frappe.get_value("Healthcare Practitioner", doc.practitioner, "bypass_vitals"):
-        make_encounter(doc, "validate")
+        make_encounter(doc, method)
     else:
         make_vital(doc, method)

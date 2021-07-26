@@ -164,7 +164,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2020-12-12 00:28:19.653591",
+ "modified": "2021-05-08 12:57:52.329626",
  "modified_by": "Administrator",
  "module": "NHIF",
  "name": "NHIF Price Package",
@@ -185,6 +185,5 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "title_field": "itemname",
- "track_changes": 1
+ "title_field": "itemname"
 }

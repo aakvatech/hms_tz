@@ -26,7 +26,13 @@
   "replaces",
   "priority",
   "body_part",
-  "note"
+  "note",
+  "section_break_23",
+  "delivered_quantity",
+  "column_break_25",
+  "sales_invoice_number",
+  "reference_journal_entry",
+  "cancelled"
  ],
  "fields": [
   {
@@ -185,12 +191,41 @@
    "fieldtype": "Check",
    "label": "Is Not Available Inhouse",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_23",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "delivered_quantity",
+   "fieldtype": "Float",
+   "label": "Delivered Quantity"
+  },
+  {
+   "fieldname": "column_break_25",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sales_invoice_number",
+   "fieldtype": "Data",
+   "label": "Sales Invoice Number"
+  },
+  {
+   "default": "0",
+   "fieldname": "cancelled",
+   "fieldtype": "Check",
+   "label": "Cancelled"
+  },
+  {
+   "fieldname": "reference_journal_entry",
+   "fieldtype": "Data",
+   "label": "Reference Journal Entry"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-03-22 19:21:48.209962",
+ "modified": "2021-06-06 16:09:45.772712",
  "modified_by": "Administrator",
  "module": "NHIF",
  "name": "Previous Radiology Procedure Prescription",
@@ -198,6 +233,5 @@
  "permissions": [],
  "quick_entry": 1,
  "sort_field": "modified",
- "sort_order": "DESC",
- "track_changes": 1
+ "sort_order": "DESC"
 }

@@ -1,10 +1,10 @@
 frappe.ui.form.on('Sales Invoice', {
 	onload: function (frm) {
-		frm.trigger('add_get_info_btn')
+		frm.trigger('add_get_info_btn');
 	},
-	patient: function (frm) {
-		frm.clear_table("items")
-	},
+	// patient: function (frm) {
+	// 	frm.clear_table("items")
+	// },
 	refresh: function (frm) {
 		if (frappe.boot.active_domains.includes("Healthcare")) {
 			frm.set_df_property("patient", "hidden", 0);
@@ -31,7 +31,7 @@ frappe.ui.form.on('Sales Invoice', {
 								per_billed: ["<", 99.99],
 								company: me.frm.doc.company
 							}
-						})
+						});
 					});
 				frm.add_custom_button(__('Healthcare Services'), function () {
 					get_healthcare_services_to_invoice(frm);
@@ -57,7 +57,7 @@ frappe.ui.form.on('Sales Invoice', {
 			frm.set_df_property("ref_practitioner", "hidden", 1);
 		}
 	},
-})
+});
 
 var get_healthcare_services_to_invoice = function (frm) {
 	var me = this;
@@ -83,6 +83,7 @@ var get_healthcare_services_to_invoice = function (frm) {
 						filters: {
 							patient: dialog.get_value("patient"),
 							company: frm.doc.company,
+							encounter_date: [">", frappe.datetime.add_days(frappe.datetime.now_date(true), -7)],
 							is_not_billable: 0,
 							duplicated: 0,
 							docstatus: 1
@@ -107,7 +108,7 @@ var get_healthcare_services_to_invoice = function (frm) {
 	});
 	dialog.fields_dict.get_items.input.onclick = function () {
 		var patient = dialog.fields_dict.patient.input.value;
-		var encounter = dialog.fields_dict.encounter.input.value
+		var encounter = dialog.fields_dict.encounter.input.value;
 		if (patient && encounter) {
 			selected_patient = patient;
 			var method = "hms_tz.nhif.api.healthcare_utils.get_healthcare_services_to_invoice";
@@ -125,7 +126,7 @@ var get_healthcare_services_to_invoice = function (frm) {
 			$results.empty();
 			$results.append($placeholder);
 		}
-	}
+	};
 	$wrapper = dialog.fields_dict.results_area.$wrapper.append(`<div class="results"
 		style="border: 1px solid #d1d8dd; border-radius: 3px; height: 300px; overflow: auto;"></div>`);
 	$results = $wrapper.find('.results');
@@ -161,7 +162,7 @@ var get_healthcare_items = function (frm, invoice_healthcare_services, $results,
 			}
 		}
 	});
-}
+};
 
 var make_list_row = function (columns, invoice_healthcare_services, result = {}) {
 	var me = this;
@@ -177,7 +178,7 @@ var make_list_row = function (columns, invoice_healthcare_services, result = {})
 						${__(result[column])}</a>`)
 			}
 		</div>`;
-	})
+	});
 
 	let $row = $(`<div class="list-item">
 		<div class="list-item__content" style="flex: 0 0 10px;">
@@ -311,7 +312,7 @@ var get_drugs_to_invoice = function (frm) {
 			$results.empty();
 			$results.append($placeholder);
 		}
-	}
+	};
 	$wrapper = dialog.fields_dict.results_area.$wrapper.append(`<div class="results"
 		style="border: 1px solid #d1d8dd; border-radius: 3px; height: 300px; overflow: auto;"></div>`);
 	$results = $wrapper.find('.results');
@@ -351,7 +352,7 @@ var list_row_data_items = function (head, $row, result, invoice_healthcare_servi
 				data-description = "${result.description}">
 				</div>`).append($row);
 	}
-	return $row
+	return $row;
 };
 
 var add_to_item_line = function (frm, checked_values, invoice_healthcare_services) {
@@ -366,7 +367,7 @@ var add_to_item_line = function (frm, checked_values, invoice_healthcare_service
 				frm.trigger("validate");
 				frm.refresh_fields();
 				if (frm.is_new()) {
-					frappe.set_route('Form', 'Sales Invoice', r.message)
+					frappe.set_route('Form', 'Sales Invoice', r.message);
 				} else {
 					frm.reload_doc();
 				}

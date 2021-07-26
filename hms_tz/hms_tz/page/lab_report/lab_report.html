@@ -1,0 +1,59 @@
+{% extends "templates/base.html" %}
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col">
+			<img src="/files/Screenshot 2021-04-04 at 20.54.02.png" height=50%>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<table class="table table-sm">
+				<thead class="thead-dark">
+					<tr>
+					<th scope="col">Patient</th>
+					<th scope="col">Practioner</th>
+					<th scope="col">Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for lab in data %}
+						{% if lab.remark == 0 %}
+							{% set class = "table-success" %}
+							{% set message = "Proceed to the Doctor" %}
+							<tr class="{{ class }}">
+								<td>{{ lab.patient }}</td>
+								<td>{{ lab.practitioner }}</td>
+								<td>{{ message }}</td>
+							</tr>
+						{% endif %}
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<div class="col">
+			<table class="table table-sm">
+				<thead class="thead-dark">
+					<tr>
+					<th scope="col">Patient</th>
+					<th scope="col">Practioner</th>
+					<th scope="col">Status</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for lab in lab_test %}
+						{% if lab.remark > 0 %}
+							{% set class = "table-danger" %}
+							{% set message = "In Progress" %}
+							<tr class="{{ class }}">
+								<td>{{ lab.patient }}</td>
+								<td>{{ lab.practitioner }}</td>
+								<td>{{ message }}</td>
+							</tr>
+						{% endif %}
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

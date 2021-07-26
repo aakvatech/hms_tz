@@ -159,8 +159,14 @@ def create_subscription(doc):
     if len(subscription_list) > 0 or not doc.product_code:
         return
     plan = frappe.get_value(
-        "NHIF Product", doc.product_code, "healthcare_insurance_coverage_plan"
+        "Healthcare Insurance Coverage Plan",
+        {"nhif_employername": doc.nhif_employername},
+        "name",
     )
+    if not plan:
+        plan = frappe.get_value(
+            "NHIF Product", doc.product_code, "healthcare_insurance_coverage_plan"
+        )
     if not plan:
         return
     plan_doc = frappe.get_doc("Healthcare Insurance Coverage Plan", plan)

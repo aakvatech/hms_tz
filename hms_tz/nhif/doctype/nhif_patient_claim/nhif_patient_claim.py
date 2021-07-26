@@ -11,7 +11,7 @@ from hms_tz.nhif.api.token import get_claimsservice_token
 import json
 import requests
 from frappe.utils.background_jobs import enqueue
-from frappe.utils import now, now_datetime, get_fullname
+from frappe.utils import now, now_datetime, get_fullname, nowdate
 from hms_tz.nhif.doctype.nhif_response_log.nhif_response_log import add_log
 from hms_tz.nhif.api.healthcare_utils import (
     get_item_rate,
@@ -58,7 +58,7 @@ class NHIFPatientClaim(Document):
         self.facility_code = frappe.get_value(
             "Company NHIF Settings", self.company, "facility_code"
         )
-        self.posting_date = now()
+        self.posting_date = nowdate()
         self.claim_year = int(now_datetime().strftime("%Y"))
         self.claim_month = int(now_datetime().strftime("%m"))
         self.folio_no = int(self.name[-9:])
@@ -427,7 +427,7 @@ class NHIFPatientClaim(Document):
         entities.FolioNo = self.folio_no
         entities.SerialNo = self.serial_no
         entities.FacilityCode = self.facility_code
-        entities.CardNo = self.cardno
+        entities.CardNo = self.cardno.strip()
         entities.FirstName = self.first_name
         entities.LastName = self.last_name
         entities.Gender = self.gender
@@ -525,7 +525,14 @@ class NHIFPatientClaim(Document):
         self.total_amount = 0
         for item in self.nhif_patient_claim_item:
             item.amount_claimed = item.unit_price * item.item_quantity
+            item.folio_item_id = item.folio_item_id or str(uuid.uuid1())
+            item.date_created = item.date_created or nowdate()
+            item.folio_id = item.folio_id or self.folio_id
             self.total_amount += item.amount_claimed
+        for item in self.nhif_patient_claim_disease:
+            item.folio_id = item.folio_id or self.folio_id
+            item.folio_disease_id = item.folio_disease_id or str(uuid.uuid1())
+            item.date_created = item.date_created or nowdate()
 
 
 def get_item_refcode(item_code):
@@ -614,6 +621,7 @@ def read_multi_pdf(output):
 
 
 def get_pdf_file(doc):
+    return "Claim File"
     try:
         doctype = doc.doctype
         docname = doc.name

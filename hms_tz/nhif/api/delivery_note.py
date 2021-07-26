@@ -32,7 +32,6 @@ def onload(doc, method):
                     item.last_qty_prescribed,
                     item.stock_uom,
                 ),
-                alert=True,
             )
 
 
@@ -75,3 +74,15 @@ def before_submit(doc, method):
                     "Approval number required for {0}. Please open line {1} and set the Approval Number."
                 ).format(item.item_name, item.idx)
             )
+
+def on_submit(doc, method):
+    update_drug_prescription(doc)
+
+def update_drug_prescription(doc):
+    frappe.db.sql("""
+        UPDATE `tabDrug Prescription` dp
+        INNER JOIN `tabDelivery Note Item` dni ON dp.name = dni.reference_name
+        SET dp.quantity = dni.stock_qty
+        WHERE dni.stock_qty != dp.quantity
+            AND dni.reference_doctype = "Drug Prescription"
+            AND dni.parent = '{0}'""".format(doc.name))

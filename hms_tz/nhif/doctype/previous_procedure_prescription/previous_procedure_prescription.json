@@ -32,7 +32,13 @@
   "replaces",
   "priority",
   "body_part",
-  "note"
+  "note",
+  "section_break_28",
+  "delivered_quantity",
+  "column_break_30",
+  "sales_invoice_number",
+  "reference_journal_entry",
+  "cancelled"
  ],
  "fields": [
   {
@@ -220,11 +226,40 @@
    "fieldtype": "Check",
    "label": "Is Not Available Inhouse",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_28",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "delivered_quantity",
+   "fieldtype": "Float",
+   "label": "Delivered Quantity"
+  },
+  {
+   "fieldname": "column_break_30",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sales_invoice_number",
+   "fieldtype": "Data",
+   "label": "Sales Invoice Number"
+  },
+  {
+   "default": "0",
+   "fieldname": "cancelled",
+   "fieldtype": "Check",
+   "label": "Cancelled"
+  },
+  {
+   "fieldname": "reference_journal_entry",
+   "fieldtype": "Data",
+   "label": "Reference Journal Entry"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2021-03-22 19:22:02.238767",
+ "modified": "2021-06-06 16:10:13.354264",
  "modified_by": "Administrator",
  "module": "NHIF",
  "name": "Previous Procedure Prescription",
@@ -232,6 +267,5 @@
  "permissions": [],
  "restrict_to_domain": "Healthcare",
  "sort_field": "modified",
- "sort_order": "DESC",
- "track_changes": 1
+ "sort_order": "DESC"
 }

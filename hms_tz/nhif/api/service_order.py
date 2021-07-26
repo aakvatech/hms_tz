@@ -10,8 +10,8 @@ from frappe.utils.background_jobs import enqueue
 
 def after_save(doc, method):
     if doc.docstatus == 0 and doc.order_reference_name:
-        # enqueue(method=auto_submit, queue='short',
-        #         timeout=10000, is_async=True, kwargs=doc.name)
+        enqueue(method=auto_submit, queue='short',
+                timeout=10000, is_async=True, kwargs=doc.name)
         return
 
 

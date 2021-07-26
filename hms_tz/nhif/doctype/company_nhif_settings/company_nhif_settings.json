@@ -72,8 +72,7 @@
   {
    "fieldname": "nhifservice_expiry",
    "fieldtype": "Datetime",
-   "label": "NHIF Service Token Expiry",
-   "read_only": 1
+   "label": "NHIF Service Token Expiry"
   },
   {
    "fieldname": "column_break_9",
@@ -94,8 +93,7 @@
   {
    "fieldname": "claimsserver_expiry",
    "fieldtype": "Datetime",
-   "label": "Claims Server Token Expiry",
-   "read_only": 1
+   "label": "Claims Server Token Expiry"
   },
   {
    "fieldname": "column_break_4",
@@ -120,7 +118,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2021-01-28 13:59:37.182517",
+ "modified": "2021-05-20 10:58:06.255490",
  "modified_by": "Administrator",
  "module": "NHIF",
  "name": "Company NHIF Settings",

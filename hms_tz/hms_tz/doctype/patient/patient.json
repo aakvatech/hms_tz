@@ -65,7 +65,8 @@
   "surrounding_factors",
   "other_risk_factors",
   "more_info",
-  "patient_details"
+  "patient_details",
+  "nhif_employername"
  ],
  "fields": [
   {
@@ -433,6 +434,12 @@
    "in_preview": 1,
    "label": "Triage",
    "options": "Triage"
+  },
+  {
+    "label": "NHIF EmployerName",
+    "fieldname": "nhif_employername",
+    "fieldtype": "Data",
+    "read_only": 1
   }
  ],
  "icon": "fa fa-user",

@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_rename": 1,
  "autoname": "field:result_component",
  "creation": "2021-02-05 11:30:51.548379",
  "doctype": "DocType",
@@ -18,7 +19,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2021-02-05 11:30:51.548379",
+ "modified": "2021-04-18 16:30:59.339810",
  "modified_by": "Administrator",
  "module": "Hms Tz",
  "name": "Result Component",

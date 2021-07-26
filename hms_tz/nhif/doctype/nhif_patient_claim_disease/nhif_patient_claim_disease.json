@@ -47,7 +47,7 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "label": "Date Created",
-   "read_only": 1
+   "permlevel": 1
   },
   {
    "fieldname": "created_by",
@@ -109,7 +109,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-04-14 23:23:23.884241",
+ "modified": "2021-04-20 10:02:20.643396",
  "modified_by": "Administrator",
  "module": "NHIF",
  "name": "NHIF Patient Claim Disease",

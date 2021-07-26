@@ -98,7 +98,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2021-02-19 12:03:13.394248",
+ "modified": "2021-05-08 12:56:47.995939",
  "modified_by": "Administrator",
  "module": "NHIF",
  "name": "NHIF Response Log",
@@ -118,6 +118,5 @@
   }
  ],
  "sort_field": "modified",
- "sort_order": "DESC",
- "track_changes": 1
+ "sort_order": "DESC"
 }

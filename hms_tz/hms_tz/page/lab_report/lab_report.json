@@ -1,0 +1,27 @@
+{
+ "content": null,
+ "creation": "2021-04-10 00:08:52.941622",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2021-04-10 00:09:40.680550",
+ "modified_by": "Administrator",
+ "module": "Hms Tz",
+ "name": "lab-report",
+ "owner": "Administrator",
+ "page_name": "Lab Report",
+ "restrict_to_domain": "Healthcare",
+ "roles": [
+  {
+   "role": "Lab Reports-TV"
+  },
+  {
+   "role": "System Manager"
+  }
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0,
+ "title": "Lab Report"
+}

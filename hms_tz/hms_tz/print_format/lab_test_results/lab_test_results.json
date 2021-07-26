@@ -17,10 +17,10 @@
  "modified_by": "Administrator",
  "module": "Hms Tz",
  "name": "Lab Test Results",
- "owner": "av-dev2@aakvatech.com",
+ "owner": "info@aakvatech.com",
  "print_format_builder": 0,
  "print_format_type": "Jinja",
  "raw_printing": 0,
- "show_section_headings": 1,
+ "show_section_headings": 0,
  "standard": "Yes"
 }
