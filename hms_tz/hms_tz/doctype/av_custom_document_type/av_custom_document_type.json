@@ -1,0 +1,54 @@
+{
+ "actions": [],
+ "creation": "2021-08-09 17:00:20.252730",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "document_type",
+  "date_fieldname",
+  "add_edit_fields",
+  "selected_fields"
+ ],
+ "fields": [
+  {
+   "fieldname": "document_type",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Document Type",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "date_fieldname",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Date Fieldname",
+   "reqd": 1
+  },
+  {
+   "fieldname": "add_edit_fields",
+   "fieldtype": "Button",
+   "in_list_view": 1,
+   "label": "Add / Edit Fields"
+  },
+  {
+   "fieldname": "selected_fields",
+   "fieldtype": "Code",
+   "label": "Selected Fields",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2021-08-09 17:00:20.252730",
+ "modified_by": "Administrator",
+ "module": "Hms Tz",
+ "name": "AV Custom Document Type",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
