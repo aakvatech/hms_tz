@@ -1,0 +1,54 @@
+{
+ "actions": [],
+ "creation": "2021-08-09 17:11:13.462312",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "av_standard_doctypes",
+  "section_break_2",
+  "av_custom_doctypes"
+ ],
+ "fields": [
+  {
+   "fieldname": "av_standard_doctypes",
+   "fieldtype": "Table",
+   "label": "AV Standard Document Types",
+   "options": "AV Standard Document Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_2",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "av_custom_doctypes",
+   "fieldtype": "Table",
+   "label": "AV Custom Document Types",
+   "options": "AV Custom Document Type"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2021-08-09 17:11:13.462312",
+ "modified_by": "Administrator",
+ "module": "Hms Tz",
+ "name": "AV Patient History Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
