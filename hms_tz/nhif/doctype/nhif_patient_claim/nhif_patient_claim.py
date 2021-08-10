@@ -25,13 +25,14 @@ from PyPDF2 import PdfFileWriter
 
 class NHIFPatientClaim(Document):
     def validate(self):
+        self.patient_encounters = self.get_patient_encounters()
         if not self.allow_changes:
-            self.patient_encounters = self.get_patient_encounters()
             from hms_tz.nhif.api.patient_encounter import finalized_encounter
 
             finalized_encounter(self.patient_encounters[-1])
             self.set_claim_values()
         self.calculate_totals()
+        self.set_clinical_notes()
         if not self.is_new():
             frappe.db.sql(
                 "UPDATE `tabPatient Appointment` SET nhif_patient_claim = '{0}' WHERE name = '{1}'".format(
@@ -49,7 +50,7 @@ class NHIFPatientClaim(Document):
         if not self.patient_signature:
             frappe.throw(_("Patient signature is required"))
         self.patient_file = generate_pdf(self)
-        self.claim_file = get_pdf_file(self)
+        self.claim_file = get_claim_pdf_file(self)
         self.send_nhif_claim()
 
     def set_claim_values(self):
@@ -437,7 +438,7 @@ class NHIFPatientClaim(Document):
         entities.PatientFileNo = self.patient_file_no
         entities.PatientFile = self.patient_file
         entities.ClaimFile = self.claim_file
-        entities.ClinicalNotes = "ClinicalNotes"
+        entities.ClinicalNotes = self.clinical_notes
         entities.AuthorizationNo = self.authorization_no
         entities.AttendanceDate = str(self.attendance_date)
         entities.PatientTypeCode = self.patient_type_code
@@ -534,6 +535,14 @@ class NHIFPatientClaim(Document):
             item.folio_disease_id = item.folio_disease_id or str(uuid.uuid1())
             item.date_created = item.date_created or nowdate()
 
+    def set_clinical_notes(self):
+        self.clinical_notes = ""
+        for patient_encounter in self.patient_encounters:
+            self.clinical_notes += frappe.get_value(
+                "Patient Encounter", patient_encounter, "examination_detail"
+            )
+            self.clinical_notes += "\n"
+
 
 def get_item_refcode(item_code):
     code_list = frappe.get_all(
@@ -620,20 +629,21 @@ def read_multi_pdf(output):
     return filedata
 
 
-def get_pdf_file(doc):
-    return "Claim File"
+def get_claim_pdf_file(doc):
     try:
         doctype = doc.doctype
         docname = doc.name
-        default_print_format = frappe.db.get_value(
-            "Property Setter",
-            dict(property="default_print_format", doc_type=doctype),
-            "value",
-        )
-        if default_print_format:
-            print_format = default_print_format
-        else:
-            print_format = "NHIF Form 2A & B"
+        # default_print_format = frappe.db.get_value(
+        #     "Property Setter",
+        #     dict(property="default_print_format", doc_type=doctype),
+        #     "value",
+        # )
+        # if default_print_format:
+        #     print_format = default_print_format
+        # else:
+        #     print_format = "NHIF Form 2A & B"
+
+        print_format = "NHIF Form 2A & B"
 
         html = frappe.get_print(
             doctype, docname, print_format, doc=None, no_letterhead=1

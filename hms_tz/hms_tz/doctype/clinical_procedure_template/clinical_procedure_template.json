@@ -26,6 +26,8 @@
   "staff_role",
   "medical_department",
   "healthcare_service_unit_type",
+  "section_break_16",
+  "company_options",
   "medical_coding_section",
   "medical_code_standard",
   "medical_code",
@@ -251,10 +253,21 @@
   {
    "fieldname": "section_break_2",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_16",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "company_options",
+   "fieldtype": "Table",
+   "label": "Companys Options",
+   "options": "Healthcare Company Option",
+   "reqd": 1
   }
  ],
  "links": [],
- "modified": "2020-09-23 17:39:04.168090",
+ "modified": "2021-07-31 22:30:27.579928",
  "modified_by": "Administrator",
  "module": "Hms Tz",
  "name": "Clinical Procedure Template",

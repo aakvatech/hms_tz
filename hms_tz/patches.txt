@@ -1,0 +1,2 @@
+hms_tz.patches.v2_0.migrate_hsu_into_the_child_table
+

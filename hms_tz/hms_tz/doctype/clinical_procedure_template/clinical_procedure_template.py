@@ -7,10 +7,12 @@ import frappe, json
 from frappe import _
 from frappe.model.document import Document
 from frappe.model.rename_doc import rename_doc
+from hms_tz.nhif.api.healthcare_utils import validate_hsu_healthcare_template
 
 class ClinicalProcedureTemplate(Document):
 	def validate(self):
 		self.enable_disable_item()
+		validate_hsu_healthcare_template(self)
 
 	def after_insert(self):
 		create_item_from_template(self)

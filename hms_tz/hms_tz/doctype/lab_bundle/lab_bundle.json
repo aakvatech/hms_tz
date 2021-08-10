@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "autoname": "field:lab_bundle_name",
+ "creation": "2021-07-12 12:26:36.823433",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "lab_bundle_name",
+  "column_break_2",
+  "public",
+  "section_break_4",
+  "lab_bundle_item"
+ ],
+ "fields": [
+  {
+   "fieldname": "lab_bundle_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Lab Bundle Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "public",
+   "fieldtype": "Check",
+   "label": "Public"
+  },
+  {
+   "fieldname": "section_break_4",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "lab_bundle_item",
+   "fieldtype": "Table",
+   "label": "Lab Bundle Item",
+   "options": "Lab Bundle Item",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2021-07-12 12:26:46.084958",
+ "modified_by": "Administrator",
+ "module": "Hms Tz",
+ "name": "Lab Bundle",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

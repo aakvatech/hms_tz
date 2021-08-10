@@ -23,17 +23,19 @@ frappe.ui.form.on('Patient Encounter', {
                 });
             });
         };
-        frm.set_query('healthcare_service_unit', 'drug_prescription', function () {
-            return {
-                filters: [
-                    {
-                        'service_unit_type': 'Pharmacy'
-                    }
-                ]
-            };
-        });
+
     },
     refresh: function (frm) {
+        frm.fields_dict['drug_prescription'].grid.get_field('healthcare_service_unit').get_query = function (doc, cdt, cdn) {
+            return {
+                filters:
+                {
+                    'company': doc.company,
+                    'service_unit_type': 'Pharmacy',
+                }
+
+            };
+        };
         set_medical_code(frm, true);
         if (frm.doc.duplicated == 1 || frm.doc.finalized) {
             frm.remove_custom_button("Schedule Admission");
@@ -247,7 +249,7 @@ frappe.ui.form.on('Patient Encounter', {
     },
     create_sales_invoice: function (frm) {
         if (frm.doc.docstatus != 0 || !frm.doc.encounter_mode_of_payment || !frm.doc.encounter_category || frm.doc.sales_invoice) {
-            frappe.show_alert(__("The criteria for this button to work not met!"))
+            frappe.show_alert(__("The criteria for this button to work not met!"));
             return;
         }
         frappe.call({
@@ -291,6 +293,28 @@ frappe.ui.form.on('Patient Encounter', {
             },
         });
     },
+    get_lab_bundle_items: function (frm, cdt, cdn) {
+        var doc = locals[cdt][cdn];
+        if (doc.lab_bundle) {
+            frappe.call({
+                method: "frappe.client.get",
+                args: {
+                    name: doc.lab_bundle,
+                    doctype: "Lab Bundle"
+                },
+                callback(r) {
+                    console.log(r);
+                    if (r.message) {
+                        for (var row in r.message.lab_bundle_item) {
+                            var child = frm.add_child("lab_test_prescription");
+                            frappe.model.set_value(child.doctype, child.name, "lab_test_code", r.message.lab_bundle_item[row].lab_test_template);
+                            refresh_field("lab_test_prescription");
+                        }
+                    }
+                }
+            });
+        }
+    }
 });
 
 frappe.ui.form.on('Drug Prescription', {
@@ -329,7 +353,7 @@ const medical_code_mapping = {
         'therapies',
         'diet_recommendation'
     ]
-}
+};
 
 function set_medical_code(frm, reset_columns) {
     function set_options_for_fields(fields, from_table) {
@@ -368,7 +392,7 @@ function validate_medical_code(frm) {
                     at line ${element.idx} is empty or does not exist in the
                     ${frm.fields_dict[from_table].df.label} table.`));
                 }
-            })
+            });
         }
     }
 };
@@ -419,12 +443,16 @@ var duplicate = function (frm) {
 frappe.ui.form.on('Lab Prescription', {
     lab_test_code: function (frm, cdt, cdn) {
         const row = locals[cdt][cdn];
-        if (row.is_not_available_inhouse) {
-            msgprint = "NOTE: This healthcare service item, <b>" + row.lab_test_code + "</b>, is not available inhouse and has been marked as prescribe.<br><br>Request the patient to get it from another healthcare service provider."
-            frappe.show_alert(__(msgprint))
-        } else {
-            frappe.model.set_value(cdt, cdn, "prescribe", 0);
-        }
+        set_is_not_available_inhouse(frm, row, row.lab_test_code)
+            .then(() => {
+                if (row.is_not_available_inhouse) {
+                    msgprint = "NOTE: This healthcare service item, <b>" + row.lab_test_code + "</b>, is not available inhouse and has been marked as prescribe.<br><br>Request the patient to get it from another healthcare service provider.";
+                    frappe.show_alert(__(msgprint));
+                } else {
+                    frappe.model.set_value(cdt, cdn, "prescribe", 0);
+                }
+            });
+
         if (!row.lab_test_code) { return; }
         validate_stock_item(frm, row.lab_test_code, 1, row.healthcare_service_unit, "Lab Test Template");
     },
@@ -454,12 +482,16 @@ frappe.ui.form.on('Lab Prescription', {
 frappe.ui.form.on('Radiology Procedure Prescription', {
     radiology_examination_template: function (frm, cdt, cdn) {
         let row = frappe.get_doc(cdt, cdn);
-        if (row.is_not_available_inhouse) {
-            msgprint = "NOTE: This healthcare service item, <b>" + row.radiology_examination_template + "</b>, is not available inhouse and has been marked as prescribe.<br>Request the patient to get it from another healthcare service provider."
-            frappe.show_alert(__(msgprint))
-        } else {
-            frappe.model.set_value(cdt, cdn, "prescribe", 0);
-        }
+        set_is_not_available_inhouse(frm, row, row.radiology_examination_template)
+            .then(() => {
+                if (row.is_not_available_inhouse) {
+                    msgprint = "NOTE: This healthcare service item, <b>" + row.radiology_examination_template + "</b>, is not available inhouse and has been marked as prescribe.<br>Request the patient to get it from another healthcare service provider.";
+                    frappe.show_alert(__(msgprint));
+                } else {
+                    frappe.model.set_value(cdt, cdn, "prescribe", 0);
+                }
+            });
+
         if (!row.radiology_examination_template) { return; }
         validate_stock_item(frm, row.radiology_examination_template, 1, row.healthcare_service_unit, "Radiology Examination Template");
     },
@@ -489,12 +521,16 @@ frappe.ui.form.on('Radiology Procedure Prescription', {
 frappe.ui.form.on('Procedure Prescription', {
     procedure: function (frm, cdt, cdn) {
         let row = frappe.get_doc(cdt, cdn);
-        if (row.is_not_available_inhouse) {
-            msgprint = "NOTE: This healthcare service item, <b>" + row.procedure + "</b>, is not available inhouse and has been marked as prescribe.<br>Request the patient to get it from another healthcare service provider."
-            frappe.show_alert(__(msgprint))
-        } else {
-            frappe.model.set_value(cdt, cdn, "prescribe", 0);
-        }
+        set_is_not_available_inhouse(frm, row, row.procedure)
+            .then(() => {
+                if (row.is_not_available_inhouse) {
+                    msgprint = "NOTE: This healthcare service item, <b>" + row.procedure + "</b>, is not available inhouse and has been marked as prescribe.<br>Request the patient to get it from another healthcare service provider.";
+                    frappe.show_alert(__(msgprint));
+                } else {
+                    frappe.model.set_value(cdt, cdn, "prescribe", 0);
+                }
+            });
+
         if (!row.procedure) { return; }
         validate_stock_item(frm, row.procedure, 1, row.healthcare_service_unit, "Clinical Procedure Template");
     },
@@ -524,12 +560,16 @@ frappe.ui.form.on('Procedure Prescription', {
 frappe.ui.form.on('Drug Prescription', {
     drug_code: function (frm, cdt, cdn) {
         let row = frappe.get_doc(cdt, cdn);
-        if (row.is_not_available_inhouse) {
-            msgprint = "NOTE: This healthcare service item, <b>" + row.drug_code + "</b>, is not available inhouse and has been marked as prescribe.<br>Request the patient to get it from another healthcare service provider."
-            frappe.show_alert(__(msgprint))
-        } else {
-            frappe.model.set_value(cdt, cdn, "prescribe", 0);
-        }
+        set_is_not_available_inhouse(frm, row, row.drug_code)
+            .then(() => {
+                if (row.is_not_available_inhouse) {
+                    msgprint = "NOTE: This healthcare service item, <b>" + row.drug_code + "</b>, is not available inhouse and has been marked as prescribe.<br>Request the patient to get it from another healthcare service provider.";
+                    frappe.show_alert(__(msgprint));
+                } else {
+                    frappe.model.set_value(cdt, cdn, "prescribe", 0);
+                }
+
+            });
         if (!row.drug_code) { return; }
         validate_stock_item(frm, row.drug_code, row.quantity, row.healthcare_service_unit, "Drug Prescription");
     },
@@ -569,12 +609,16 @@ frappe.ui.form.on('Drug Prescription', {
 frappe.ui.form.on('Therapy Plan Detail', {
     therapy_type: function (frm, cdt, cdn) {
         let row = frappe.get_doc(cdt, cdn);
-        if (row.is_not_available_inhouse) {
-            msgprint = "NOTE: This healthcare service item, <b>" + row.therapy_type + "</b>, is not available inhouse and has been marked as prescribe.<br>Request the patient to get it from another healthcare service provider."
-            frappe.show_alert(__(msgprint))
-        } else {
-            frappe.model.set_value(cdt, cdn, "prescribe", 0);
-        }
+        set_is_not_available_inhouse(frm, row, row.therapy_type)
+            .then(() => {
+                if (row.is_not_available_inhouse) {
+                    msgprint = "NOTE: This healthcare service item, <b>" + row.therapy_type + "</b>, is not available inhouse and has been marked as prescribe.<br>Request the patient to get it from another healthcare service provider.";
+                    frappe.show_alert(__(msgprint));
+                } else {
+                    frappe.model.set_value(cdt, cdn, "prescribe", 0);
+                }
+            });
+
         if (!row.therapy_type) { return; }
         validate_stock_item(frm, row.therapy_type, 1, row.healthcare_service_unit, "Therapy Type");
     },
@@ -611,6 +655,7 @@ const validate_stock_item = function (frm, healthcare_service, qty = 1, healthca
         args: {
             'healthcare_service': healthcare_service,
             'qty': qty,
+            'company': frm.doc.company,
             'caller': caller,
             'healthcare_service_unit': healthcare_service_unit
         },
@@ -641,4 +686,22 @@ const load_print_page = function (invoice_name, pos_profile) {
         },
         true
     );
+};
+
+const set_is_not_available_inhouse = function (frm, row, template) {
+    return frappe.call({
+        method: 'hms_tz.nhif.api.healthcare_utils.get_template_company_option',
+        args: {
+            'template': template,
+            'company': frm.doc.company
+        },
+        callback: function (data) {
+            if (data.message) {
+                row.is_not_available_inhouse = data.is_not_available;
+            }
+            else {
+                row.is_not_available_inhouse = 0;
+            }
+        }
+    });
 };

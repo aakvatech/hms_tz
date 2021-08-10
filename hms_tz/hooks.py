@@ -388,6 +388,9 @@ fixtures = [
                     "Drug Prescription-reference_journal_entry",
                     "Drug Prescription-invoiced",
                     "Therapy Plan Detail-invoiced",
+                    "Medication-healthcare_service_unit",
+                    "Patient Encounter-get_lab_bundle_items",
+                    "Patient Encounter-lab_bundle",
                 ),
             ]
         ],
@@ -845,6 +848,7 @@ doctype_js = {
     "Vital Signs": "nhif/api/vital_signs.js",
     "Healthcare Insurance Subscription": "nhif/api/insurance_subscription.js",
     "Inpatient Record": "nhif/api/inpatient_record.js",
+    "Healthcare Service Unit": "nhif/api/service_unit.js",
 }
 # csf_tz.nhif.api.patient_appointment
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}

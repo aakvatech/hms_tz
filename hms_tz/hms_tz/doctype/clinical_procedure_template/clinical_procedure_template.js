@@ -49,6 +49,16 @@ frappe.ui.form.on('Clinical Procedure Template', {
 				change_template_code(frm.doc);
 			});
 		}
+
+		frm.fields_dict['company_options'].grid.get_field('service_unit').get_query = function (doc, cdt, cdn) {
+			const child = locals[cdt][cdn];
+			return {
+				filters:
+				{
+					'company': child.company,
+				}
+			};
+		};
 	},
 
 	clinical_procedure_check_list_template: function(frm) {

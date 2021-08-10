@@ -299,23 +299,25 @@ def get_warehouse_from_service_unit(healthcare_service_unit):
 
 def get_item_form_LRPT(LRPT_doc):
     item = frappe._dict()
+    comapny_option = get_template_company_option(LRPT_doc.template, LRPT_doc.company)
+    item.healthcare_service_unit = comapny_option.service_unit
     if LRPT_doc.doctype == "Lab Test":
-        item.item_code, item.healthcare_service_unit = frappe.get_value(
-            "Lab Test Template", LRPT_doc.template, ["item", "healthcare_service_unit"]
+        item.item_code = frappe.get_value(
+            "Lab Test Template", LRPT_doc.template, "item"
         )
         item.qty = 1
     elif LRPT_doc.doctype == "Radiology Examination":
-        item.item_code, item.healthcare_service_unit = frappe.get_value(
+        item.item_code = frappe.get_value(
             "Radiology Examination Template",
             LRPT_doc.radiology_examination_template,
-            ["item", "healthcare_service_unit"],
+            "item",
         )
         item.qty = 1
     elif LRPT_doc.doctype == "Clinical Procedure":
-        item.item_code, item.healthcare_service_unit = frappe.get_value(
+        item.item_code = frappe.get_value(
             "Clinical Procedure Template",
             LRPT_doc.procedure_template,
-            ["item", "healthcare_service_unit"],
+            "item",
         )
         item.qty = 1
     elif LRPT_doc.doctype == "Therapy Plan":
@@ -386,8 +388,10 @@ def get_healthcare_service_unit(item):
     elif refd == "Drug Prescription":
         return frappe.get_value("Drug Prescription", refn, "healthcare_service_unit")
     elif refd == "Healthcare Service Order":
-        order_doctype, order, order_group, billing_item = frappe.get_value(
-            refd, refn, ["order_doctype", "order", "order_group", "billing_item"]
+        order_doctype, order, order_group, billing_item, company = frappe.get_value(
+            refd,
+            refn,
+            ["order_doctype", "order", "order_group", "billing_item", "company"],
         )
         if order_doctype in [
             "Lab Test Template",
@@ -395,7 +399,9 @@ def get_healthcare_service_unit(item):
             "Clinical Procedure Template",
             "Therapy Plan Template",
         ]:
-            return frappe.get_value(order_doctype, order, "healthcare_service_unit")
+            comapny_option = get_template_company_option(order, company)
+            return comapny_option.service_unit
+
         elif order_doctype == "Medication":
             if not order_group:
                 return
@@ -498,10 +504,10 @@ def set_healthcare_services(doc, checked_values):
             checked_item["dn"],
             "parent",
         )
-        item_line.healthcare_practitioner = frappe.get_value(
+        item_line.healthcare_practitioner, company = frappe.get_value(
             "Patient Encounter",
             parent_encounter,
-            "practitioner",
+            ["practitioner", "company"],
         )
 
         if checked_item["dt"] == "Drug Prescription":
@@ -513,17 +519,13 @@ def set_healthcare_services(doc, checked_values):
 
         else:
             map_obj = childs_map.get(checked_item["dt"])
-            template_doctype = map_obj.get("template")
             service_item = frappe.get_value(
                 checked_item["dt"],
                 checked_item["dn"],
                 map_obj.get("item"),
             )
-            item_line.healthcare_service_unit = frappe.get_value(
-                template_doctype,
-                service_item,
-                "healthcare_service_unit",
-            )
+            comapny_option = get_template_company_option(service_item, company)
+            item_line.healthcare_service_unit = comapny_option.service_unit
 
         item_line.warehouse = get_warehouse_from_service_unit(
             item_line.healthcare_service_unit
@@ -694,3 +696,41 @@ def set_uninvoiced_so_closed():
     for so in uninvoiced_so_list:
         so_doc = frappe.get_doc("Sales Order", so.name)
         so_doc.update_status("Closed")
+
+
+def validate_hsu_healthcare_template(doc):
+    doctypes = [
+        "Lab Test Template",
+        "Therapy Type",
+        "Radiology Examination Template",
+        "Clinical Procedure Template",
+    ]
+    if doc.doctype not in doctypes:
+        return
+    companys = frappe.get_all("Company", filters={"domain": "Healthcare"})
+    companys = [i.name for i in companys]
+    for company in companys:
+        row = next(
+            (d for d in doc.company_options if d.get("company") == company), None
+        )
+        if not row:
+            frappe.msgprint(
+                _("Please set Healthcare Service Unit for company {0}").format(company)
+            )
+
+
+@frappe.whitelist()
+def get_template_company_option(template=None, company=None):
+    def_res = {"company": company, "service_unit": None, "is_not_available": 0}
+    if not template or not company:
+        return def_res
+    exist = frappe.db.exists(
+        "Healthcare Company Option", {"company": company, "parent": template}
+    )
+    if exist:
+        doc = frappe.get_doc(
+            "Healthcare Company Option", {"company": company, "parent": template}
+        )
+        return doc
+    else:
+        return def_res

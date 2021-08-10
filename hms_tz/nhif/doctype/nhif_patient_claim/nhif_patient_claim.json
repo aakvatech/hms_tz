@@ -46,6 +46,8 @@
   "patient_file",
   "claim_file_section",
   "claim_file",
+  "section_break_40",
+  "clinical_notes",
   "section_break_28",
   "nhif_patient_claim_disease",
   "section_break_30",
@@ -356,12 +358,22 @@
    "label": "Inpatient Record",
    "options": "Inpatient Record",
    "read_only": 1
+  },
+  {
+   "fieldname": "section_break_40",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "clinical_notes",
+   "fieldtype": "Long Text",
+   "label": "Clinical Notes",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2021-07-17 11:44:17.760721",
+ "modified": "2021-07-29 13:22:30.799642",
  "modified_by": "Administrator",
  "module": "NHIF",
  "name": "NHIF Patient Claim",

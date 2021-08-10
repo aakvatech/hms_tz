@@ -25,6 +25,8 @@
   "healthcare_service_order_category",
   "patient_care_type",
   "staff_role",
+  "section_break_20",
+  "company_options",
   "medical_coding_section",
   "medical_code_standard",
   "medical_code",
@@ -207,10 +209,21 @@
    "label": "Healthcare Service Order Category",
    "options": "Healthcare Service Order Category",
    "reqd": 1
+  },
+  {
+   "fieldname": "section_break_20",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "company_options",
+   "fieldtype": "Table",
+   "label": "Companys Options",
+   "options": "Healthcare Company Option",
+   "reqd": 1
   }
  ],
  "links": [],
- "modified": "2020-09-18 18:32:35.726527",
+ "modified": "2021-07-31 22:31:52.054022",
  "modified_by": "Administrator",
  "module": "Hms Tz",
  "name": "Therapy Type",

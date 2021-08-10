@@ -17,6 +17,15 @@ frappe.ui.form.on('Lab Test Template', {
 				}
 			};
 		});
+		frm.fields_dict['company_options'].grid.get_field('service_unit').get_query = function (doc, cdt, cdn) {
+			const child = locals[cdt][cdn];
+			return {
+				filters:
+				{
+					'company': child.company,
+				}
+			};
+		};
 	},
 	medical_code: function(frm) {
 		frm.set_query('medical_code', function() {

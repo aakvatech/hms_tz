@@ -15,6 +15,7 @@ from hms_tz.nhif.api.healthcare_utils import (
     create_individual_procedure_prescription,
     msgThrow,
     msgPrint,
+    get_template_company_option,
 )
 from erpnext.healthcare.doctype.healthcare_settings.healthcare_settings import (
     get_receivable_account,
@@ -143,6 +144,7 @@ def on_submit_validation(doc, method):
                 validate_stock_item(
                     row.get(value),
                     quantity,
+                    doc.company,
                     healthcare_service_unit=row.get("healthcare_service_unit"),
                     method=method,
                 )
@@ -175,6 +177,7 @@ def on_submit_validation(doc, method):
             if row.override_subscription or row.prescribe:
                 continue
 
+            # healthcare_service_templates is like {"CBC": [cbc1_lab_prescription_line_object, cbc2_lab_prescription_line_object], "XRay Abdomen": [radiology_prescription_line_object], ["Panadol": drug_prescription_line_object]}
             rows_affected = healthcare_service_templates.setdefault(row.get(value), [])
             rows_affected.append(row)
     # hsic => Healthcare Service Insurance Coverage
@@ -194,6 +197,7 @@ def on_submit_validation(doc, method):
         },
         order_by="modified desc",
     )
+    # hsic_map is like {"CBC": HSIC_object_for_CBC, "XRay Abdomen": HSIC_object_for_xray_abdomen, "Panadol": HSIC_object_for_panadol}
     hsic_map = {hsic.healthcare_service_template: hsic for hsic in hsic_list}
     hicp_name = frappe.get_value(
         "Healthcare Insurance Coverage Plan",
@@ -223,6 +227,7 @@ def on_submit_validation(doc, method):
                 )
         if coverage_info.maximum_number_of_claims == 0:
             continue
+        # if maximum_number_of_claims is more than 12 it means more times per month. Times will be less than 1
         times = 12 / coverage_info.maximum_number_of_claims
         count = 1
         days = int(times * 30)
@@ -230,24 +235,63 @@ def on_submit_validation(doc, method):
             count = 1 / times
             days = 30
         if not coverage_info.number_of_claims:
-            coverage_info.number_of_claims = frappe.db.count(
-                "Healthcare Insurance Claim",
-                {
-                    "service_template": template,
-                    "insurance_subscription": insurance_subscription,
-                    "claim_posting_date": [
-                        "between",
-                        add_to_date(today, days=-days),
-                        today,
-                    ],
-                },
+            lrpt_names_sql = """
+                SELECT hsi.name FROM `tabLab Prescription` hsi
+                INNER JOIN `tabPatient Encounter` pe ON hsi.parent = pe.name
+                WHERE pe.insurance_subscription = "{0}"
+                  AND hsi.lab_test_code = "{1}"
+                  AND hsi.prescribe = 0
+                  AND DATE(pe.creation) BETWEEN "{2}" AND "{3}"
+                UNION ALL
+                SELECT hsi.name FROM `tabRadiology Procedure Prescription` hsi
+                INNER JOIN `tabPatient Encounter` pe ON hsi.parent = pe.name
+                WHERE pe.insurance_subscription = "{0}"
+                  AND hsi.radiology_examination_template = "{1}"
+                  AND hsi.prescribe = 0
+                  AND DATE(pe.creation) BETWEEN "{2}" AND "{3}"
+                UNION ALL
+                SELECT hsi.name FROM `tabProcedure Prescription` hsi
+                INNER JOIN `tabPatient Encounter` pe ON hsi.parent = pe.name
+                WHERE pe.insurance_subscription = "{0}"
+                  AND hsi.procedure = "{1}"
+                  AND hsi.prescribe = 0
+                  AND DATE(pe.creation) BETWEEN "{2}" AND "{3}"
+                UNION ALL
+                SELECT hsi.name FROM `tabTherapy Plan Detail` hsi
+                INNER JOIN `tabPatient Encounter` pe ON hsi.parent = pe.name
+                WHERE pe.insurance_subscription = "{0}"
+                  AND hsi.therapy_type = "{1}"
+                  AND hsi.prescribe = 0
+                  AND DATE(pe.creation) BETWEEN "{2}" AND "{3}"
+            """.format(
+                insurance_subscription, template, add_to_date(today, days=-days), today
             )
-        if coverage_info.number_of_claims > count:
-            frappe.throw(
+            lrpt_names = frappe.db.sql(lrpt_names_sql)
+            lrpt_count = len(lrpt_names) or 0
+            drug_count_sql = """
+                SELECT SUM(quantity) FROM `tabDrug Prescription` hsi
+                INNER JOIN `tabPatient Encounter` pe ON hsi.parent = pe.name
+                WHERE pe.insurance_subscription = "{0}"
+                  AND hsi.drug_code = "{1}"
+                  AND hsi.prescribe = 0
+                  AND DATE(pe.creation) BETWEEN "{2}" AND "{3}"
+            """.format(
+                insurance_subscription, template, add_to_date(today, days=-days), today
+            )
+            drug_count = (
+                frappe.db.sql(drug_count_sql, as_dict=0,)[
+                    0
+                ][0]
+                or 0
+            )
+            coverage_info.number_of_claims = lrpt_count + drug_count
+        if coverage_info.number_of_claims > int(count):
+            msgThrow(
                 _(
                     "Maximum Number of Claims for {0} per year is exceeded within the"
-                    " last {1} days"
-                ).format(template, days)
+                    " last {1} days. The allowed count is {2} where as past prescription count is {3}"
+                ).format(template, days, int(count), coverage_info.number_of_claims),
+                method,
             )
     validate_totals(doc)
 
@@ -362,6 +406,7 @@ def get_stock_availability(item_code, warehouse):
 def validate_stock_item(
     healthcare_service,
     qty,
+    company,
     warehouse=None,
     healthcare_service_unit=None,
     caller="Unknown",
@@ -373,7 +418,9 @@ def validate_stock_item(
         # LRPT code stock check goes here
         return
 
-    if frappe.get_value("Medication", healthcare_service, "is_not_available_inhouse"):
+    company_option = get_template_company_option(healthcare_service, company)
+    is_not_available = company_option.is_not_available
+    if is_not_available:
         return
 
     qty = float(qty)
@@ -426,9 +473,8 @@ def on_submit(doc, method):
         on_submit_validation(doc, method)
         create_healthcare_docs(doc)
         create_delivery_note(doc, method)
+    if not doc.inpatient_record:
         update_inpatient_record_consultancy(doc)
-        # frappe.enqueue(method=enqueue_on_update_after_submit, queue='long',
-        #                timeout=300, is_async=True, **{"doc_name": doc.name})
 
 
 @frappe.whitelist()
@@ -499,7 +545,9 @@ def create_delivery_note(patient_encounter_doc, method):
     # Create list of warehouses to process delivery notes by warehouses
     warehouses = []
     for line in patient_encounter_doc.drug_prescription:
-        if patient_encounter_doc.insurance_subscription and line.prescribe:
+        if line.invoiced and line.prescribe:
+            frappe.msgprint(_("Invoiced and Prescribed patient who is an inpatient"))
+        elif patient_encounter_doc.insurance_subscription and line.prescribe:
             continue
         if line.drug_prescription_created:
             continue
@@ -514,7 +562,15 @@ def create_delivery_note(patient_encounter_doc, method):
     for element in warehouses:
         items = []
         for row in patient_encounter_doc.drug_prescription:
-            if patient_encounter_doc.insurance_subscription and row.prescribe:
+            if row.drug_prescription_created:
+                continue
+            encounter_customer = ""
+            if row.invoiced and row.prescribe:
+                encounter_customer = frappe.get_value(
+                    "Patient", patient_encounter_doc.patient, "customer"
+                )
+                insurance_coverage_plan = ""
+            elif patient_encounter_doc.insurance_subscription and row.prescribe:
                 continue
             warehouse = get_warehouse_from_service_unit(row.healthcare_service_unit)
             if element != warehouse:
@@ -573,7 +629,7 @@ def create_delivery_note(patient_encounter_doc, method):
                 "Patient", patient_encounter_doc.patient, "customer"
             )
             insurance_coverage_plan = ""
-        else:
+        elif not encounter_customer:
             encounter_customer = frappe.get_value(
                 "Healthcare Insurance Company",
                 patient_encounter_doc.insurance_company,
