@@ -282,7 +282,7 @@ def get_company():
 def setup_patient_history_settings():
 	import json
 
-	settings = frappe.get_single('Patient History Settings')
+	settings = frappe.get_single('AV Patient History Settings')
 	configuration = get_patient_history_config()
 	for dt, config in configuration.items():
 		settings.append("standard_doctypes", {
@@ -322,7 +322,8 @@ def get_patient_history_config():
 			{"label": "Descriptive Test Result", "fieldname": "descriptive_test_items", "fieldtype": "Table"},
 			{"label": "Organism Test Result", "fieldname": "organism_test_items", "fieldtype": "Table"},
 			{"label": "Sensitivity Test Result", "fieldname": "sensitivity_test_items", "fieldtype": "Table"},
-			{"label": "Comments", "fieldname": "lab_test_comment", "fieldtype": "Table"}
+			{"label": "Custom Result", "fieldname": "custom_result", "fieldtype": "Text Editor"}
+			{"label": "Comments", "fieldname": "lab_test_comment", "fieldtype": "Text"}
 		]),
 		"Therapy Session": ("start_date", [
 			{"label": "Therapy Type", "fieldname": "therapy_type", "fieldtype": "Link"},
