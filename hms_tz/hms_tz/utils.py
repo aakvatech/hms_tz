@@ -975,7 +975,7 @@ def manage_healthcare_doc_cancel(doc):
 
 def check_if_healthcare_doc_is_linked(doc, method):
     item_linked = {}
-    exclude_docs = ['Patient Medical Record']
+    exclude_docs = ['AV Patient Medical Record']
     from frappe.desk.form.linked_with import get_linked_doctypes, get_linked_docs
     linked_docs = get_linked_docs(
         doc.doctype, doc.name, linkinfo=get_linked_doctypes(doc.doctype))
@@ -1004,7 +1004,7 @@ def check_if_healthcare_doc_is_linked(doc, method):
 def delete_medical_record(reference_doc, reference_name):
     query = """
 		delete from
-			`tabPatient Medical Record`
+			`tabAV Patient Medical Record`
 		where
 			reference_doctype = %s and reference_name = %s"""
     frappe.db.sql(query, (reference_doc, reference_name))

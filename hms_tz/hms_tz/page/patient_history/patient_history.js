@@ -55,7 +55,8 @@ frappe.pages['patient_history'].on_page_load = function (wrapper) {
 			if (doctype && docname) {
 				let exclude = ['patient', 'patient_name', 'patient_sex', 'encounter_date'];
 				frappe.call({
-					method: 'erpnext.healthcare.utils.render_doc_as_html',
+					// method: 'erpnext.healthcare.utils.render_doc_as_html',
+					method: "hms_tz.hms_tz.utils.render_doc_as_html",
 					args: {
 						doctype: doctype,
 						docname: docname,
@@ -99,7 +100,8 @@ frappe.pages['patient_history'].on_page_load = function (wrapper) {
 let setup_filters = function (patient, me) {
 	$('.doctype-filter').empty();
 	frappe.xcall(
-		'erpnext.healthcare.page.patient_history.patient_history.get_patient_history_doctypes'
+		// 'erpnext.healthcare.page.patient_history.patient_history.get_patient_history_doctypes'
+		"hms_tz.hms_tz.page.patient_history.patient_history.get_patient_history_doctypes"
 	).then(document_types => {
 		let doctype_filter = frappe.ui.form.make_control({
 			parent: $('.doctype-filter'),
@@ -159,7 +161,8 @@ let get_documents = function (patient, me, document_types = "", selected_date_ra
 		filters['date_range'] = selected_date_range;
 
 	frappe.call({
-		'method': 'erpnext.healthcare.page.patient_history.patient_history.get_feed',
+		// 'method': 'erpnext.healthcare.page.patient_history.patient_history.get_feed',
+		"method": "hms_tz.hms_tz.page.patient_history.patient_history.get_feed",
 		args: filters,
 		callback: function (r) {
 			let data = r.message;
@@ -274,7 +277,8 @@ let add_date_separator = function (data) {
 
 let show_patient_info = function (patient, me) {
 	frappe.call({
-		'method': 'erpnext.healthcare.doctype.patient.patient.get_patient_detail',
+		// 'method': 'erpnext.healthcare.doctype.patient.patient.get_patient_detail',
+		method: "hms_tz.hms_tz.doctype.patient.patient.get_patient_detail",
 		args: {
 			patient: patient
 		},
@@ -312,7 +316,8 @@ let show_patient_info = function (patient, me) {
 
 let show_patient_vital_charts = function (patient, me, btn_show_id, pts, title) {
 	frappe.call({
-		method: 'erpnext.healthcare.utils.get_patient_vitals',
+		// method: 'erpnext.healthcare.utils.get_patient_vitals',
+		method: "hms_tz.hms_tz.utils.get_patient_vitals",
 		args: {
 			patient: patient
 		},

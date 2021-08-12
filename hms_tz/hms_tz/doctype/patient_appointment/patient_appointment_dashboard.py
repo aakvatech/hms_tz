@@ -5,12 +5,12 @@ def get_data():
 	return {
 		'fieldname': 'appointment',
 		'non_standard_fieldnames': {
-			'Patient Medical Record': 'reference_name'
+			'AV Patient Medical Record': 'reference_name'
 		},
 		'transactions': [
 			{
 				'label': _('Consultations'),
-				'items': ['Patient Encounter', 'Vital Signs', 'Patient Medical Record']
+				'items': ['Patient Encounter', 'Vital Signs', 'AV Patient Medical Record']
 			}
 		]
 	}

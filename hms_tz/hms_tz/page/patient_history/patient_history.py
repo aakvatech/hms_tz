@@ -13,7 +13,7 @@ def get_feed(name, document_types=None, date_range=None, start=0, page_length=20
 	"""get feed"""
 	filters = get_filters(name, document_types, date_range)
 
-	result = frappe.db.get_all('Patient Medical Record',
+	result = frappe.db.get_all('AV Patient Medical Record',
 		fields=['name', 'owner', 'communication_date',
 			'reference_doctype', 'reference_name', 'subject'],
 		filters=filters,
@@ -46,7 +46,7 @@ def get_filters(name, document_types=None, date_range=None):
 @frappe.whitelist()
 def get_feed_for_dt(doctype, docname):
 	"""get feed"""
-	result = frappe.db.get_all('Patient Medical Record',
+	result = frappe.db.get_all('AV Patient Medical Record',
 		fields=['name', 'owner', 'communication_date',
 			'reference_doctype', 'reference_name', 'subject'],
 		filters={
@@ -62,12 +62,12 @@ def get_feed_for_dt(doctype, docname):
 @frappe.whitelist()
 def get_patient_history_doctypes():
 	document_types = []
-	settings = frappe.get_single("Patient History Settings")
+	settings = frappe.get_single("AV Patient History Settings")
 
-	for entry in settings.standard_doctypes:
+	for entry in settings.av_standard_doctypes:
 		document_types.append(entry.document_type)
 
-	for entry in settings.custom_doctypes:
+	for entry in settings.av_custom_doctypes:
 		document_types.append(entry.document_type)
 
 	return document_types
