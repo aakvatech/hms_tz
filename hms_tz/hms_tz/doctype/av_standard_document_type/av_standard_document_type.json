@@ -17,7 +17,6 @@
    "in_list_view": 1,
    "label": "Document Type",
    "options": "DocType",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -25,7 +24,6 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Date Fieldname",
-   "read_only": 1,
    "reqd": 1
   },
   {
@@ -37,14 +35,13 @@
   {
    "fieldname": "selected_fields",
    "fieldtype": "Code",
-   "label": "Selected Fields",
-   "read_only": 1
+   "label": "Selected Fields"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2021-08-09 16:53:33.691081",
+ "modified": "2021-08-10 21:27:17.454795",
  "modified_by": "Administrator",
  "module": "Hms Tz",
  "name": "AV Standard Document Type",

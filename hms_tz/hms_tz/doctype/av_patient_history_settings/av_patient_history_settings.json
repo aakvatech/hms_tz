@@ -14,8 +14,7 @@
    "fieldname": "av_standard_doctypes",
    "fieldtype": "Table",
    "label": "AV Standard Document Types",
-   "options": "AV Standard Document Type",
-   "read_only": 1
+   "options": "AV Standard Document Type"
   },
   {
    "fieldname": "section_break_2",
@@ -31,7 +30,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2021-08-09 17:11:13.462312",
+ "modified": "2021-08-10 21:19:32.165994",
  "modified_by": "Administrator",
  "module": "Hms Tz",
  "name": "AV Patient History Settings",
