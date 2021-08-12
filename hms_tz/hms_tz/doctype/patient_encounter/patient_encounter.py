@@ -60,7 +60,7 @@ def create_therapy_plan(encounter):
 
 def insert_encounter_to_medical_record(doc):
 	subject = set_subject_field(doc)
-	medical_record = frappe.new_doc('AV Patient Medical Record')
+	medical_record = frappe.new_doc('Patient Medical Record')
 	medical_record.patient = doc.patient
 	medical_record.subject = subject
 	medical_record.status = 'Open'
@@ -71,16 +71,16 @@ def insert_encounter_to_medical_record(doc):
 	medical_record.save(ignore_permissions=True)
 
 def update_encounter_medical_record(encounter):
-	medical_record_id = frappe.db.exists('AV Patient Medical Record', {'reference_name': encounter.name})
+	medical_record_id = frappe.db.exists('Patient Medical Record', {'reference_name': encounter.name})
 
 	if medical_record_id and medical_record_id[0][0]:
 		subject = set_subject_field(encounter)
-		frappe.db.set_value('AV Patient Medical Record', medical_record_id[0][0], 'subject', subject)
+		frappe.db.set_value('Patient Medical Record', medical_record_id[0][0], 'subject', subject)
 	else:
 		insert_encounter_to_medical_record(encounter)
 
 def delete_medical_record(encounter):
-	frappe.delete_doc_if_exists('AV Patient Medical Record', 'reference_name', encounter.name)
+	frappe.delete_doc_if_exists('Patient Medical Record', 'reference_name', encounter.name)
 
 def set_subject_field(encounter):
 	subject = frappe.bold(_('Healthcare Practitioner: ')) + encounter.practitioner + '<br>'

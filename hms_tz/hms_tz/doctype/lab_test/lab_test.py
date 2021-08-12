@@ -373,7 +373,7 @@ def insert_lab_test_to_medical_record(doc):
 	if doc.custom_result:
 		subject += '<br>' + cstr(doc.custom_result)
 
-	medical_record = frappe.new_doc('AV Patient Medical Record')
+	medical_record = frappe.new_doc('Patient Medical Record')
 	medical_record.patient = doc.patient
 	medical_record.subject = subject
 	medical_record.status = 'Open'
@@ -384,10 +384,10 @@ def insert_lab_test_to_medical_record(doc):
 	medical_record.save(ignore_permissions = True)
 
 def delete_lab_test_from_medical_record(self):
-	medical_record_id = frappe.db.sql('select name from `tabAV Patient Medical Record` where reference_name=%s', (self.name))
+	medical_record_id = frappe.db.sql('select name from `tabPatient Medical Record` where reference_name=%s', (self.name))
 
 	if medical_record_id and medical_record_id[0][0]:
-		frappe.delete_doc('AV Patient Medical Record', medical_record_id[0][0])
+		frappe.delete_doc('Patient Medical Record', medical_record_id[0][0])
 
 @frappe.whitelist()
 def get_lab_test_prescribed(patient):

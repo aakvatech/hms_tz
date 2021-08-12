@@ -158,13 +158,13 @@ def create_medical_record(doc, method=None):
 	if not medical_record_required:
 		return 
 	
-	if frappe.db.exists("AV Patient Medical Record", {"reference_name": doc.name}):
+	if frappe.db.exists("Patient Medical Record", {"reference_name": doc.name}):
 		return 
 	
 	subject = set_subject_field(doc)
 	date_field = get_date_field(doc.doctype)
 
-	record = frappe.newa_doc("AV Patient Medical Record")
+	record = frappe.newa_doc("Patient Medical Record")
 	record.patient = doc.patient
 	record.subject = subject
 	record.status = "Open"
@@ -180,11 +180,11 @@ def update_medical_record(doc, method=None):
 	if not medical_record_required:
 		return
 
-	medical_record_id = frappe.db.exists('AV Patient Medical Record', { 'reference_name': doc.name })
+	medical_record_id = frappe.db.exists('Patient Medical Record', { 'reference_name': doc.name })
 
 	if medical_record_id:
 		subject = set_subject_field(doc)
-		frappe.db.set_value('AV Patient Medical Record', medical_record_id[0][0], 'subject', subject)
+		frappe.db.set_value('Patient Medical Record', medical_record_id[0][0], 'subject', subject)
 	else:
 		create_medical_record(doc)
 
@@ -194,6 +194,6 @@ def delete_medical_record(doc, method=None):
 	if not medical_record_required:
 		return
 
-	record = frappe.db.exists('AV Patient Medical Record', { 'reference_name': doc.name })
+	record = frappe.db.exists('Patient Medical Record', { 'reference_name': doc.name })
 	if record:
-		frappe.delete_doc('AV Patient Medical Record', record, force=1)
+		frappe.delete_doc('Patient Medical Record', record, force=1)

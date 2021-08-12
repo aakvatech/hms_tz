@@ -113,10 +113,10 @@ let create_medical_record = function (frm) {
 	frappe.route_options = {
 		'patient': frm.doc.name,
 		'status': 'Open',
-		'reference_doctype': 'AV Patient Medical Record',
+		'reference_doctype': 'Patient Medical Record',
 		'reference_owner': frm.doc.owner
 	};
-	frappe.new_doc('AV Patient Medical Record');
+	frappe.new_doc('Patient Medical Record');
 };
 
 let get_age = function (birth) {

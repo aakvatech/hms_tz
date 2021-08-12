@@ -168,7 +168,7 @@ def insert_session_medical_record(doc):
     subject += frappe.bold(_('Total Counts Completed: ')) + \
         cstr(doc.total_counts_completed) + '<br>'
 
-    medical_record = frappe.new_doc('AV Patient Medical Record')
+    medical_record = frappe.new_doc('Patient Medical Record')
     medical_record.patient = doc.patient
     medical_record.subject = subject
     medical_record.status = 'Open'

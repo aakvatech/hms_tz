@@ -31,7 +31,7 @@ def after_insert(doc, method):
 
 def on_trash(doc, method):
     pmr_list = frappe.get_all(
-        "AV Patient Medical Record",
+        "Patient Medical Record",
         fields={"name"},
         filters={
             "reference_doctype": "Patient Encounter",
@@ -40,7 +40,7 @@ def on_trash(doc, method):
     )
     for pmr_doc in pmr_list:
         frappe.delete_doc(
-            "AV Patient Medical Record", pmr_doc.name, ignore_permissions=True
+            "Patient Medical Record", pmr_doc.name, ignore_permissions=True
         )
 
 

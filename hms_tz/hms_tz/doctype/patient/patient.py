@@ -270,7 +270,7 @@ def get_timeline_data(doctype, name):
 		SELECT
 			unix_timestamp(communication_date), count(*)
 		FROM
-			`tabAV Patient Medical Record`
+			`tabPatient Medical Record`
 		WHERE
 			patient=%s
 			and `communication_date` > date_sub(curdate(), interval 1 year)

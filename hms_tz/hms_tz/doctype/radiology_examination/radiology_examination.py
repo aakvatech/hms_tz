@@ -47,7 +47,7 @@ def insert_to_medical_record(doc):
     if subject and doc.notes:
         subject += '<br/>'+doc.notes
 
-    medical_record = frappe.new_doc('AV Patient Medical Record')
+    medical_record = frappe.new_doc('Patient Medical Record')
     medical_record.patient = doc.patient
     medical_record.subject = subject
     medical_record.status = 'Open'
