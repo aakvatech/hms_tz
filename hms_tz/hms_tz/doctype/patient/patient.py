@@ -44,7 +44,7 @@ class Patient(Document):
                 customer.territory = self.territory
 
             customer.customer_name = self.patient_name
-            customer.default_price_list = self.default_price_list
+            # customer.default_price_list = self.default_price_list
             customer.default_currency = self.default_currency
             customer.language = self.language
             customer.ignore_mandatory = True
@@ -69,13 +69,13 @@ class Patient(Document):
         if not self.territory:
             self.territory = frappe.db.get_single_value(
                 'Selling Settings', 'territory') or get_root_of('Territory')
-        if not self.default_price_list:
-            self.default_price_list = frappe.db.get_single_value(
-                'Selling Settings', 'selling_price_list')
+        # if not self.default_price_list:
+        #     self.default_price_list = frappe.db.get_single_value(
+        #         'Selling Settings', 'selling_price_list')
 
-        if not self.customer_group or not self.territory or not self.default_price_list:
-            frappe.msgprint(
-                _('Please set defaults for Customer Group, Territory and Selling Price List in Selling Settings'), alert=True)
+        # if not self.customer_group or not self.territory or not self.default_price_list:
+        #     frappe.msgprint(
+        #         _('Please set defaults for Customer Group, Territory and Selling Price List in Selling Settings'), alert=True)
 
         if not self.default_currency:
             self.default_currency = get_default_currency()
@@ -169,7 +169,7 @@ def create_customer(doc):
         'territory': doc.territory or frappe.db.get_single_value('Selling Settings', 'territory'),
         'customer_type': 'Individual',
         'default_currency': doc.default_currency,
-        'default_price_list': doc.default_price_list,
+        # 'default_price_list': doc.default_price_list,
         'language': doc.language
     }).insert(ignore_permissions=True, ignore_mandatory=True)
 
