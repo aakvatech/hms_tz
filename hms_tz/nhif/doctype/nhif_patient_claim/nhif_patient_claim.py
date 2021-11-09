@@ -579,19 +579,22 @@ class NHIFPatientClaim(Document):
             self.clinical_notes += "\n"
 
 @frappe.whitelist()
-def merge_nhif_claims(doc):
-    doc_auth = doc.authorization_no
-    
+def merge_nhif_claims(authorization_no):    
     claim_details = frappe.get_all(
         "NHIF Patient Claim",
-        filters={"authorization_no": doc_auth, "docstatus": 0},
+        filters={"authorization_no": authorization_no, "docstatus": 0},
         fields=["name"],
     )
 
-    if len(claim_details) > 1:
-        claim_name_list = ""
-        for claim in claim_details:
-            claim_name_list += claim_details["name"] + ", "
+    if len(claim_details) == 1:
+        frappe.throw("This Authorization No.: {0} was used Only Once on NHIF Patient Claim: {1}".format(
+            frappe.bold(doc_auth),
+            frappe.bold(claim_details[0]["name"])
+        ))
+
+    claim_name_list = ""
+    for claim in claim_details:
+        claim_name_list += claim_details["name"] + ", "
     
     first_doc = frappe.get_doc("NHIF Patient Claim", claim_name_list[0])
     second_doc = frappe.get_doc("NHIF Patient Claim", claim_name_list[1])
