@@ -601,16 +601,16 @@ def merge_nhif_claims(authorization_no):
 
     if second_doc.nhif_patient_claim_disease:
         first_doc.append("nhif_patient_claim_disease", {
-            first_doc.diagnosis_type: second_doc.diagnosis_type
-            first_doc.status: second_doc.status
-            first_doc.patient_encounter: second_doc.patient_encounter
-            first_doc.codification_table: second_doc.codification_table
-            first_doc.medical_code: second_doc.medical_code
-            first_doc.disease_code: second_doc.disease_code
-            first_doc.description: second_doc.description
-            first_doc.item_crt_by: second_doc.item_crt_by
-            first_doc.date_created: second_doc.date_created
-            first_doc.parent: second_doc.parent
+            first_doc.diagnosis_type: second_doc.diagnosis_type,
+            first_doc.status: second_doc.status,
+            first_doc.patient_encounter: second_doc.patient_encounter,
+            first_doc.codification_table: second_doc.codification_table,
+            first_doc.medical_code: second_doc.medical_code,
+            first_doc.disease_code: second_doc.disease_code,
+            first_doc.description: second_doc.description,
+            first_doc.item_crt_by: second_doc.item_crt_by,
+            first_doc.date_created: second_doc.date_created,
+            first_doc.parent: second_doc.parent,
             first_doc.parenttype: second_doc.parenttype
         })
         first_doc.save(ignore_permissions=True)
@@ -622,20 +622,20 @@ def merge_nhif_claims(authorization_no):
 
     if second_doc.nhif_patient_claim_item:
         first_doc.append("nhif_patient_claim_item", {
-            first_doc.item_name: second_doc.item_name
-            first_doc.item_code: second_doc.item_code
-            first_doc.item_quantity: second_doc.item_quantity
-            first_doc.unit_price: second_doc.unit_price
-            first_doc.amount_claimed: second_doc.amount_claimed
-            first_doc.approval_ref_no: second_doc.approval_ref_no
-            first_doc.patient_encounter: second_doc.patient_encounter
-            first_doc.ref_doctype: second_doc.ref_doctype
-            first_doc.ref_docname: second_doc.ref_docname
-            first_doc.folio_item_id: second_doc.folio_item_id
-            first_doc.folio_id: second_doc.folio_id
-            first_doc.date_created: second_doc.date_created
-            first_doc.item_crt_by: second_doc.item_crt_by
-            first_doc.parent: second_doc.parent
+            first_doc.item_name: second_doc.item_name,
+            first_doc.item_code: second_doc.item_code,
+            first_doc.item_quantity: second_doc.item_quantity,
+            first_doc.unit_price: second_doc.unit_price,
+            first_doc.amount_claimed: second_doc.amount_claimed,
+            first_doc.approval_ref_no: second_doc.approval_ref_no,
+            first_doc.patient_encounter: second_doc.patient_encounter,
+            first_doc.ref_doctype: second_doc.ref_doctype,
+            first_doc.ref_docname: second_doc.ref_docname,
+            first_doc.folio_item_id: second_doc.folio_item_id,
+            first_doc.folio_id: second_doc.folio_id,
+            first_doc.date_created: second_doc.date_created,
+            first_doc.item_crt_by: second_doc.item_crt_by,
+            first_doc.parent: second_doc.parent,
             first_doc.parenttype: second_doc.parenttype
         })
         first_doc.save(ignore_permissions=True)
