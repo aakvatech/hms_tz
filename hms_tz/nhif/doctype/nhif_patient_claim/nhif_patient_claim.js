@@ -12,5 +12,17 @@ frappe.ui.form.on('NHIF Patient Claim', {
 				}
 			};
 		});
+	},
+
+	onload: function (frm){
+		if (frm.doc.authorization_no){
+			frm.add_custom_button(_("Merge Claims"), function() {
+				console.log(frm.doc.authorization_no)
+				return frappe.call({
+					method: "hms_tz.nhif.doctype.nhif_patient_claim.nhif_patient_claim.merge_nhif_claims",
+					args: {"authorization_no": frm.doc.authorization_no}
+				})
+			})
+		}
 	}
 });
