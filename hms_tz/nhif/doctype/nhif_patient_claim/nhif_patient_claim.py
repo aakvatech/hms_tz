@@ -59,15 +59,17 @@ class NHIFPatientClaim(Document):
         if len(claim_details) > 1:
             claim_name_list = ""
             for claim in claim_details:
-                claim_name_list += claim_details[0]["name"] + ", "
+                claim_name_list += claim_details["name"] + ", "
 
-                frappe.throw(
-                    "This Authorization Number {0} has used multiple times in NHIF Patient Claim: {1}. \
+                frappe.msgprint(
+                    "This Authorization Number {0} has used multiple times in NHIF Patient Claim: {1} and {2}. \
                     Please merge the authorization number to Proceed".format(
-                        frappe.bold(authorization_no), frappe.bold(claim_name_list)
+                        frappe.bold(authorization_no), 
+                        frappe.bold(claim_name_list[0]), 
+                        frappe.bold(claim_name_list[1])
                     )
                 )
-
+            
         self.patient_encounters = self.get_patient_encounters()
         if not self.patient_signature:
             frappe.throw(_("Patient signature is required"))
@@ -576,6 +578,80 @@ class NHIFPatientClaim(Document):
             self.clinical_notes += examination_detail or ""
             self.clinical_notes += "\n"
 
+@frappe.whitelist()
+def merge_nhif_claims(doc):
+    doc_auth = doc.authorization_no
+    
+    claim_details = frappe.get_all(
+        "NHIF Patient Claim",
+        filters={"authorization_no": doc_auth, "docstatus": 0},
+        fields=["name"],
+    )
+
+    if len(claim_details) > 1:
+        claim_name_list = ""
+        for claim in claim_details:
+            claim_name_list += claim_details["name"] + ", "
+    
+    first_doc = frappe.get_doc("NHIF Patient Claim", claim_name_list[0])
+    second_doc = frappe.get_doc("NHIF Patient Claim", claim_name_list[1])
+
+    if second_doc.nhif_patient_claim_disease:
+        first_doc.append("nhif_patient_claim_disease", {
+            first_doc.diagnosis_type: second_doc.diagnosis_type
+            first_doc.status: second_doc.status
+            first_doc.patient_encounter: second_doc.patient_encounter
+            first_doc.codification_table: second_doc.codification_table
+            first_doc.medical_code: second_doc.medical_code
+            first_doc.disease_code: second_doc.disease_code
+            first_doc.description: second_doc.description
+            first_doc.item_crt_by: second_doc.item_crt_by
+            first_doc.date_created: second_doc.date_created
+            first_doc.parent: second_doc.parent
+            first_doc.parenttype: second_doc.parenttype
+        })
+        first_doc.save(ignore_permissions=True)
+        frappe.msgprint("NHIF Claim Diseases Merged Successfully \
+            from Claim: {0} to Claim: {1}..!!".format(
+                frappe.bold(second_doc.name),
+                frappe.bold(first_doc.name)
+            ))
+
+    if second_doc.nhif_patient_claim_item:
+        first_doc.append("nhif_patient_claim_item", {
+            first_doc.item_name: second_doc.item_name
+            first_doc.item_code: second_doc.item_code
+            first_doc.item_quantity: second_doc.item_quantity
+            first_doc.unit_price: second_doc.unit_price
+            first_doc.amount_claimed: second_doc.amount_claimed
+            first_doc.approval_ref_no: second_doc.approval_ref_no
+            first_doc.patient_encounter: second_doc.patient_encounter
+            first_doc.ref_doctype: second_doc.ref_doctype
+            first_doc.ref_docname: second_doc.ref_docname
+            first_doc.folio_item_id: second_doc.folio_item_id
+            first_doc.folio_id: second_doc.folio_id
+            first_doc.date_created: second_doc.date_created
+            first_doc.item_crt_by: second_doc.item_crt_by
+            first_doc.parent: second_doc.parent
+            first_doc.parenttype: second_doc.parenttype
+        })
+        first_doc.save(ignore_permissions=True)
+        frappe.msgprint("NHIF Claim Items Merged Successfully \
+            from Claim: {0} to Claim: {1}..!!".format(
+                frappe.bold(second_doc.name),
+                frappe.bold(first_doc.name)
+            ))
+    
+    frappe.delete_doc(second_doc.doctype, second_doc.name)
+    if not frappe.get_doc("NHIF Patient Claim", second_doc.name):
+        frappe.msgprint("NHIF Claim: {0} was Deleted Successfully..!!".format(
+            frappe.bold(second_doc.name)
+        ))
+    else:
+        frappe.msgprint("NHIF Claim: {0} was not Deleted, please try again or seek \
+            assistance from IT Office..!!".format(
+                frappe.bold(second_doc.name)
+            ))
 
 def get_item_refcode(item_code):
     code_list = frappe.get_all(
