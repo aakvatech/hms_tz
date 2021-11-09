@@ -56,17 +56,15 @@ class NHIFPatientClaim(Document):
             fields=["name", "patient", "patient_name"],
         )
 
-        if len(claim_details) > 1:
+         if len(claim_details) > 1:
             claim_name_list = ""
             for claim in claim_details:
                 claim_name_list += claim_details[0]["name"] + ", "
 
-                frappe.msgprint(
-                    "This Authorization Number {0} has used multiple times in NHIF Patient Claim: {1} and {2}. \
+                frappe.throw(
+                    "This Authorization Number {0} has used multiple times in NHIF Patient Claim: {1}. \
                     Please merge the authorization number to Proceed".format(
-                        frappe.bold(authorization_no), 
-                        frappe.bold(claim_name_list[0]), 
-                        frappe.bold(claim_name_list[1])
+                        frappe.bold(authorization_no), frappe.bold(claim_name_list)
                     )
                 )
             
@@ -587,17 +585,13 @@ def merge_nhif_claims(authorization_no):
     )
 
     if len(claim_details) == 1:
-        frappe.throw("This Authorization No.: {0} was used Only Once on NHIF Patient Claim: {1}".format(
-            frappe.bold(doc_auth),
+        frappe.throw("This Authorization No.: {0} was used only once on NHIF Patient Claim: {1}".format(
+            frappe.bold(authorization_no),
             frappe.bold(claim_details[0]["name"])
         ))
-
-    claim_name_list = []
-    for claim in claim_details:
-        claim_name_list += claim_details["name"]
     
-    first_doc = frappe.get_doc("NHIF Patient Claim", claim_name_list[0])
-    second_doc = frappe.get_doc("NHIF Patient Claim", claim_name_list[1])
+    first_doc = frappe.get_doc("NHIF Patient Claim", claim_details[0]["name"])
+    second_doc = frappe.get_doc("NHIF Patient Claim", claim_details[1]["name"])
 
     diseases_no = len(first_doc.nhif_patient_claim_disease)
     items_no = len(first_doc.nhif_patient_claim_item)
@@ -617,11 +611,11 @@ def merge_nhif_claims(authorization_no):
             "parent": first_doc.name,
             "parenttype": row.parenttype
             })
-            first_doc.save(ignore_permissions=True)
+        first_doc.save(ignore_permissions=True)
 
     if len(first_doc.nhif_patient_claim_disease) > diseases_no:
-        frappe.msgprint("NHIF Patient Claim Diseases Merged Successfully \
-            from Claim: {0} to Claim: {1}..!!".format(
+        frappe.msgprint("NHIF Patient Claim Diseases merged successfully \
+            from Claim: {0} to Claim: {1}".format(
                 frappe.bold(second_doc.name),
                 frappe.bold(first_doc.name)
             ))
@@ -645,11 +639,11 @@ def merge_nhif_claims(authorization_no):
                 "parent": first_doc.name,
                 "parenttype": row.parenttype
             })
-            first_doc.save(ignore_permissions=True)
+        first_doc.save(ignore_permissions=True)
 
     if len(first_doc.nhif_patient_claim_item) > items_no:
-        frappe.msgprint("NHIF Patient Claim Items Merged Successfully \
-            from Claim: {0} to Claim: {1}..!!".format(
+        frappe.msgprint("NHIF Patient Claim Items merged successfully \
+            from Claim: {0} to Claim: {1}".format(
                 frappe.bold(second_doc.name),
                 frappe.bold(first_doc.name)
             ))
@@ -658,12 +652,12 @@ def merge_nhif_claims(authorization_no):
     
     claim = frappe.get_doc("NHIF Patient Claim", second_doc.name)
     if not claim:
-        frappe.msgprint("NHIF Patient Claim: {0} was Deleted Successfully..!!".format(
+        frappe.msgprint("NHIF Patient Claim: {0} was deleted successfully.".format(
             frappe.bold(second_doc.name)
         ))
     else:
-        frappe.msgprint("NHIF Patient Claim: {0} was not Deleted, Please try again or Seek \
-            assistance from IT Office..!!".format(
+        frappe.msgprint("NHIF Patient Claim: {0} was not deleted, please try again or Seek \
+            assistance from IT Office.".format(
                 frappe.bold(second_doc.name)
             ))
 
