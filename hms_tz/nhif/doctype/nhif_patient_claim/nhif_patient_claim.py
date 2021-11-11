@@ -56,7 +56,7 @@ class NHIFPatientClaim(Document):
             fields=["name", "patient", "patient_name"],
         )
 
-         if len(claim_details) > 1:
+        if len(claim_details) > 1:
             claim_name_list = ""
             for claim in claim_details:
                 claim_name_list += claim_details[0]["name"] + ", "
