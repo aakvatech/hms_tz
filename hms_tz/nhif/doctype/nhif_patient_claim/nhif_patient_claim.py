@@ -58,6 +58,11 @@ class NHIFPatientClaim(Document):
 
         if len(claim_details) > 1:
             claim_name_list = ""
+
+            # self.allow_changes = 1
+            # frappe.db.set_value("NHIF Patient Claim", self.name, "allow_changes", 1)
+            # frappe.msgprint(str(self.allow_changes))
+
             for claim in claim_details:
                 claim_name_list += claim_details[0]["name"] + ", "
 
@@ -640,7 +645,8 @@ def merge_nhif_claims(authorization_no):
                 "parent": first_doc.name,
                 "parenttype": row.parenttype
             })
-
+    
+    first_doc.allow_changes = 1
     first_doc.save(ignore_permissions=True)
     frappe.db.commit()
 
@@ -658,9 +664,7 @@ def merge_nhif_claims(authorization_no):
                 frappe.bold(first_doc.name)
             ))
     
-    first_doc.reload()
-    
-    frappe.delete_doc(second_doc.doctype, second_doc.name)
+    # frappe.delete_doc(second_doc.doctype, second_doc.name)
 
 def get_item_refcode(item_code):
     code_list = frappe.get_all(
