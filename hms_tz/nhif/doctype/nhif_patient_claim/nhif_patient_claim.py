@@ -59,10 +59,6 @@ class NHIFPatientClaim(Document):
         if len(claim_details) > 1:
             claim_name_list = ""
 
-            # self.allow_changes = 1
-            # frappe.db.set_value("NHIF Patient Claim", self.name, "allow_changes", 1)
-            # frappe.msgprint(str(self.allow_changes))
-
             for claim in claim_details:
                 claim_name_list += claim_details[0]["name"] + ", "
 
