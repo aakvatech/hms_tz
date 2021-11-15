@@ -25,21 +25,6 @@ from PyPDF2 import PdfFileWriter
 
 class NHIFPatientClaim(Document):
     def validate(self):
-        if frappe.db.exists({
-            "doctype": "NHIF Patient Claim",
-            "patient": self.patient,
-            "patient_appointment": self.patient_appointment,
-            "cardno": self.cardno,
-            "authorization_no": self.authorization_no
-        }):
-            frappe.throw(
-                "NHIF Patient Claim for this Patient: {0}, AppointmentNo: {1}, CardNo: {2} and \
-                AuthorizationNo: {3}, is already been created".format(
-                    frappe.bold(self.patient),
-                    frappe.bold(self.patient_appointment),
-                    frappe.bold(self.cardno),
-                    frappe.bold(self.authorization_no)
-                ))
         
         self.patient_encounters = self.get_patient_encounters()
         if not self.patient_encounters:
@@ -62,6 +47,23 @@ class NHIFPatientClaim(Document):
         frappe.set_value(
             "Patient Appointment", self.patient_appointment, "nhif_patient_claim", ""
         )
+    
+    def before_insert(self):
+        if frappe.db.exists({
+            "doctype": "NHIF Patient Claim",
+            "patient": self.patient,
+            "patient_appointment": self.patient_appointment,
+            "cardno": self.cardno,
+            "authorization_no": self.authorization_no
+        }):
+            frappe.throw(
+                "NHIF Patient Claim for this Patient: {0}, AppointmentNo: {1}, CardNo: {2} and \
+                AuthorizationNo: {3}, is already been created".format(
+                    frappe.bold(self.patient),
+                    frappe.bold(self.patient_appointment),
+                    frappe.bold(self.cardno),
+                    frappe.bold(self.authorization_no)
+                ))
 
     def before_submit(self):
         authorization_no = self.authorization_no
