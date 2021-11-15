@@ -8,6 +8,7 @@ from frappe import _
 from frappe.utils import nowdate, nowtime
 from hms_tz.nhif.api.healthcare_utils import get_item_rate, get_item_price
 from hms_tz.nhif.api.patient_appointment import get_mop_amount
+from hms_tz.nhif.api.patient_encounter import create_healthcare_docs_from_name
 
 import json
 
@@ -203,3 +204,6 @@ def set_beds_price(self):
                     item_code, str(bed.check_in), str(bed.amount), payment_type
                 )
             )
+
+def after_insert(doc, method):
+    create_healthcare_docs_from_name(doc.admission_encounter)
