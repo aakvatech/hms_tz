@@ -728,30 +728,36 @@ def make_insurance_claim(doc):
 
 # Cancel opne appointments, delete draft vital signs and delete draft delivery note 
 def delete_or_cancel_draft_document():
-    before_7_days_date = add_to_date(datetime.now(), days=-7, as_string=False)
+    from frappe.utils import nowdate, date_diff, cint, cstr
 
-    before_45_days_date = add_to_date(datetime.now(), days=-45, as_string=False)
+    pa = frappe.qb.DocType("Patient Appointment")
+    appointments = (
+        frappe.qb.from_(pa).select(pa.name, pa.appointment_date).where(pa.status == "Open" )
+    ).run(as_dict=1)
 
-    appointments = frappe.get_all("Patient Appointment", 
-        filters={"appointment_date": ['<', before_7_days_date], "status": "Open"},
-        pluck="name"
-    )
+    for app_doc in appointments:
+        app_date_diff = date_diff(nowdate(), app_doc.appointment_date)
+        if cint(app_date_diff) > 7:
+            frappe.db.set_value("Patient Appointment", app_doc.name, "status", "Cancelled",  update_modified=False)
 
-    for doc_name in appointments:
-        frappe.db.set_value("Patient Appointment", doc_name, "status", "Cancelled",  update_modified=False)
+    vs = frappe.qb.DocType("Vital Signs")
+    vital_docs = (
+        frappe.qb.from_(vs).select(vs.name, vs.signs_date).where(vs.docstatus == 0)
+    ).run(as_dict=1)
 
+    for vs_doc in vital_docs:
+        diff_in_date = date_diff(nowdate(), vs_doc.signs_date)
+        if cint(diff_in_date) > 7:
+            doc = frappe.get_doc("Vital Signs", vs_doc.name)
+            dn_del.delete()
 
-    vital_docs = frappe.get_all("Vital Signs",
-        filters={"signs_date": ['<', before_7_days_date], "docstatus": 0},
-        pluck="name"
-    )
-    for doc_name in vital_docs:
-        frappe.delete_doc("Vital Signs", doc_name)
+    dn = frappe.qb.DocType("Delivery Note")
+    delivery_documents = (
+        frappe.qb.from_(dn).select(dn.name, dn.posting_date).where(dn.docstatus == 0)
+    ).run(as_dict=1)
 
-
-    delivery_documents = frappe.get_all("Delivery Note", 
-        filters={"posting_date": ['<', before_7_days_date], "docstatus": 0}, 
-        pluck="name"
-    )
-    for doc_name in delivery_documents:
-        frappe.delete_doc("Delivery Note", doc_name)
+    for dn_doc in delivery_documents:
+        dn_date_diff = date_diff(nowdate(), dn_doc.posting_date)
+        if cint(dn_date_diff) > 45:
+            dn_del = frappe.get_doc("Delivery Note", dn_doc.name)
+            dn_del.delete()
