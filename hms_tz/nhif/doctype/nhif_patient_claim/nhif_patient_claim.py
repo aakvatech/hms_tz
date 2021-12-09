@@ -677,6 +677,14 @@ def merge_nhif_claims(authorization_no):
 
     # frappe.delete_doc(second_doc.doctype, second_doc.name)
 
+@frappe.whitelist()
+def get_missing_patient_signature(patient):
+    if patient:
+        patient_doc = frappe.get_doc("Patient", patient)
+        patient_signature = patient_doc.patient_signature
+        
+        return patient_signature
+
 
 def get_item_refcode(item_code):
     code_list = frappe.get_all(

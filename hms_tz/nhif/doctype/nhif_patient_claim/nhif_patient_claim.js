@@ -26,5 +26,17 @@ frappe.ui.form.on('NHIF Patient Claim', {
 				})
 			})
 		}
+		
+		if (!frm.doc.patient_signature && frm.doc.patient) {
+			frm.add_custom_button(__("Set Patient Signature"), function() {
+				frappe.call({
+					method: "hms_tz.nhif.doctype.nhif_patient_claim.nhif_patient_claim.get_missing_patient_signature",
+					args: { "patient": frm.doc.patient },
+					callback: function (r) {
+						frm.set_value("patient_signature", r.message)
+					}
+				})
+			})
+		}
 	}
 });
