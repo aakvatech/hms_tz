@@ -682,6 +682,8 @@ def get_missing_patient_signature(patient):
     if patient:
         patient_doc = frappe.get_doc("Patient", patient)
         patient_signature = patient_doc.patient_signature
+        if not patient_signature:
+            frappe.msgprint("Signature not Found...")
         
         return patient_signature
 
