@@ -1172,91 +1172,94 @@ def update_drug_prescription(patient_encounter_doc, name):
             for item in dn_doc.items:
                 if ((d.name == item.reference_name) and (d.drug_code == item.item_code)):
                     frappe.db.set_value("Drug Prescription", item.reference_name, "dn_detail", item.name)
+
 def validate_patient_balance_vs_patient_costs(doc):
-	encounters = get_patient_encounters(doc)
+    encounters = get_patient_encounters(doc)
+    
+    total_amount_billed = 0
+    
+    if encounters:
+        for enc in encounters:
+            encounter_doc = frappe.get_doc("Patient Encounter", enc)
 
-	total_amount_billed = 0
-	for enc in encounters:
-		encounter_doc = frappe.get_doc("Patient Encounter", enc)
+            for lab in encounter_doc.lab_test_prescription:
+                if (
+                    lab.prescribe == 0 or 
+                    lab.is_not_available_inhouse ==  1 or 
+                    lab.invoiced == 1 or
+                    lab.is_cancelled == 1
+                ):
+                    continue
+            
+                total_amount_billed += lab.amount
+            
+            for radiology in encounter_doc.radiology_procedure_prescription:
+                if (
+                    radiology.prescribe == 0 or
+                    radiology.is_not_available_inhouse == 1 or
+                    radiology.invoiced == 1 or
+                    radiology.is_cancelled == 1
+                ):
+                    return
+                
+                total_amount_billed += radiology.amount
 
-		for lab in encounter_doc.lab_test_prescription:
-			if (
-				lab.prescribe == 0 or 
-				lab.is_not_available_inhouse ==  1 or 
-				lab.invoiced == 1 or
-				lab.is_cancelled == 1
-			):
-				continue
-		
-			total_amount_billed += lab.amount
-		
-		for radiology in encounter_doc.radiology_procedure_prescription:
-			if (
-				radiology.prescribe == 0 or
-				radiology.is_not_available_inhouse == 1 or
-				radiology.invoiced == 1 or
-				radiology.is_cancelled == 1
-			):
-				return
-			
-			total_amount_billed += radiology.amount
+            for procedure in encounter_doc.procedure_prescription:
+                if (
+                    procedure.prescribe == 0 or
+                    procedure.is_not_available_inhouse == 1 or
+                    procedure.invoiced == 1 or
+                    procedure.is_cancelled == 1
+                ):
+                    return
 
-		for procedure in encounter_doc.procedure_prescription:
-			if (
-				procedure.prescribe == 0 or
-				procedure.is_not_available_inhouse == 1 or
-				procedure.invoiced == 1 or
-				procedure.is_cancelled == 1
-			):
-				return
+                total_amount_billed += procedure.amount
+            
+            for drug in encounter_doc.drug_prescription:
+                if (
+                    drug.prescribe == 0 or
+                    drug.is_not_available_inhouse == 1 or
+                    drug.invoiced == 1 or
+                    drug.is_cancelled == 1
+                ):
+                    return
 
-			total_amount_billed += procedure.amount
-		
-		for drug in encounter_doc.drug_prescription:
-			if (
-				drug.prescribe == 0 or
-				drug.is_not_available_inhouse == 1 or
-				drug.invoiced == 1 or
-				drug.is_cancelled == 1
-			):
-				return
+                total_amount_billed += (drug.delivered_quantity * drug.amount)
+            
+            for plan in encounter_doc.therapies:
+                if (
+                    plan.prescribe == 0 or
+                    plan.is_not_available_inhouse == 1 or
+                    plan.invoiced == 1 or
+                    lab.is_cancelled == 1
+                ): 
+                    return
 
-			total_amount_billed += (drug.quantity * drug.amount)
-		
-		for plan in encounter_doc.therapies:
-			if (
-				plan.prescribe == 0 or
-				plan.is_not_available_inhouse == 1 or
-				plan.invoiced == 1 or
-				lab.is_cancelled == 1
-			): 
-				return
-
-			total_amount_billed += plan.amount
-
-	inpatient_record_doc = frappe.get_doc("Inpatient Record", doc.inpatient_record)
-
-	cash_limit = inpatient_record_doc.cash_limit
-
-	for record in inpatient_record_doc.inpatient_occupancies:
-		if not record.is_confirmed:
-			continue
-
-		total_amount_billed += record.amount
+                total_amount_billed += plan.amount
+    
+    inpatient_record_doc = frappe.get_doc("Inpatient Record", doc.inpatient_record)
+    
+    cash_limit = inpatient_record_doc.cash_limit
+    
+    for record in inpatient_record_doc.inpatient_occupancies:
+        if not record.is_confirmed:
+            continue
+        
+        total_amount_billed += record.amount
 	
-	for record in inpatient_record_doc.inpatient_consultancy:
-		if not record.is_confirmed:
-			continue
+    for record in inpatient_record_doc.inpatient_consultancy:
+        if not record.is_confirmed:
+            continue
 		
-		total_amount_billed += record.rate
+        total_amount_billed += record.rate
 
 	# get balance from payment entry after patient has deposit advances 
-	deposit_balance = get_balance_on(party_type="Customer", party=doc.patient_name, company=doc.company)
+    deposit_balance = get_balance_on(party_type="Customer", party=doc.patient_name, company=doc.company)
 
-	patient_balance = ( -1 * deposit_balance) + cash_limit
+    patient_balance = ( -1 * deposit_balance) + cash_limit
 
-	if patient_balance < total_amount_billed:
-		frappe.throw(frappe.bold("The deposit balance of this patient {0} - {1} is not enough or\
+    if patient_balance < total_amount_billed:
+        frappe.throw(frappe.bold("The deposit balance of this patient {0} - {1} is not enough or\
 			the patient has reached the cash limit. In order to submit this encounter,\
 			please request patient to deposit advances or request patient cash limit adjustment".format(doc.patient, doc.patient_name)))
 
