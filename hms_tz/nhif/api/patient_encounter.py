@@ -1176,66 +1176,67 @@ def update_drug_prescription(patient_encounter_doc, name):
 def validate_patient_balance_vs_patient_costs(doc):
     encounters = get_patient_encounters(doc)
     
+    if not encounters:
+        return
+
     total_amount_billed = 0
-    
-    if encounters:
-        for enc in encounters:
-            encounter_doc = frappe.get_doc("Patient Encounter", enc)
+    for enc in encounters:
+        encounter_doc = frappe.get_doc("Patient Encounter", enc)
 
-            for lab in encounter_doc.lab_test_prescription:
-                if (
-                    lab.prescribe == 0 or 
-                    lab.is_not_available_inhouse ==  1 or 
-                    lab.invoiced == 1 or
-                    lab.is_cancelled == 1
-                ):
-                    continue
+        for lab in encounter_doc.lab_test_prescription:
+            if (
+                lab.prescribe == 0 or 
+                lab.is_not_available_inhouse ==  1 or 
+                lab.invoiced == 1 or
+                lab.is_cancelled == 1
+            ):
+                continue
+        
+            total_amount_billed += lab.amount
+        
+        for radiology in encounter_doc.radiology_procedure_prescription:
+            if (
+                radiology.prescribe == 0 or
+                radiology.is_not_available_inhouse == 1 or
+                radiology.invoiced == 1 or
+                radiology.is_cancelled == 1
+            ):
+                return
             
-                total_amount_billed += lab.amount
-            
-            for radiology in encounter_doc.radiology_procedure_prescription:
-                if (
-                    radiology.prescribe == 0 or
-                    radiology.is_not_available_inhouse == 1 or
-                    radiology.invoiced == 1 or
-                    radiology.is_cancelled == 1
-                ):
-                    return
-                
-                total_amount_billed += radiology.amount
+            total_amount_billed += radiology.amount
 
-            for procedure in encounter_doc.procedure_prescription:
-                if (
-                    procedure.prescribe == 0 or
-                    procedure.is_not_available_inhouse == 1 or
-                    procedure.invoiced == 1 or
-                    procedure.is_cancelled == 1
-                ):
-                    return
+        for procedure in encounter_doc.procedure_prescription:
+            if (
+                procedure.prescribe == 0 or
+                procedure.is_not_available_inhouse == 1 or
+                procedure.invoiced == 1 or
+                procedure.is_cancelled == 1
+            ):
+                return
 
-                total_amount_billed += procedure.amount
-            
-            for drug in encounter_doc.drug_prescription:
-                if (
-                    drug.prescribe == 0 or
-                    drug.is_not_available_inhouse == 1 or
-                    drug.invoiced == 1 or
-                    drug.is_cancelled == 1
-                ):
-                    return
+            total_amount_billed += procedure.amount
+        
+        for drug in encounter_doc.drug_prescription:
+            if (
+                drug.prescribe == 0 or
+                drug.is_not_available_inhouse == 1 or
+                drug.invoiced == 1 or
+                drug.is_cancelled == 1
+            ):
+                return
 
-                total_amount_billed += (drug.delivered_quantity * drug.amount)
-            
-            for plan in encounter_doc.therapies:
-                if (
-                    plan.prescribe == 0 or
-                    plan.is_not_available_inhouse == 1 or
-                    plan.invoiced == 1 or
-                    lab.is_cancelled == 1
-                ): 
-                    return
+            total_amount_billed += (drug.delivered_quantity * drug.amount)
+        
+        for plan in encounter_doc.therapies:
+            if (
+                plan.prescribe == 0 or
+                plan.is_not_available_inhouse == 1 or
+                plan.invoiced == 1 or
+                lab.is_cancelled == 1
+            ): 
+                return
 
-                total_amount_billed += plan.amount
+            total_amount_billed += plan.amount
     
     inpatient_record_doc = frappe.get_doc("Inpatient Record", doc.inpatient_record)
     
