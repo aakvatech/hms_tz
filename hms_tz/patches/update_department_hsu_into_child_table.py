@@ -1,4 +1,3 @@
-from re import template
 import frappe
 from frappe.utils import nowdate
 
@@ -17,7 +16,7 @@ def execute():
             "item": "radiology_examination_template"
         },
         {
-            "doctype": "clinical Procedure Template",
+            "doctype": "Clinical Procedure Template",
             "field": "procedure_prescription",
             "item": "procedure"
         },
