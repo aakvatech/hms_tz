@@ -114,6 +114,14 @@ def on_submit_validation(doc, method):
                     ).format(child.get("doctype"), row.get(child.get("item")), row.idx),
                     method,
                 )
+            if (
+                child.get("doctype") != "Medication" and 
+                row.doctype != "Drug Prescription"
+            ):
+                for option in healthcare_doc.company_options:
+                    if doc.company == option.company:
+                        row.department_hsu = option.service_unit
+
 
     prescribed_list = ""
     for key, value in child_tables.items():
