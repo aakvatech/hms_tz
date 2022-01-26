@@ -8,6 +8,7 @@
   "therapy_type",
   "no_of_sessions",
   "sessions_completed",
+  "department_hsu",
   "order_details_section",
   "intent",
   "sequence",
@@ -95,11 +96,17 @@
    "fieldtype": "Select",
    "label": "Intent",
    "options": "\nProposal\nPlan\nDirective\nOrder\nOriginal Order\nReflex Order\nFiller Order\nInstance Order\nOption"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "department_hsu",
+   "fieldtype": "Data",
+   "label": "Department HSU"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2020-12-02 23:41:46.983428",
+ "modified": "2022-01-26 11:50:39.541061",
  "modified_by": "Administrator",
  "module": "Hms Tz",
  "name": "Therapy Plan Detail",
