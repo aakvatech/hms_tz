@@ -363,6 +363,25 @@ def get_healthcare_practitioner(item):
     refd, refn = get_references(item)
     if not refd or not refn:
         return
+
+    ref_docs = [
+        {"reference_doc": "Lab Prescription"},
+        {"reference_doc": "Radiology Procedure Prescription"},
+        {"reference_doc": "Procedure Prescription"},
+        {"reference_doc": "Therapy Plan Detail"},
+    ]
+
+    for ref_doc in ref_docs:
+        if refd == ref_doc.get("reference_doc"):
+            parent, parenttype = frappe.get_value(
+                ref_doc.get("reference_doc"), refn, ["parent", "parenttype"]
+            )
+            if (
+                parent and 
+                parenttype == "Patient Encounter"
+            ):
+                return frappe.get_value("Patient Encounter", parent, "practitioner")
+        
     if refd == "Patient Encounter":
         return frappe.get_value("Patient Encounter", refn, "practitioner")
     elif refd == "Patient Appointment":
@@ -383,6 +402,18 @@ def get_healthcare_service_unit(item):
     refd, refn = get_references(item)
     if not refd or not refn:
         return
+
+    ref_docs = [
+        {"reference_doc": "Lab Prescription"},
+        {"reference_doc": "Radiology Procedure Prescription"},
+        {"reference_doc": "Procedure Prescription"},
+        {"reference_doc": "Therapy Plan Detail"},
+    ]
+
+    for ref_doc in ref_docs:
+        if refd == ref_doc.get("reference_doc"):
+            return frappe.get_value(ref_doc.get("reference_doc"), refn, "department_hsu")
+
     if refd == "Patient Encounter":
         return frappe.get_value("Patient Encounter", refn, "healthcare_service_unit")
     elif refd == "Patient Appointment":
