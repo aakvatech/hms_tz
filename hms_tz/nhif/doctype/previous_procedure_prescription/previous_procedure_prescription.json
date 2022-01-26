@@ -20,6 +20,7 @@
   "procedure_created",
   "invoiced",
   "clinical_procedure",
+  "department_hsu",
   "column_break_10",
   "override_insurance_subscription",
   "hso_payment_method",
@@ -255,11 +256,17 @@
    "fieldname": "reference_journal_entry",
    "fieldtype": "Data",
    "label": "Reference Journal Entry"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "department_hsu",
+   "fieldtype": "Data",
+   "label": "Department HSU"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2021-06-06 16:10:13.354264",
+ "modified": "2022-01-26 21:54:26.393353",
  "modified_by": "Administrator",
  "module": "NHIF",
  "name": "Previous Procedure Prescription",
