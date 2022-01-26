@@ -1,2 +1,3 @@
 hms_tz.patches.v2_0.migrate_hsu_into_the_child_table
+hms_tz.patches.update_department_hsu_into_child_table
 
