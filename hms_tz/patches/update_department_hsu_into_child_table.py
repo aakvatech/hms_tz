@@ -35,9 +35,14 @@ def execute():
             if encounter_doc.get(child.get("field")):
                 for row in encounter_doc.get(child.get("field")):
                     if row.get(child.get("item")) and not row.department_hsu:
-                        template = frappe.get_doc(child.get("doctype"), row.get(child.get("item")))
-                        if not template.disabled:
-                            for option in template.company_options:
-                                if encounter_doc.company == option.company:
-                                    row.department_hsu = option.service_unit
-                                    row.db_update()
+                        try:
+                            template = frappe.get_doc(child.get("doctype"), row.get(child.get("item")))
+                            if not template.disabled:
+                                for option in template.company_options:
+                                    if encounter_doc.company == option.company:
+                                        row.department_hsu = option.service_unit
+                                        row.db_update()
+                        
+                        except Exception:
+                            traceback = frappe.get_traceback()
+                            frappe.log_error(traceback)
