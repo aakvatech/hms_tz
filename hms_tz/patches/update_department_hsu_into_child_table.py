@@ -44,5 +44,4 @@ def execute():
                                         row.db_update()
                         
                         except Exception:
-                            traceback = frappe.get_traceback()
-                            frappe.log_error(traceback)
+                            pass
