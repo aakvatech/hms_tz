@@ -7,7 +7,7 @@ def execute():
     encounters = frappe.get_all("Patient Encounter", {"encounter_date": ["<=", today]}, ["name"], pluck="name")
 
     frappe.db.sql("""
-        UPDATE `tabLab Prescription` l,
+        UPDATE `tabLab Prescription` l
         INNER JOIN `tabLab Test Template` lab ON l.lab_test_code = lab.name AND lab.disabled = 0
         INNER JOIN `Healthcare Company Option` lab_hco ON lab.name = lab_hco.parent AND lab_hco.company = pe.company
         SET l.department_hsu = lab_hco.service_unit
