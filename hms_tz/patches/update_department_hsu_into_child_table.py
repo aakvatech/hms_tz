@@ -11,7 +11,7 @@ def execute():
         INNER JOIN `tabLab Test Template` lab ON l.lab_test_code = lab.name AND lab.disabled = 0
         INNER JOIN `Healthcare Company Option` lab_hco ON lab.name = lab_hco.parent AND lab_hco.company = pe.company
         SET l.department_hsu = lab_hco.service_unit
-        WHERE l.parent IN %s
+        WHERE l.parent IN ({0})
     """.format(tuple(encounters)))
 
 
