@@ -46,6 +46,8 @@ def execute():
         WHERE pe.name IN (%s)
     """%frappe.db.escape(tuple(encounters)))
 
+    frappe.db.commit()
+
     # child_fields = [
     #     {
     #         "doctype": "Lab Test Template",
