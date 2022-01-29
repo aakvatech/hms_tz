@@ -30,7 +30,7 @@ def execute():
     frappe.db.sql("""
         UPDATE `tabProcedure Prescription` lrpt
         INNER JOIN `tabPatient Encounter` pe ON lrpt.parent = pe.name
-        INNER JOIN `tabProcedure Prescription` template ON lrpt.procedure = template.name AND template.disabled = 0
+        INNER JOIN `tabClinical Procedure Template` template ON lrpt.procedure = template.name AND template.disabled = 0
         INNER JOIN `tabHealthcare Company Option` hco ON template.name = hco.parent AND hco.company = pe.company
         SET lrpt.department_hsu = hco.service_unit
         WHERE pe.name IN (%s)
