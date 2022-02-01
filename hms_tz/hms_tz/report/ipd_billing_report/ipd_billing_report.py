@@ -91,29 +91,30 @@ def get_encounter_data(args, start_date, end_date):
 		procedure_amount = drug_amount = therapy_amount = 0
 
 		lab_transactions = frappe.get_all("Lab Prescription", 
-			filters={"prescribe": 1, "is_not_available_inhouse": 0, "is_cancelled": 0, "parent": enc.name},
-			fields=["amount"]
+			filters={"prescribe": 1, "is_not_available_inhouse": 0, "is_cancelled": 0,
+			"invoiced": 0, "parent": enc.name}, fields=["amount"]
 		)
 		 
 		for lab in lab_transactions:
 			lab_amount += lab.amount
 
 		radiology_transactions = frappe.get_all("Radiology Procedure Prescription",
-			filters={"prescribe": 1, "is_not_available_inhouse": 0, "is_cancelled": 0, "parent": enc.name},
-			fields=["amount"]
+			filters={"prescribe": 1, "is_not_available_inhouse": 0, "is_cancelled": 0,
+			"invoiced": 0, "parent": enc.name}, fields=["amount"]
 		)
 		for radiology in radiology_transactions:
 			radiology_amount += radiology.amount
 
 		procedure_transactions = frappe.get_list("Procedure Prescription", 
-			filters={"prescribe": 1, "is_not_available_inhouse": 0, "is_cancelled": 0, "parent": enc.name},
-			fields=["amount"]
+			filters={"prescribe": 1, "is_not_available_inhouse": 0, "is_cancelled": 0,
+			"invoiced": 0, "parent": enc.name}, fields=["amount"]
 		)
 		for procedure in procedure_transactions:
 			procedure_amount += procedure.amount
 
 		drug_transactions = frappe.get_all("Drug Prescription", 
-			filters={"prescribe": 1, "is_not_available_inhouse": 0, "parent": enc.name},
+			filters={"prescribe": 1, "is_not_available_inhouse": 0, "is_cancelled": 0,
+			"invoiced": 0, "parent": enc.name},
 			fields=["quantity", "quantity_returned", "amount"]
 		)
 		for drug in drug_transactions:

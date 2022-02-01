@@ -536,7 +536,7 @@ def set_healthcare_services(doc, checked_values):
 
 
 def create_individual_lab_test(source_doc, child):
-    if child.lab_test_created == 1:
+    if child.lab_test_created == 1 or child.is_not_available_inhouse:
         return
     ltt_doc = frappe.get_doc("Lab Test Template", child.lab_test_code)
     patient_sex = frappe.get_value("Patient", source_doc.patient, "sex")
@@ -574,7 +574,7 @@ def create_individual_lab_test(source_doc, child):
 
 
 def create_individual_radiology_examination(source_doc, child):
-    if child.radiology_examination_created == 1:
+    if child.radiology_examination_created == 1 or child.is_not_available_inhouse:
         return
     doc = frappe.new_doc("Radiology Examination")
     doc.patient = source_doc.patient
@@ -615,7 +615,7 @@ def create_individual_radiology_examination(source_doc, child):
 
 
 def create_individual_procedure_prescription(source_doc, child):
-    if child.procedure_created == 1:
+    if child.procedure_created == 1 or child.is_not_available_inhouse:
         return
     doc = frappe.new_doc("Clinical Procedure")
     doc.patient = source_doc.patient

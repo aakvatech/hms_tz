@@ -846,9 +846,12 @@ doctype_js = {
     "Healthcare Insurance Subscription": "nhif/api/insurance_subscription.js",
     "Inpatient Record": "nhif/api/inpatient_record.js",
     "Healthcare Service Unit": "nhif/api/service_unit.js",
+    "Therapy Plan": "nhif/api/therapy_plan.js",
 }
 # csf_tz.nhif.api.patient_appointment
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {"Therapy Plan" : "nhif/api/therapy_plan_list.js"}
+
 inpatient_record_list_js = {"doctype": "nhif/api/inpatient_record_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -980,6 +983,9 @@ doc_events = {
     "Prescription Dosage": {
         "before_insert": "hms_tz.nhif.api.prescription_dosage.before_insert",
     },
+#    "Therapy Plan": {
+#        "validate": "hms_tz.nhif.api.therapy_plan.validate",
+#    },
 }
 
 # standard_queries = {

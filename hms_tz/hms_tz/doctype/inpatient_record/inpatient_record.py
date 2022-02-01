@@ -182,6 +182,7 @@ def schedule_discharge(args):
         inpatient_record = frappe.get_doc("Inpatient Record", inpatient_record_id)
         check_out_inpatient(inpatient_record)
         set_details_from_ip_order(inpatient_record, discharge_order)
+        validate_schedule_discharge(inpatient_record)
         inpatient_record.status = "Discharge Scheduled"
         inpatient_record.save(ignore_permissions=True)
         frappe.db.set_value(
@@ -362,3 +363,155 @@ def get_leave_from(doctype, txt, searchfield, start, page_len, filters):
             "page_len": page_len,
         },
     )
+
+def validate_schedule_discharge(inpatient_record):
+    patient = inpatient_record.patient
+
+    conditions = {
+        "patient": patient,
+        "appointment_no": inpatient_record.patient_appointment,
+        "inpatient_record": inpatient_record.name,
+        "company": inpatient_record.company,
+        "docstatus": 0
+    }
+
+    lrpmt_msg = ""
+    lrpmt_docs = frappe.get_all("LRPMT Returns", filters=conditions, fields=["name"])
+    if lrpmt_docs:
+        for d in lrpmt_docs:
+            lrpmt_msg = _(lrpmt_msg + "LRPMT Returns: {0} to return and cancel items\
+                was not submitted".format(frappe.bold(d.name))
+                + "<br>"
+            )
+        lrpmt_msg += "<br><br>"
+
+    filters = {
+        "patient": patient,
+        "company": inpatient_record.company,
+        "appointment": inpatient_record.patient_appointment,
+        "inpatient_record": inpatient_record.name
+    }
+    encounter_list = frappe.get_all("Patient Encounter", filters=filters, fields=["name"])
+    
+    lab_list = []
+    radiology_list = []
+    procedure_list = []
+    drug_list = []
+    therapies = []
+
+    child_table_map = [
+        {"table": "lab_test_prescription"},
+        {"table": "radiology_procedure_prescription"}, 
+        {"table": "procedure_prescription"}
+    ]
+
+    for encounter in encounter_list:
+        encounter_doc = frappe.get_doc("Patient Encounter", encounter.name)
+
+        for field in child_table_map:
+            for row in encounter_doc.get(field.get("table")):
+                if row.doctype == "Lab Prescription":
+                    if row.lab_test:
+                        lab_list.append(row.lab_test)
+
+                if row.doctype == "Radiology Examination Template":
+                    if row.radiology_examination_created:
+                        radiology_list.append(row.radiology_examination_created)
+
+                if row.doctype == "Procedure Prescription":
+                    if row.clinical_procedure:
+                        procedure_list.append(row.clinical_procedure)
+
+        for row in encounter_doc.drug_prescription:
+            if row.dn_detail:
+                drug_list.append(row.dn_detail)
+                break
+
+        for plan in encounter_doc.therapies:
+            items = frappe.db.sql(""" 
+                SELECT tp.name, tpd.therapy_type FROM `tabTherapy Plan Detail` tpd
+                INNER JOIN `tabTherapy Plan` tp ON tpd.parent = tp.name
+                WHERE tp.patient = %s AND tp.docstatus = 0
+                AND tp.workflow_state != "Not Serviced" AND tpd.therapy_type = %s"""
+            %(frappe.db.escape(encounter_doc.patient), frappe.db.escape(plan.therapy_type)), as_dict=1)
+            
+            if items:
+                therapies.append(items[0])
+    
+    lab_msg = ""
+    if lab_list:
+        lab_docs = frappe.get_all("Lab Test", filters={"patient": patient, "name": ["in", lab_list],
+            "docstatus": 0, "workflow_state": ["!=", "Not Serviced"]}, fields=["name", "template"])
+        if lab_docs:
+            for lab in lab_docs:
+                lab_msg = _(lab_msg + "Lab Test: {0} of {1}\
+                        was not Submitted".format(
+                        frappe.bold(lab["template"]),
+                        frappe.bold(lab["name"])
+                    )
+                    + "<br>"
+                )
+            lab_msg += "<br><br>"
+    
+    radiology_msg = ""
+    if radiology_list:
+        radiology_docs = frappe.get_all("Radiology Examination", filters={"patient": patient, "name": ["in", radiology_list],
+            "docstatus": 0, "workflow_state": ["!=", "Not Serviced"]}, fields=["name", "radiology_examination_template"])
+        if radiology_docs:
+            for radiology in radiology_docs:
+                radiology_msg = _(radiology_msg + "Radiology Examination: {0} of {1}\
+                        was not Submitted".format(
+                        frappe.bold(radiology["radiology_examination_template"]),
+                        frappe.bold(radiology["name"])
+                    )
+                    + "<br>"
+                )
+            radiology_msg += "<br><br>"
+    procedure_msg = ""
+    if procedure_list:
+        procedure_docs = frappe.get_all("Clinical Procedure", filters={"patient": patient, "name": ["in", procedure_list],
+            "docstatus": 0, "workflow_state": ["!=", "Not Serviced"]}, fields=["name", "procedure_template"])
+        if procedure_docs:
+            for procedure in procedure_docs:
+                procedure_msg = _(procedure_msg + "Clinical Procedure: {0} of {1}\
+                        was not Submitted".format(
+                        frappe.bold(procedure["procedure_template"]),
+                        frappe.bold(procedure["name"])
+                    )
+                    + "<br>"
+                )
+            procedure_msg += "<br><br>"
+    
+    drug_msg = ""
+    if drug_list:
+        dni_parent = frappe.get_value("Delivery Note Item", 
+            {"name": drug_list[0], "docstatus": 0}, ["parent"])
+        if dni_parent:
+            dn_doc = frappe.get_doc("Delivery Note", dni_parent)
+
+            for item in dn_doc.items:
+                drug_msg = _(drug_msg + "Delivery Note: #{0} of Item: {1}\
+                        was not Submitted".format(
+                        frappe.bold(item["parent"]),
+                        frappe.bold(item["item_code"])
+                    )
+                    + "<br>"
+                )
+            drug_list += "<br><br>"
+    
+    therapy_msg = ""
+    if therapies:
+        for therapy in therapies:
+            therapy_msg = _(therapy_msg + "Therapy Plan: {0} of {1}\
+                was not Submitted".format(
+                    frappe.bold(therapy["therapy_type"]),
+                    frappe.bold(therapy["name"])
+                )
+                + "<br>"
+            )
+        therapy_msg += "<br><br>"
+    
+    msg = lrpmt_msg + lab_msg + radiology_msg + procedure_msg + drug_msg + therapy_msg
+
+    if msg:
+        frappe.msgprint(title="Notification", msg=msg)

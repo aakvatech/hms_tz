@@ -75,7 +75,7 @@ class NHIFPatientClaim(Document):
 
         self.patient_encounters = self.get_patient_encounters()
         if not self.patient_signature:
-            frappe.throw(_("Patient signature is required"))
+            get_missing_patient_signature(self)
         self.patient_file = generate_pdf(self)
         self.claim_file = get_claim_pdf_file(self)
         self.send_nhif_claim()
@@ -171,7 +171,7 @@ class NHIFPatientClaim(Document):
                     new_row.disease_code = row.code[:3] + "." + (row.code[3:4] or "0")
                 else:
                     new_row.disease_code = row.code[:3]
-                new_row.description = row.description
+                new_row.description = row.description[0:139]
                 new_row.item_crt_by = get_fullname(row.modified_by)
                 new_row.date_created = row.modified.strftime("%Y-%m-%d")
         final_diagnosis_list = []
@@ -191,7 +191,7 @@ class NHIFPatientClaim(Document):
                     new_row.disease_code = row.code[:3] + "." + (row.code[3:4] or "0")
                 else:
                     new_row.disease_code = row.code[:3]
-                new_row.description = row.description
+                new_row.description = row.description[0:139]
                 new_row.item_crt_by = get_fullname(row.modified_by)
                 new_row.date_created = row.modified.strftime("%Y-%m-%d")
 
@@ -691,6 +691,13 @@ def merge_nhif_claims(authorization_no):
 
     # frappe.delete_doc(second_doc.doctype, second_doc.name)
 
+def get_missing_patient_signature(self):
+    if self.patient:
+        patient_doc = frappe.get_doc("Patient", self.patient)
+        signature = patient_doc.patient_signature
+        if not signature:
+            frappe.throw(_("Patient signature is required"))
+        self.patient_signature = signature
 
 def get_item_refcode(item_code):
     code_list = frappe.get_all(
