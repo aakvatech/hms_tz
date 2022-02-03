@@ -206,4 +206,8 @@ def set_beds_price(self):
             )
 
 def after_insert(doc, method):
+    if not doc.insurance_subscription:
+        cash_limit = frappe.get_value("Patient", doc.patient, "cash_limit")
+        doc.cash_limit = cash_limit
+        doc.save(ignore_permissions=True)
     create_healthcare_docs_from_name(doc.admission_encounter)
