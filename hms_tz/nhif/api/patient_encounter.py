@@ -621,7 +621,7 @@ def create_delivery_note_per_encounter(patient_encounter_doc, method):
     for element in warehouses:
         items = []
         for row in patient_encounter_doc.drug_prescription:
-            if row.drug_prescription_created:
+            if row.drug_prescription_created or row.is_not_available_inhouse:
                 continue
             encounter_customer = ""
             if row.invoiced and row.prescribe:
@@ -733,6 +733,7 @@ def create_delivery_note_per_encounter(patient_encounter_doc, method):
                     frappe.bold(doc.name)
                 )
             )
+
 
 @frappe.whitelist()
 def get_chronic_diagnosis(patient):
@@ -1164,18 +1165,22 @@ def show_last_prescribed(doc, method):
                 )
             )
 
+
 def update_drug_prescription(patient_encounter_doc, name):
     dn_doc = frappe.get_doc("Delivery Note", name)
 
     for d in patient_encounter_doc.drug_prescription:
         if d.parent == dn_doc.reference_name:
             for item in dn_doc.items:
-                if ((d.name == item.reference_name) and (d.drug_code == item.item_code)):
-                    frappe.db.set_value("Drug Prescription", item.reference_name, "dn_detail", item.name)
+                if (d.name == item.reference_name) and (d.drug_code == item.item_code):
+                    frappe.db.set_value(
+                        "Drug Prescription", item.reference_name, "dn_detail", item.name
+                    )
+
 
 def validate_patient_balance_vs_patient_costs(doc):
     encounters = get_patient_encounters(doc)
-    if not encounters:
+    if not encounters or len(encounters) == 0:
         return
 
     total_amount_billed = 0
@@ -1200,8 +1205,8 @@ def validate_patient_balance_vs_patient_costs(doc):
                 radiology.invoiced == 1 or
                 radiology.is_cancelled == 1
             ):
-                return
-            
+                retur
+                
             total_amount_billed += radiology.amount
 
         for procedure in encounter_doc.procedure_prescription:
@@ -1232,7 +1237,7 @@ def validate_patient_balance_vs_patient_costs(doc):
                 plan.is_not_available_inhouse == 1 or
                 plan.invoiced == 1 or
                 lab.is_cancelled == 1
-            ): 
+            ):
                 return
 
             total_amount_billed += plan.amount
@@ -1264,12 +1269,19 @@ def validate_patient_balance_vs_patient_costs(doc):
             please request patient to deposit advances or request patient cash limit adjustment".format(doc.patient, doc.patient_name)))
 
 def get_patient_encounters(doc):
-	if doc.mode_of_payment != "" and doc.inpatient_record != "":
-		patient_encounters = frappe.get_all("Patient Encounter", 
-			filters={"patient": doc.patient, "appointment": doc.appointment, "inpatient_record": doc.inpatient_record},
-			fields=["name"], pluck="name"
-		)
-		return patient_encounters
+    if doc.mode_of_payment != "" and doc.inpatient_record != "":
+        patient_encounters = frappe.get_all(
+            "Patient Encounter",
+            filters={
+                "patient": doc.patient,
+                "appointment": doc.appointment,
+                "inpatient_record": doc.inpatient_record,
+            },
+            fields=["name"],
+            pluck="name",
+        )
+        return patient_encounters
+
 
 def show_last_prescribed_for_lrpt(doc):
     childs_map = [
@@ -1278,75 +1290,81 @@ def show_last_prescribed_for_lrpt(doc):
             "doctype": "Lab Test Template",
             "item": "lab_test_code",
             "ref_doc": "Lab Test",
-            "field_name": "template"
+            "field_name": "template",
         },
         {
             "table": "radiology_procedure_prescription",
             "doctype": "Radiology Examination Template",
             "item": "radiology_examination_template",
             "ref_doc": "Radiology Examination",
-            "field_name": "radiology_examination_template"
+            "field_name": "radiology_examination_template",
         },
         {
             "table": "procedure_prescription",
             "doctype": "Clinical Procedure Template",
             "item": "procedure",
             "ref_doc": "Clinical Procedure",
-            "field_name": "procedure_template"
+            "field_name": "procedure_template",
         },
         # {
-            # "table": "therapies",
-            # "doctype": "Therapy Type",
-            # "item": "therapy_type",
-            # "ref_doc": "Therapy Plan",
-            # "field_name": "therapy_plan_template"
+        # "table": "therapies",
+        # "doctype": "Therapy Type",
+        # "item": "therapy_type",
+        # "ref_doc": "Therapy Plan",
+        # "field_name": "therapy_plan_template"
         # }
     ]
-    
+
     msg = ""
     for child in childs_map:
         msg_print = ""
         for entry in doc.get(child.get("table")):
             conditions = {
                 "patient": doc.patient,
-                child.get("field_name"): entry.get(child.get("item"))
+                child.get("field_name"): entry.get(child.get("item")),
             }
 
-            item_doc = frappe.get_all(child.get("ref_doc"), filters=conditions, 
-                fields=[child.get("field_name"), "creation"], order_by="creation DESC", page_length=1
+            item_doc = frappe.get_all(
+                child.get("ref_doc"),
+                filters=conditions,
+                fields=[child.get("field_name"), "creation"],
+                order_by="creation DESC",
+                limit=1,
             )
-            
+
             if len(item_doc) > 0:
                 date = item_doc[0]["creation"].strftime("%Y-%m-%d")
 
-                msg_print += _( msg_print + "{0} prescribed last on: {1}".format(
-                        frappe.bold(entry.get(child.get("item"))),
-                        frappe.bold(date)
-                    ) 
+                msg_print += _(
+                    msg_print
+                    + "{0} prescribed last on: {1}".format(
+                        frappe.bold(entry.get(child.get("item"))), frappe.bold(date)
+                    )
                     + "<br>"
                 )
-        
+
         msg += msg_print
 
     for plan in doc.therapies:
-        items = frappe.db.sql(""" 
+        items = frappe.db.sql(
+            """ 
             SELECT tpd.therapy_type, Date(tpd.creation) AS date FROM `tabTherapy Plan Detail` tpd
             INNER JOIN `tabTherapy Plan` tp ON tpd.parent = tp.name WHERE tp.patient = %s 
-            AND tpd.therapy_type = %s """ 
-        %(frappe.db.escape(doc.patient), frappe.db.escape(plan.therapy_type)), as_dict=1)
+            AND tpd.therapy_type = %s """
+            % (frappe.db.escape(doc.patient), frappe.db.escape(plan.therapy_type)),
+            as_dict=1,
+        )
 
         if items:
-            msg = _( msg + "{0} prescribed last on: {1}".format(
-                    frappe.bold(items[0]["therapy_type"]),
-                    frappe.bold(items[0]["date"])
-                ) 
+            msg = _(
+                msg
+                + "{0} prescribed last on: {1}".format(
+                    frappe.bold(items[0]["therapy_type"]), frappe.bold(items[0]["date"])
+                )
                 + "<br>"
             )
 
     if msg:
         frappe.msgprint(
-            _(
-                "The below are the last related Item prescribed:<br><br>"
-                + msg
-            )
+            _("The below are the last related Item prescribed:<br><br>" + msg)
         )
