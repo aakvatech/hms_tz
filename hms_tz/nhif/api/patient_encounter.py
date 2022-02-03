@@ -1205,7 +1205,7 @@ def validate_patient_balance_vs_patient_costs(doc):
                 radiology.invoiced == 1 or
                 radiology.is_cancelled == 1
             ):
-                retur
+                return
                 
             total_amount_billed += radiology.amount
 
