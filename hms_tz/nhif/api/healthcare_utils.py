@@ -817,17 +817,7 @@ def delete_or_cancel_draft_document():
         doc.delete()
         frappe.db.commit()
 
-    delivery_documents = frappe.db.sql(
-        """
-        SELECT name FROM `tabDelivery Note` 
-        WHERE docstatus = 0 AND posting_date < '{before_45_days_date}'
-    """.format(
-            before_45_days_date=before_45_days_date
-        ),
-        as_dict=1,
+    frappe.db.sql("""
+        DELETE FROM `tabDelivery Note` WHERE docstatus = 0 and posting_date < '{0}' 
+        """.format(before_45_days_date)
     )
-
-    for dn_doc in delivery_documents:
-        dn_del = frappe.get_doc("Delivery Note", dn_doc.name)
-        dn_del.delete()
-        frappe.db.commit()
