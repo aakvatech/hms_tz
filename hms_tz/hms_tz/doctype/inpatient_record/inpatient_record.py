@@ -319,6 +319,7 @@ def transfer_patient(inpatient_record, service_unit, check_in):
     hsu.occupancy_status = "Occupied"
     hsu.save(ignore_permissions=True)
 
+@frappe.whitelist()
 def add_bed(inpatient_record, service_unit, check_in, check_out, left):
 		item_line = inpatient_record.append("inpatient_occupancies", {})
 		item_line.service_unit = service_unit
