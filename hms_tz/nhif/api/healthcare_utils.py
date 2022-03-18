@@ -607,11 +607,6 @@ def create_individual_lab_test(source_doc, child):
         # child.lab_test = doc.name
         child.db_update()
 
-    # Will not submit sales invoice or patient encounter if lab test is not created
-    else:
-        frappe.throw(frappe.bold("Lab Test was not created, please try submitting again"))
-
-
 def create_individual_radiology_examination(source_doc, child):
     if child.radiology_examination_created == 1 or child.is_not_available_inhouse:
         return
@@ -655,12 +650,6 @@ def create_individual_radiology_examination(source_doc, child):
         # child.radiology_examination = doc.name
         child.db_update()
 
-    # 08-02-2022
-    # Will not submit sales invoice or patient encounter if radiology examination is not created
-    else:
-        frappe.throw(frappe.bold("Radiology Examination was not created, please try submitting again"))
-
-
 def create_individual_procedure_prescription(source_doc, child):
     if child.procedure_created == 1 or child.is_not_available_inhouse:
         return
@@ -700,11 +689,6 @@ def create_individual_procedure_prescription(source_doc, child):
         # procedure prescription will be updated only clinical procedure is submitted
         # child.clinical_procedure = doc.name
         child.db_update()
-
-    # 08-02-2022
-    # Will not submit sales invoice or patient encounter if clinical procedure is not created
-    else:
-        frappe.throw(frappe.bold("Clinical Procedure was not created, please try submitting again"))
 
 
 def msgThrow(msg, method="throw", alert=True):
@@ -850,7 +834,7 @@ def delete_or_cancel_draft_document():
 def create_invoiced_items_if_not_created():
     """create pending LRP item(s) after submission of sales invoice"""
     
-    today_date = '2022-03-17' #nowdate()
+    today_date = nowdate()
     si_invoices = frappe.db.sql(""" SELECT Distinct(si.name) FROM `tabSales Invoice` si
         INNER JOIN `tabSales Invoice Item` sii ON si.name = sii.parent
         WHERE si.docstatus = 1 
@@ -951,11 +935,11 @@ def create_invoiced_items_if_not_created():
                             child.sales_invoice_number = item.parent
                             child.db_update()
 
-                    # item.hms_tz_item_status = "Created"
+                    item.hms_tz_item_status = "Created"
                 except Exception:
                     traceback = frappe.get_traceback()
                     frappe.log_error(traceback)
         
         frappe.db.commit()
 
-        # si_doc.save(ignore_permissions=True)
+        si_doc.save(ignore_permissions=True)

@@ -210,7 +210,7 @@ scheduler_events = {
             "hms_tz.nhif.api.healthcare_utils.delete_or_cancel_draft_document"
         ],
         # Routine for every five 5min
-        "*/2 * * * *": [
+        "*/5 * * * *": [
             "hms_tz.nhif.api.healthcare_utils.create_invoiced_items_if_not_created"
         ]
     },

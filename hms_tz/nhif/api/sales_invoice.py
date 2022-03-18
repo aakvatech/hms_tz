@@ -92,8 +92,8 @@ def create_healthcare_docs(doc, method):
                 child.sales_invoice_number = doc.name
                 child.save(ignore_permissions=True)
 
-                # item.hms_tz_item_status = "Created"
-                # item.db_update()   
+                item.hms_tz_item_status = "Created"
+                item.db_update()   
 
     if method == "From Front End":
         frappe.db.commit()
