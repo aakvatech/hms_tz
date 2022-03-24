@@ -79,77 +79,80 @@ frappe.ui.form.on('Clinical Procedure', {
 				function(doc) { return (doc.qty<=doc.actual_qty) ? 'green' : 'orange' ; });
 		}
 
-		if (frm.doc.docstatus == 1) {
-			if (frm.doc.status == 'In Progress') {
-				let btn_label = '';
-				let msg = '';
-				if (frm.doc.consume_stock) {
-					btn_label = __('Complete and Consume');
-					msg = __('Complete {0} and Consume Stock?', [frm.doc.name]);
-				} else {
-					btn_label = 'Complete';
-					msg = __('Complete {0}?', [frm.doc.name]);
-				}
+		frm.remove_custom_button("Start");
+		frm.remove_custom_button("Complete");
 
-				frm.add_custom_button(__(btn_label), function () {
-					frappe.confirm(
-						msg,
-						function() {
-							frappe.call({
-								method: 'complete_procedure',
-								doc: frm.doc,
-								freeze: true,
-								callback: function(r) {
-									if (r.message) {
-										frappe.show_alert({
-											message:  __('Stock Entry {0} created',
-												['<a class="bold" href="#Form/Stock Entry/'+ r.message + '">' + r.message + '</a>']),
-											indicator: 'green'
-										});
-									}
-									frm.reload_doc();
-								}
-							});
-						}
-					);
-				}).addClass("btn-primary");
+		// if (frm.doc.docstatus == 1) {
+		// 	if (frm.doc.status == 'In Progress') {
+		// 		let btn_label = '';
+		// 		let msg = '';
+		// 		if (frm.doc.consume_stock) {
+		// 			btn_label = __('Complete and Consume');
+		// 			msg = __('Complete {0} and Consume Stock?', [frm.doc.name]);
+		// 		} else {
+		// 			btn_label = 'Complete';
+		// 			msg = __('Complete {0}?', [frm.doc.name]);
+		// 		}
 
-			} else if (frm.doc.status == 'Pending') {
-				frm.add_custom_button(__('Start'), function() {
-					frappe.call({
-						doc: frm.doc,
-						method: 'start_procedure',
-						callback: function(r) {
-							if (!r.exc) {
-								if (r.message == 'insufficient stock') {
-									let msg = __('Stock quantity to start the Procedure is not available in the Warehouse {0}. Do you want to record a Stock Entry?',
-										[frm.doc.warehouse.bold()]);
-									frappe.confirm(
-										msg,
-										function() {
-											frappe.call({
-												doc: frm.doc,
-												method: 'make_material_receipt',
-												freeze: true,
-												callback: function(r) {
-													if (!r.exc) {
-														frm.reload_doc();
-														let doclist = frappe.model.sync(r.message);
-														frappe.set_route('Form', doclist[0].doctype, doclist[0].name);
-													}
-												}
-											});
-										}
-									);
-								} else {
-									frm.reload_doc();
-								}
-							}
-						}
-					});
-				}).addClass("btn-primary");
-			}
-		}
+		// 		frm.add_custom_button(__(btn_label), function () {
+		// 			frappe.confirm(
+		// 				msg,
+		// 				function() {
+		// 					frappe.call({
+		// 						method: 'complete_procedure',
+		// 						doc: frm.doc,
+		// 						freeze: true,
+		// 						callback: function(r) {
+		// 							if (r.message) {
+		// 								frappe.show_alert({
+		// 									message:  __('Stock Entry {0} created',
+		// 										['<a class="bold" href="#Form/Stock Entry/'+ r.message + '">' + r.message + '</a>']),
+		// 									indicator: 'green'
+		// 								});
+		// 							}
+		// 							frm.reload_doc();
+		// 						}
+		// 					});
+		// 				}
+		// 			);
+		// 		}).addClass("btn-primary");
+
+		// 	} else if (frm.doc.status == 'Pending') {
+		// 		frm.add_custom_button(__('Start'), function() {
+		// 			frappe.call({
+		// 				doc: frm.doc,
+		// 				method: 'start_procedure',
+		// 				callback: function(r) {
+		// 					if (!r.exc) {
+		// 						if (r.message == 'insufficient stock') {
+		// 							let msg = __('Stock quantity to start the Procedure is not available in the Warehouse {0}. Do you want to record a Stock Entry?',
+		// 								[frm.doc.warehouse.bold()]);
+		// 							frappe.confirm(
+		// 								msg,
+		// 								function() {
+		// 									frappe.call({
+		// 										doc: frm.doc,
+		// 										method: 'make_material_receipt',
+		// 										freeze: true,
+		// 										callback: function(r) {
+		// 											if (!r.exc) {
+		// 												frm.reload_doc();
+		// 												let doclist = frappe.model.sync(r.message);
+		// 												frappe.set_route('Form', doclist[0].doctype, doclist[0].name);
+		// 											}
+		// 										}
+		// 									});
+		// 								}
+		// 							);
+		// 						} else {
+		// 							frm.reload_doc();
+		// 						}
+		// 					}
+		// 				}
+		// 			});
+		// 		}).addClass("btn-primary");
+		// 	}
+		// }
 		frm.set_query('insurance_subscription', function(){
 			return{
 				filters:{
@@ -161,6 +164,9 @@ frappe.ui.form.on('Clinical Procedure', {
 	},
 
 	onload: function(frm) {
+		frm.remove_custom_button("Start");
+		frm.remove_custom_button("Complete");
+
 		if (frm.is_new()) {
 			frm.add_fetch('procedure_template', 'medical_department', 'medical_department');
 			frm.set_value('start_time', null);
