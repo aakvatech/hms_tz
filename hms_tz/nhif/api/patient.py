@@ -3,6 +3,8 @@
 # For license information, please see license.txt
 
 from __future__ import unicode_literals
+from hashlib import new
+from types import new_class
 import frappe
 from frappe import _
 from hms_tz.nhif.api.token import get_nhifservice_token
@@ -210,3 +212,37 @@ def after_insert(doc, method):
         return
     doc.insurance_card_detail = (doc.card_no or "") + ", "
     create_subscription(doc)
+
+
+@frappe.whitelist()
+def enqueue_update_cash_limit(old_cash_limit, new_cash_limit):
+    from frappe.utils.background_jobs import enqueue
+
+    data = {'old_value': old_cash_limit, 'new_value': new_cash_limit}
+
+    enqueue(
+        method=update_cash_limit,
+        queue='default',
+        timeout=60000,
+        job_name='update_new_cash_limit',
+        is_async=True,
+        kwargs=data
+    )
+
+    if frappe.get_all('Patient', ['cash_limit'], page_length=1)[0]['cash_limit'] != old_cash_limit:
+        frappe.msgprint(frappe.bold('Cash Limit Updated Successfully'))
+
+
+def update_cash_limit(kwargs):
+    data = kwargs
+    patient_list = frappe.get_all('Patient', {'status': 'Active'}, pluck='name')
+    pa_names = tuple(patient_list)
+
+    new_cash_limit = data.get('new_value')
+
+    frappe.db.sql("""
+        UPDATE `tabPatient` p  SET p.cash_limit = {new_cash_limit}
+        WHERE p.name IN {pa_names}
+    """.format(new_cash_limit=new_cash_limit, pa_names=pa_names)
+    )
+    frappe.db.commit()

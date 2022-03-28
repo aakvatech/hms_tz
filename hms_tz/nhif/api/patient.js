@@ -6,9 +6,11 @@ frappe.ui.form.on('Patient', {
         if (frm.is_new()) {
             frm.set_value("customer_group", "Patient")
         }
+        frm.trigger('update_cash_limit');
     },
     refresh: function (frm) {
         frm.trigger('add_get_info_btn');
+        frm.trigger('update_cash_limit');
     },
     add_get_info_btn: function (frm) {
         frm.add_custom_button(__('Get Patient Info'), function () {
@@ -130,6 +132,55 @@ frappe.ui.form.on('Patient', {
             }
         });
     },
+
+    update_cash_limit: function(frm) {
+        if (frappe.user.has_role('Healthcare Administrator')) {
+            frm.add_custom_button(__('Update Cash Limit'), function () {
+                let d = new frappe.ui.Dialog({
+                    title: 'Change Cash Limit',
+                    fields: [
+                        {
+                            fieldname: 'current_cash_limit',
+                            fieldtype: 'Currency',
+                            label: __('Current Cash Limit'),
+                            default: frm.doc.cash_limit,
+                            reqd: true
+                        },
+                        {
+                            fieldname: 'column_break_1', 
+                            fieldtype: 'Column Break'
+                        },
+                        {
+                            fieldname: 'new_cash_limit',
+                            fieldtype: 'Currency',
+                            label: 'New Cash Limit',
+                            reqd: true
+                        }
+                    ],
+                });
+                d.set_primary_action(__('Submit'), function() {
+                    if (d.get_value('new_cash_limit') == 0) {
+                        frappe.msgprint({
+                            title: 'Notification',
+                            indicator: 'red',
+                            message: __('new cash limit cannot be zero')
+                        });
+                    } else {
+                        frappe.call('hms_tz.nhif.api.patient.enqueue_update_cash_limit', {
+                            old_cash_limit: d.get_value('current_cash_limit'),
+                            new_cash_limit: d.get_value('new_cash_limit')
+                        }).then(r => {
+                            // frm.refresh();
+                            frappe.show_alert(__('Processing updating patients'))
+                        })
+                        d.hide();
+                    }
+
+                });
+                d.show();
+            });
+        }
+    }
 });
 
 function update_patient_info(frm, card) {
