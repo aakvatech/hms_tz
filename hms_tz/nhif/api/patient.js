@@ -170,7 +170,6 @@ frappe.ui.form.on('Patient', {
                             old_cash_limit: d.get_value('current_cash_limit'),
                             new_cash_limit: d.get_value('new_cash_limit')
                         }).then(r => {
-                            // frm.refresh();
                             frappe.show_alert(__('Processing updating patients'))
                         })
                         d.hide();

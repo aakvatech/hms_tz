@@ -3,8 +3,6 @@
 # For license information, please see license.txt
 
 from __future__ import unicode_literals
-from hashlib import new
-from types import new_class
 import frappe
 from frappe import _
 from hms_tz.nhif.api.token import get_nhifservice_token
@@ -18,6 +16,7 @@ from frappe.utils import getdate
 from hms_tz.nhif.doctype.nhif_response_log.nhif_response_log import add_log
 from hms_tz.nhif.api.healthcare_utils import remove_special_characters
 from datetime import date
+from frappe.utils.background_jobs import enqueue
 
 
 def validate(doc, method):
@@ -216,8 +215,6 @@ def after_insert(doc, method):
 
 @frappe.whitelist()
 def enqueue_update_cash_limit(old_cash_limit, new_cash_limit):
-    from frappe.utils.background_jobs import enqueue
-
     data = {'old_value': old_cash_limit, 'new_value': new_cash_limit}
 
     enqueue(
