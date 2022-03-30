@@ -33,8 +33,6 @@ def cancel_lrpt_doc(self):
 			if doc.docstatus < 2:
 				try:
 					apply_workflow(doc, "Not Serviced")
-					if doc.meta.get_field("status"):
-						doc.status = "Not Serviced"
 					doc.save(ignore_permissions=True)
 					doc.reload()
 
