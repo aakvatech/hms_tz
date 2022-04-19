@@ -50,6 +50,7 @@ doctype_js = {
     "Therapy Plan": "nhif/api/therapy_plan.js",
     "Clinical Procedure": "nhif/api/clinical_procedure.js",
     "Medical Department": "nhif/api/medical_department.js",
+    "Delivery Note": "nhif/api/delivery_note.js"
 }
 # csf_tz.nhif.api.patient_appointment
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
