@@ -11,6 +11,7 @@ frappe.ui.form.on('Original Delivery Note Item', {
                 'border': '7px', 'border-radius': '12px', 'cursor': 'pointer',
                 'width': '220px', 'height': '30px'
             });
+        frm.set_df_property('convert_to_in_stock_item', 'read_only', 0);
     },
 
     convert_to_in_stock_item: (frm, cdt, cdn) => {
@@ -19,12 +20,11 @@ frappe.ui.form.on('Original Delivery Note Item', {
                 name: frm.doc.name, row: locals[cdt][cdn]
             }).then(r => {
                 if (r.message) {
-                    frm.refresh_field("items");
-                    frm.refresh_field("hms_tz_original_items");
+                    frm.refresh();
                 }
             });
         } else {
-            frappe.msgprint('This Item is not out of stock')
+            frappe.msgprint('This Item is not out of stock');
         }
     }
 });
