@@ -46,7 +46,7 @@ def execute():
         "read_only":1
     }).insert(ignore_permissions=True)
 
-    is_not_available_inhouse = frappe.get_doc('Custom FIeld', 'Drug Prescription-is_not_available_inhouse')
+    is_not_available_inhouse = frappe.get_doc('Custom Field', 'Drug Prescription-is_not_available_inhouse')
     is_not_available_inhouse.allow_on_submit = 1
     is_not_available_inhouse.bold = 1
     is_not_available_inhouse.save(ignore_permissions=True)
