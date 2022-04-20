@@ -157,7 +157,6 @@ def update_drug_prescription(doc):
                     if dni.reference_doctype == "Drug Prescription":
                         for item in patient_encounter_doc.drug_prescription:
                             if (
-                                dni.item_code == item.drug_code and 
                                 dni.reference_name == item.name and 
                                 dni.reference_doctype == item.doctype
                             ):
@@ -174,17 +173,18 @@ def update_drug_prescription(doc):
                     ):
                         for item in patient_encounter_doc.drug_prescription:
                             if (
-                                og_item.item_code == item.drug_code and 
                                 og_item.reference_name == item.name and 
                                 og_item.reference_doctype == item.doctype
                             ):
                                 item.dn_detail = og_item.dn_detail
                                 item.is_not_available_inhouse = 1
-                                item.hms_tz_is_out_of_stcok = 1
+                                item.hms_tz_is_out_of_stock = 1
                                 item.db_update()
+                patient_encounter_doc.save(ignore_permissions=True)
 
 def check_item_for_out_of_stock(doc):
     """Mark an Item as out of stock if it is not available in stock"""
+
     if len(doc.items) > 0 and len(doc.hms_tz_original_items) > 0:
         items = []
 
