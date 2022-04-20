@@ -845,7 +845,8 @@ def delete_or_cancel_draft_document():
     for dn_doc in delivery_documents:
         dn_del = frappe.get_doc("Delivery Note", dn_doc.name)
         try:
-            dn_del.delete()
+            if not dn_del.hms_tz_is_all_items_out_of_stock:
+                dn_del.delete()
         except Exception:
             frappe.log_error(frappe.get_traceback())
         frappe.db.commit()
