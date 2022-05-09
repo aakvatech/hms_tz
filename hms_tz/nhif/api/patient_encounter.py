@@ -1435,3 +1435,56 @@ def show_last_prescribed_for_lrpt(doc):
         frappe.msgprint(
             _("The below are the last related Item prescribed:<br><br>" + msg)
         )
+
+@frappe.whitelist()
+def convert_opd_encounter_to_ipd_encounter(encounter):
+    """Convert an out-patient encounter into list of inpatient encounters.
+
+    This can be used when items for opd encounters needs to be created with inpatient
+    functionality of create pending healthcare services while the encounter
+    does not have inpatient record
+
+    :param of encounter: name of the encounter to be converted to inpatient encounter
+    """
+    
+    doc = frappe.get_doc("Patient Encounter", encounter)
+    if doc.inpatient_record:
+        frappe.msgprint("<p class='text-center font-weight-bold h6' style='background-color: #DCDCDC; font-size: 12pt;'>\
+                This encounter having inpatient record: {0} already".format(
+                frappe.bold(doc.inpatient_record)
+            )
+            + "</p>"
+        )
+        return 
+    
+    inpatient_record, inpatient_status = frappe.get_value('Patient', doc.patient, ['inpatient_record', 'inpatient_status'])
+    if not inpatient_record:
+        inpatient_details_from_encounters = frappe.get_all("Patient Encounter", 
+            filters={'appointment': doc.appointment, 'inpatient_record': ['!=', ""]},
+            fields=['inpatient_record', 'inpatient_status']
+        )
+        if inpatient_details_from_encounters:
+            inpatient_record = inpatient_details_from_encounters[0].inpatient_record
+            inpatient_status = inpatient_details_from_encounters[0].inpatient_status
+
+        if not inpatient_record:
+            frappe.throw("<p class='text-center font-weight-bold h6' style='background-color: #DCDCDC; font-size: 11pt;'>\
+                    Scheduling admission was not done for this patient: {0} of appointment: {1}.".format(
+                    frappe.bold(doc.patient), frappe.bold(doc.appointment)
+                )
+                + "</p>"
+            )
+    
+    doc.inpatient_record = inpatient_record
+    doc.inpatient_status = inpatient_status
+    doc.save(ignore_permissions=True)
+
+    if doc.get('inpatient_record'):
+        frappe.msgprint("<p class='text-center font-weight-bold h6' style='background-color: #DCDCDC; font-size: 11pt;'>\
+            This encounter is now having inpatient record: {0}".format(
+                frappe.bold(doc.get('inpatient_record'))
+            )
+            + "</p>"
+        )
+        doc.reload()
+        return True

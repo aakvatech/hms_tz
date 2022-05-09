@@ -10,6 +10,7 @@ frappe.ui.form.on('Patient Encounter', {
     onload: function (frm) {
         add_btn_final(frm);
         duplicate(frm);
+        set_btn_properties(frm);
         if (frm.doc.docstatus == 1) {
             frm.add_custom_button(__('Create Pending Healthcare Services'), function () {
                 frappe.call({
@@ -95,7 +96,9 @@ frappe.ui.form.on('Patient Encounter', {
         });
         if (!frm.doc.practitioner.includes("Direct")) {
             frm.toggle_reqd("examination_detail", 1)
-        }
+        };
+        
+        set_btn_properties(frm);
     },
     
     clear_history: function(frm) {
@@ -343,6 +346,21 @@ frappe.ui.form.on('Patient Encounter', {
                 }
             });
         }
+    },
+    hms_tz_convert_to_inpatient: (frm) => {
+        if (!frm.doc.mode_of_payment) {
+            frappe.msgprint(`<p class='text-center font-weight-bold h6' style='background-color: #DCDCDC; font-size: 12pt;'>\
+                This encounter has insurance of <b>${__(frm.doc.insurance_coverage_plan)}</b>,\
+                no need to convert this encounter to inpatient encounter </p>`);
+            return 
+        }
+        frappe.call('hms_tz.nhif.api.patient_encounter.convert_opd_encounter_to_ipd_encounter', {
+            encounter: frm.doc.name
+        }).then(r => {
+            if (r.message) {
+                frm.refresh()
+            }
+        })
     }
 });
 
@@ -733,4 +751,12 @@ const set_is_not_available_inhouse = function (frm, row, template) {
             }
         }
     });
+};
+
+var set_btn_properties = (frm) => {
+    $('[data-fieldname="hms_tz_convert_to_inpatient"]').removeClass('btn-default')
+        .addClass('btn-info align-middle text-white font-weight-bold').css({
+            'font-size': '16px', 'border-radius': '6px', 'cursor': 'pointer',
+            'width': '180px',
+        });
 };
