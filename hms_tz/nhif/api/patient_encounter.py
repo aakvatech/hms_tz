@@ -739,7 +739,7 @@ def create_delivery_note_per_encounter(patient_encounter_doc, method):
                 doctype="Delivery Note",
                 posting_date=nowdate(),
                 posting_time=nowtime(),
-                set_warehouse=warehouse,
+                set_warehouse=element,
                 company=patient_encounter_doc.company,
                 customer=encounter_customer,
                 currency=frappe.get_value(
