@@ -386,7 +386,7 @@ def validate_schedule_discharge(inpatient_record):
 
     conditions = {
         "patient": patient,
-        "appointment_no": inpatient_record.patient_appointment,
+        "appointment": inpatient_record.patient_appointment,
         "inpatient_record": inpatient_record.name,
         "company": inpatient_record.company,
         "docstatus": 0
@@ -400,7 +400,9 @@ def validate_schedule_discharge(inpatient_record):
                 was not submitted".format(frappe.bold(d.name))
                 + "<br>"
             )
-        lrpmt_msg += "<br><br>"
+        lrpmt_msg += "<h4 style='background-color: LightCoral;'>\
+            please contact relevent department to submit LRPMT Returns\
+            before Scheduling Discharge</h4><br>"
 
     filters = {
         "patient": patient,
@@ -411,6 +413,29 @@ def validate_schedule_discharge(inpatient_record):
     encounter_list = frappe.get_all("Patient Encounter", filters=filters, fields=["name"], pluck="name")
     
     if encounter_list:
+        procedure_msg = ""
+        procedure_docs = frappe.get_all("Clinical Procedure", filters={"patient": patient, 
+            "ref_doctype": "Patient Encounter", "ref_docname": ["in", encounter_list], "docstatus": 0,
+            "workflow_state": ["!=", "Not Serviced"]}, fields=["name", "procedure_template"]
+        )
+
+        if procedure_docs:
+            for procedure in procedure_docs:
+                procedure_msg = _(procedure_msg + "Clinical Procedure: {0} of {1}\
+                        was not Submitted".format(
+                        frappe.bold(procedure["procedure_template"]),
+                        frappe.bold(procedure["name"])
+                    )
+                    + "<br>"
+                )
+            procedure_msg += "<h4 style='background-color: LightCoral;'>\
+                please contact relevent department to Submit/Cancell {0} Clinical Procedure\
+                before Scheduling Discharge</h4><br>"
+            
+        msg_throw = lrpmt_msg + procedure_msg
+        if msg_throw:
+            frappe.throw(title="Notification", msg=msg_throw)
+
         lab_msg = ""
         lab_docs = frappe.get_all("Lab Test", filters={"patient": patient, 
             "ref_doctype": "Patient Encounter", "ref_docname": ["in", encounter_list],
@@ -445,22 +470,7 @@ def validate_schedule_discharge(inpatient_record):
                 )
             radiology_msg += "<br><br>"
 
-        procedure_msg = ""
-        procedure_docs = frappe.get_all("Clinical Procedure", filters={"patient": patient, 
-            "ref_doctype": "Patient Encounter", "ref_docname": ["in", encounter_list], "docstatus": 0,
-            "workflow_state": ["!=", "Not Serviced"]}, fields=["name", "procedure_template"]
-        )
-
-        if procedure_docs:
-            for procedure in procedure_docs:
-                procedure_msg = _(procedure_msg + "Clinical Procedure: {0} of {1}\
-                        was not Submitted".format(
-                        frappe.bold(procedure["procedure_template"]),
-                        frappe.bold(procedure["name"])
-                    )
-                    + "<br>"
-                )
-            procedure_msg += "<br><br>"
+        
         
         drug_msg = ""
         dn_name = frappe.get_all("Delivery Note", filters={"patient": patient,
