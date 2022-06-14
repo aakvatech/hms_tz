@@ -710,16 +710,8 @@ def msgPrint(msg, method="throw", alert=False):
 def get_approval_number_from_LRPMT(ref_doctype=None, ref_docname=None):
     if not ref_doctype or not ref_docname:
         return None
-    if ref_doctype == "Drug Prescription":
-        approval_number_list = frappe.get_all(
-            "Delivery Note Item",
-            filters={"reference_doctype": ref_doctype, "reference_name": ref_docname},
-            fields=["approval_number"],
-        )
-        if len(approval_number_list) > 0:
-            return approval_number_list[0].approval_number
-    else:
-        return frappe.get_value(ref_doctype, ref_docname, "approval_number")
+
+    return frappe.get_value(ref_doctype, ref_docname, "approval_number")
 
 
 def set_uninvoiced_so_closed():

@@ -80,6 +80,7 @@ class NHIFPatientClaim(Document):
                     )
                 )
 
+        validate_item_status(self)
         self.patient_encounters = self.get_patient_encounters()
         if not self.patient_signature:
             get_missing_patient_signature(self)
@@ -291,8 +292,8 @@ class NHIFPatientClaim(Document):
                 "item": "drug_code",
                 "item_name": "drug_name",
                 "comment": "comment",
-                "ref_doctype": "Drug Prescription",
-                "ref_docname": "name",
+                "ref_doctype": "Delivery Note Item",
+                "ref_docname": "dn_detail",
             },
             {
                 "table": "therapies",
@@ -334,6 +335,15 @@ class NHIFPatientClaim(Document):
                         new_row.approval_ref_no = get_approval_number_from_LRPMT(
                             child["ref_doctype"], row.get(child["ref_docname"])
                         )
+
+                        if (
+                            child["doctype"] =="Therapy Type" or 
+                            row.get(child["ref_docname"])
+                        ):
+                            new_row.status = "Submitted"
+                        else:
+                            new_row.status = "Draft"
+
                         new_row.patient_encounter = encounter.name
                         new_row.ref_doctype = row.doctype
                         new_row.ref_docname = row.name
@@ -469,6 +479,15 @@ class NHIFPatientClaim(Document):
                                         row.get(child["ref_docname"]),
                                     )
                                 )
+                                
+                                if (
+                                    child["doctype"]=="Therapy Type" or 
+                                    row.get(child["ref_docname"])
+                                ):
+                                    new_row.status = "Submitted"
+                                else:
+                                    new_row.status = "Draft"
+
                                 new_row.patient_encounter = encounter.name
                                 new_row.ref_doctype = row.doctype
                                 new_row.ref_docname = row.name
@@ -732,7 +751,16 @@ def validate_submit_date(self):
                 frappe.bold(submit_claim_year)
             )
         )
-# 
+
+def validate_item_status(self):
+    for row in self.nhif_patient_claim_item:
+        if row.status == "Draft":
+            frappe.throw("Item: {0}, doctype: {1}. RowNo: {2} is in <strong>Draft</strong>,\
+                please contact relevant department for clarification".format(
+                    frappe.bold(row.item_name),
+                    frappe. bold(row.ref_doctype),
+                    frappe.bold(row.idx)
+                ))
 
 def get_item_refcode(item_code):
     code_list = frappe.get_all(
