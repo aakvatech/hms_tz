@@ -26,11 +26,11 @@ def get_nhifservice_token(company):
     password = get_decrypted_password("Company NHIF Settings", company, "password")
     payload = "grant_type=password&username={0}&password={1}".format(username, password)
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    url = str(setting_doc.nhifservice_url) + "/nhifservice/token"
+    url = str(setting_doc.nhifservice_url) + "/nhifservice/Token"
 
     for i in range(3):
         try:
-            r = requests.request("GET", url, headers=headers, data=payload, timeout=5)
+            r = requests.request("POST", url, headers=headers, data=payload, timeout=5)
             r.raise_for_status()
             frappe.logger().debug({"webhook_success": r.text})
             if json.loads(r.text):
@@ -83,7 +83,7 @@ def get_claimsservice_token(company):
 
     for i in range(3):
         try:
-            r = requests.request("GET", url, headers=headers, data=payload, timeout=5)
+            r = requests.request("POST", url, headers=headers, data=payload, timeout=5)
             r.raise_for_status()
             frappe.logger().debug({"webhook_success": r.text})
             if json.loads(r.text):
