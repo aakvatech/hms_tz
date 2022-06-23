@@ -207,8 +207,8 @@ scheduler_events = {
     "daily": ["hms_tz.nhif.api.inpatient_record.daily_update_inpatient_occupancies"],
     
     "cron": {
-        # fire every saturday 2:30 am at night
-        "30 2 * * 6": [
+        # Routine for every day 2:30 am at night
+        "30 2 * * *": [
             "hms_tz.nhif.api.healthcare_utils.delete_or_cancel_draft_document"
         ],
         # Routine for every 10min
