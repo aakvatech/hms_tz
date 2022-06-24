@@ -58,6 +58,7 @@ def cancel_lrpt_doc(self):
 				except Exception:
 					traceback = frappe.get_traceback()
 					frappe.log_error(traceback, str(self.doctype))
+					frappe.throw("There was an error while cancelling the Item, check error log for review")
 
 	return self.name
 
@@ -192,6 +193,18 @@ def update_drug_prescription(item, child_name):
 			"delivered_quantity": item.quantity_prescribed - item.quantity_to_return,
 			"is_cancelled": item_cancelled
 		})
+
+		if (
+			item.delivery_note_no and
+			item.status == "Draft"
+		):
+			try:
+				dn_doc = frappe.get_doc("Delivery Note", item.delivery_note_no)
+				if dn_doc.workflow_state != "Not Serviced":
+					apply_workflow(dn_doc, "Not Serviced")
+			except Exception:
+				frappe.log_error(frappe.get_traceback(), str("Apply workflow error"))
+				frappe.throw(str("Apply workflow error, check error log for more details"))
 
 	
 def get_sales_return(self):

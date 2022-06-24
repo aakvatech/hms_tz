@@ -824,7 +824,9 @@ def delete_or_cancel_draft_document():
     delivery_documents = frappe.db.sql(
         """
         SELECT name FROM `tabDelivery Note` 
-        WHERE docstatus = 0 AND posting_date < '{before_2_days_date}'
+        WHERE docstatus = 0
+        AND posting_date < '{before_2_days_date}'
+        AND workflow_state != 'Not Serviced'
     """.format(
             before_2_days_date=before_2_days_date
         ),
@@ -837,9 +839,10 @@ def delete_or_cancel_draft_document():
             result = cancel_draft_delivery_note_via_lrpmt_returns(delivery_note_doc)
             if result:
                 try:
-                    apply_workflow(delivery_note_doc, "Not Serviced")
+                    if delivery_note_doc.workflow_state != "Not Serviced":
+                        apply_workflow(delivery_note_doc, "Not Serviced")
                 except Exception:
-                    frappe.log_error(frappe.get_traceback(), str("Change workflow state for delivery note"))
+                    frappe.log_error(frappe.get_traceback(), str("Apply workflow error"))
 
         except Exception:
             frappe.log_error(frappe.get_traceback(), str("Cancel Delivery Note Via LRPMT Returns"))
