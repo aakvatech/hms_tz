@@ -64,7 +64,7 @@ class NHIFPatientClaim(Document):
 
         claim_details = frappe.get_all(
             "NHIF Patient Claim",
-            filters={"authorization_no": authorization_no, "docstatus": 0},
+            filters={"authorization_no": authorization_no, "cardno": self.cardno, "docstatus": 0},
             fields=["name", "patient", "patient_name"],
         )
 
