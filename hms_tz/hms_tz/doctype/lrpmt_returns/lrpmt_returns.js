@@ -50,7 +50,7 @@ frappe.ui.form.on('LRPMT Returns', {
 		}
 	},
 
-	on_submit: function(frm) {
+	before_submit: function(frm) {
 		frm.set_value("approved_by", frappe.user.full_name())
 	},
 

@@ -15,7 +15,7 @@ from hms_tz.nhif.api.healthcare_utils import (
 from hms_tz.hms_tz.doctype.patient_encounter.patient_encounter import get_quantity
 from hms_tz.nhif.api.patient_encounter import validate_stock_item
 from hms_tz.nhif.api.patient_appointment import get_mop_amount
-
+from frappe.model.workflow import apply_workflow
 
 class MedicationChangeRequest(Document):
     def validate(self):
@@ -62,6 +62,12 @@ class MedicationChangeRequest(Document):
                     new_row["name"] = None
                     self.append('original_pharmacy_prescription', new_row)
                     self.append('drug_prescription', new_row)
+            
+            if len(self.patient_encounter_final_diagnosis) == 0:
+                for row in encounter_doc.patient_encounter_final_diagnosis:
+                    row.name = None
+                    self.append("patient_encounter_final_diagnosis", row)
+            
         
     def before_submit(self):
         self.warehouse = self.get_warehouse_per_delivery_note()
@@ -156,12 +162,15 @@ class MedicationChangeRequest(Document):
             item.description = (
                 row.drug_name
                 + " for "
-                + row.dosage
+                + (row.dosage or "No Prescription Dosage")
                 + " for "
-                + row.period
-                + " with specific notes as follows: "
-                + (row.comment or "No Comments")
+                + (row.period or "No Prescription Period")
+                + " with "
+                + row.medical_code
+                + " and doctor notes: "
+                + (row.comment or "Take medication as per dosage.")
             )
+
             doc.append("items", item)
 
             new_original_item = set_original_items(doc.name, item)
@@ -170,6 +179,15 @@ class MedicationChangeRequest(Document):
             doc.append("hms_tz_original_items", new_original_item)
 
         doc.save(ignore_permissions=True)
+
+        try:
+            if doc.workflow_state != "Changes Made":
+                apply_workflow(doc, "Make Changes")
+
+        except Exception:
+            frappe.log_error(frappe.get_traceback(), str("Apply workflow error for delivery note: {0}".format(frappe.bold(doc.name))))
+            frappe.throw("Apply workflow error for delivery note: {0}".format(frappe.bold(doc.name)))
+
         frappe.msgprint(
             _("Delivery Note " + self.delivery_note + " has been updated!"), alert=True
         )
@@ -316,3 +334,38 @@ def set_original_items(name, item):
     })
     
     return new_row
+
+
+@frappe.whitelist()
+def create_md_change_request_from_dn(doctype, name):
+    source_doc = frappe.get_doc(doctype, name)
+    if source_doc.reference_doctype != "Patient Encounter":
+        frappe.throw("Delivery note should have reference doctype of {0}".format(frappe.bold("Patient Encounter")))
+
+    doc = frappe.new_doc("Medication Change Request")
+    doc.patient = source_doc.patient
+    doc.patient_name = source_doc.patient_name
+    doc.appointment = source_doc.hms_tz_appointment_no
+    doc.company = source_doc.company
+    doc.patient_encounter = source_doc.reference_name
+    doc.delivery_note = source_doc.name
+    doc.healthcare_practitioner = source_doc.healthcare_practitioner
+
+    try:
+        doc.save(ignore_permissions=True)
+        doc.reload()
+        
+        if doc.get("name"):
+            try:
+                if source_doc.workflow_state != "Changes Requested":
+                    apply_workflow(source_doc, "Request Changes")
+
+            except Exception:
+                frappe.log_error(frappe.get_traceback(), str("Apply workflow error for delivery note: {0}".format(frappe.bold(source_doc.name))))
+                frappe.throw("Apply workflow error for delivery note: {0}".format(frappe.bold(source_doc.name)))
+
+    except Exception:
+        frappe.log_error(frappe.get_traceback(), str(doc.doctype))
+        frappe.throw("Medication Change Request was not created")
+
+    return doc.name

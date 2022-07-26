@@ -16,7 +16,7 @@ class LRPMTReturns(Document):
 		validate_reason(self)
 		validate_drug_row(self)
 		cancel_lrpt_doc(self)
-		return_drug_item(self)
+		return_or_cancel_drug_item(self)
 	
 	def on_submit(self):
 		get_sales_return(self)
@@ -56,8 +56,14 @@ def cancel_lrpt_doc(self):
 						frappe.db.set_value(prescription_lrpmt[item.reference_doctype], item.child_name, "is_cancelled", 1)
 				
 				except Exception:
-					traceback = frappe.get_traceback()
-					frappe.log_error(traceback, str(self.doctype))
+					frappe.log_error(frappe.get_traceback(), str(self.doctype))
+					frappe.throw("There was an error while cancelling the Item: {0} of ReferenceDoctype: {1}, ReferenceName: {2},<br>\
+						Check error log for review".format(
+							frappe.boled(item.item_name),
+							frappe.bold(item.reference_doctype),
+							frappe.bold(item.reference_docname)
+						)
+					)
 
 	return self.name
 
@@ -89,111 +95,153 @@ def cancel_tharapy_plan_doc(patient, therapy_plan_id):
 
 	return therapy_plan_doc.name
 
-def return_drug_item(self):
+def return_or_cancel_drug_item(self):
 	if len(self.drug_items) == 0:
 		return 
 	
-	dn_names = get_unique_delivery_notes(self)
+	update_drug_prescription_for_uncreated_delivery_note(self)
 
-	if not dn_names:
-		for item in self.drug_items:
-			if item.child_name:
-				update_drug_prescription(item, item.child_name)
+	unique_draft_delivery_notes = get_unique_draft_delivery_notes(self)
+	if unique_draft_delivery_notes:
+		for draft_delivery_note in unique_draft_delivery_notes:
+			update_drug_description_for_draft_delivery_note(self, draft_delivery_note.delivery_note_no)
 
-	for dn in dn_names:
-		source_doc = frappe.get_doc("Delivery Note", dn.delivery_note_no)
+	unique_submitted_delivery_notes = get_unique_submitted_delivery_notes(self)
+	if unique_submitted_delivery_notes:
+		for dn in unique_submitted_delivery_notes:
+			try:
+				source_doc = frappe.get_doc("Delivery Note", dn.delivery_note_no)
+				target_doc = return_drug_quantity_to_stock(self, source_doc)
 
-		target_doc = frappe.new_doc("Delivery Note")
-		target_doc.customer = source_doc.customer
-		if source_doc.medical_department:
-			target_doc.medical_department = source_doc.medical_department
-		target_doc.healthcare_service_unit = source_doc.healthcare_service_unit
-		target_doc.patient = source_doc.patient
-		target_doc.patient_name = source_doc.patient_name
-		if source_doc.coverage_plan_name:
-			target_doc.coverage_plan_name = source_doc.coverage_plan_name
-		target_doc.company = source_doc.company
-		target_doc.posting_date = nowdate()
-		target_doc.posting_time = nowtime()
-		if source_doc.form_sales_invoice:
-			target_doc.form_sales_invoice = source_doc.form_sales_invoice
-		target_doc.is_return = 1
-		target_doc.return_against = source_doc.name
-		target_doc.reference_doctype = "LRPMT Returns" #source_doc.reference_doctype
-		target_doc.reference_name = self.name #source_doc.reference_name
-		target_doc.currency = source_doc.currency
-		target_doc.conversion_rate = source_doc.conversion_rate
-		target_doc.selling_price_list = source_doc.selling_price_list
-		target_doc.price_list_currency = source_doc.price_list_currency
-		target_doc.plc_conversion_rate = source_doc.plc_conversion_rate
-		target_doc.ignore_pricing_rule = 1
-		if source_doc.healthcare_practitioner:
-			target_doc.healthcare_practitioner = source_doc.healthcare_practitioner
-		
-		for item in self.drug_items:
-			if item.child_name:
-				update_drug_prescription(item, item.child_name)
-			
-			if (
-				not item.dn_detail or 
-				not item.delivery_note_no or 
-				not item.status or 
-				item.status == "Draft"
-			):
-				continue
-				
-			if dn.delivery_note_no == item.delivery_note_no:
-				for dni in source_doc.items:
-					if ((item.dn_detail == dni.name) and (item.drug_name == dni.item_code)):
-						target_doc.append("items", {
-							"item_code": item.drug_name,
-							"item_name": item.drug_name,
-							"description": dni.description,
-							"qty": -1 * flt(item.quantity_to_return or 0),
-							"stock_uom": dni.stock_uom,
-							"uom": dni.uom,
-							"rate": dni.rate,
-							"conversion_factor": dni.conversion_factor,
-							"warehouse": dni.warehouse,
-							"target_warehouse": dni.target_warehouse or "",
-							"dn_detail": dni.name,
-							"healthcare_service_unit": dni.healthcare_service_unit or "",
-							"healthcare_practitioner": dni.healthcare_practitioner or "",
-							"department": dni.department,
-							"cost_center": dni.cost_center,
-							"reference_doctype": dni.reference_doctype,
-							"reference_name": dni.reference_name
-						})
-		target_doc.save(ignore_permissions=True)
-		target_doc.submit()
-	
+				if target_doc.get("name"):
+					transition_workflow_states(source_doc, target_doc)
+
+			except Exception:
+				frappe.log_error(frappe.get_traceback(), str("Error in creating return delivery note for {0}".format(dn.delivery_note_no)))
+				frappe.throw("Error in creating return delivery note against delivery note: {0}".format(frappe.bold(dn.delivery_note_no)))
+
 	return self.name
+
+def return_drug_quantity_to_stock(self, source_doc):
+	target_doc = frappe.new_doc("Delivery Note")
+	target_doc.customer = source_doc.customer
+	if source_doc.medical_department:
+		target_doc.medical_department = source_doc.medical_department
+	target_doc.healthcare_service_unit = source_doc.healthcare_service_unit
+	target_doc.patient = source_doc.patient
+	target_doc.patient_name = source_doc.patient_name
+	target_doc.hms_tz_phone_no = source_doc.hms_tz_phone_no
+	if source_doc.coverage_plan_name:
+		target_doc.coverage_plan_name = source_doc.coverage_plan_name
+	target_doc.hms_tz_appointment_no = source_doc.hms_tz_appointment_no
+	target_doc.company = source_doc.company
+	target_doc.posting_date = nowdate()
+	target_doc.posting_time = nowtime()
+	if source_doc.form_sales_invoice:
+		target_doc.form_sales_invoice = source_doc.form_sales_invoice
+	target_doc.is_return = 1
+	target_doc.return_against = source_doc.name
+	target_doc.reference_doctype = "LRPMT Returns"
+	target_doc.reference_name = self.name
+	target_doc.currency = source_doc.currency
+	target_doc.conversion_rate = source_doc.conversion_rate
+	target_doc.selling_price_list = source_doc.selling_price_list
+	target_doc.price_list_currency = source_doc.price_list_currency
+	target_doc.plc_conversion_rate = source_doc.plc_conversion_rate
+	target_doc.ignore_pricing_rule = 1
+	if source_doc.healthcare_practitioner:
+		target_doc.healthcare_practitioner = source_doc.healthcare_practitioner
 	
-def update_drug_prescription(item, child_name):
-	if (
-		not item.dn_detail and
-		not item.delivery_note_no and
-		not item.status
-	):
-		frappe.db.set_value("Drug Prescription", child_name, "is_cancelled", 1)
+	for item in self.drug_items:					
+		if source_doc.name == item.delivery_note_no and item.status == "Submitted":
+			update_drug_prescription_for_submitted_delivery_note(item)
+			for dni in source_doc.items:
+				if ((item.dn_detail == dni.name) and (item.drug_name == dni.item_code)):
+					target_doc.append("items", {
+						"item_code": item.drug_name,
+						"item_name": item.drug_name,
+						"description": dni.description,
+						"qty": -1 * flt(item.quantity_to_return or 0),
+						"stock_uom": dni.stock_uom,
+						"uom": dni.uom,
+						"rate": dni.rate,
+						"conversion_factor": dni.conversion_factor,
+						"warehouse": dni.warehouse,
+						"target_warehouse": dni.target_warehouse or "",
+						"dn_detail": dni.name,
+						"healthcare_service_unit": dni.healthcare_service_unit or "",
+						"healthcare_practitioner": dni.healthcare_practitioner or "",
+						"department": dni.department,
+						"cost_center": dni.cost_center,
+						"reference_doctype": dni.reference_doctype,
+						"reference_name": dni.reference_name
+					})
+	target_doc.save(ignore_permissions=True)
+	# target_doc.submit()
+	target_doc.reload()
 
-	if (
-		item.delivery_note_no and 
-		item.status in ["Draft", "Submitted"] or 
-		item.dn_detail
-	):
-		if (item.quantity_prescribed - item.quantity_to_return) == 0:
-			item_cancelled = 1
-		else:
-			item_cancelled = 0
+	return target_doc
 
-		frappe.db.set_value("Drug Prescription", child_name, {
-			"quantity_returned": item.quantity_to_return,
-			"delivered_quantity": item.quantity_prescribed - item.quantity_to_return,
-			"is_cancelled": item_cancelled
-		})
+def update_drug_prescription_for_uncreated_delivery_note(self):
+	for item in self.drug_items:
+		if (
+			item.child_name and 
+			not item.dn_detail and
+			not item.delivery_note_no and
+			not item.status
+		):
+			frappe.db.set_value("Drug Prescription", item.child_name, "is_cancelled", 1)
 
-	
+
+def update_drug_description_for_draft_delivery_note(self, delivey_note):
+	try:
+		dn_doc = frappe.get_doc("Delivery Note", delivey_note)
+
+		if dn_doc.workflow_state != "Not Serviced":
+			apply_workflow(dn_doc, "Not Serviced")
+		
+		if dn_doc.workflow_state == "Not Serviced":
+			for item in self.drug_items:
+				if item.delivery_note_no == delivey_note and item.status == "Draft":
+					frappe.db.set_value("Drug Prescription", item.child_name, "is_cancelled", 1)
+			
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), str("Apply workflow error for Delivery Note {0}".format(frappe.bold(delivey_note))))
+		frappe.throw(str("Apply workflow error, for delivery note: {0}, check error log for more details".format(frappe.bold(delivey_note))))
+
+	frappe.db.commit()
+
+
+def update_drug_prescription_for_submitted_delivery_note(item):
+	if (item.quantity_prescribed - item.quantity_to_return) == 0:
+		item_cancelled = 1
+	else:
+		item_cancelled = 0
+
+	frappe.db.set_value("Drug Prescription", item.child_name, {
+		"quantity_returned": item.quantity_to_return,
+		"delivered_quantity": item.quantity_prescribed - item.quantity_to_return,
+		"is_cancelled": item_cancelled
+	})
+
+
+def transition_workflow_states(source_doc, target_doc):
+	try:
+		if target_doc.workflow_state != "Is Return":
+			apply_workflow(target_doc, "Return")
+		
+		if target_doc.workflow_state == "Is Return" and source_doc.workflow_state != "Return Issued":
+			try:
+				apply_workflow(source_doc, "Issue Returns")
+
+			except Exception:
+				frappe.log_error(frappe.get_traceback(), str("Apply workflow error for Delivery Note {0}".format(frappe.bold(source_doc.name))))
+			
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), str("Apply workflow error for Delivery Note {0}".format(frappe.bold(target_doc.name))))
+		frappe.throw(str("Apply workflow error, for delivery note: {0}, check error log for more details".format(frappe.bold(target_doc.name))))
+
+
 def get_sales_return(self):
 	conditions = {
 		"patient": self.patient,
@@ -260,16 +308,28 @@ def validate_drug_row(self):
 		if msg: 
 			frappe.throw(title="Notification", msg=msg, exc="Frappe.ValidationError")
 
-def get_unique_delivery_notes(self):
+def get_unique_draft_delivery_notes(self):
 	return frappe.db.sql("""SELECT DISTINCT(md.delivery_note_no)
 		FROM `tabMedication Return` md
 		INNER JOIN `tabLRPMT Returns` lrpmt ON lrpmt.name = md.parent
-		WHERE md.status NOT IN ("", "Null", "Draft")
+		WHERE md.status = "Draft"
+		AND lrpmt.patient = %s
+		AND lrpmt.appointment = %s
+		AND lrpmt.name = %s
+	"""%(frappe.db.escape(self.patient), frappe.db.escape(self.appointment), frappe.db.escape(self.name)), as_dict=1)
+
+
+def get_unique_submitted_delivery_notes(self):
+	return frappe.db.sql("""SELECT DISTINCT(md.delivery_note_no)
+		FROM `tabMedication Return` md
+		INNER JOIN `tabLRPMT Returns` lrpmt ON lrpmt.name = md.parent
+		WHERE md.status = "Submitted"
 		AND md.dn_detail != ""
 		AND lrpmt.patient = %s
 		AND lrpmt.appointment = %s
 		AND lrpmt.name = %s
 	"""%(frappe.db.escape(self.patient), frappe.db.escape(self.appointment), frappe.db.escape(self.name)), as_dict=1)
+
 	
 @frappe.whitelist()
 def get_lrpt_item_list(patient, appointment, company):
@@ -599,6 +659,11 @@ def get_drugs(patient, appointment, company):
 	)
 
 	for drug in drugs:
+		item_code = frappe.get_value("Medication", drug.drug_code, "item")
+		drug.update({
+			"drug_code": item_code,
+		})
+		
 		item_list.append(drug)
 		name_list.append(drug.name)
 	return item_list, name_list

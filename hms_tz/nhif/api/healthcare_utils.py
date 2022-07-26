@@ -12,7 +12,8 @@ from frappe.utils import nowdate, nowtime, now_datetime, add_to_date
 from datetime import timedelta
 import base64
 import re
-
+import json
+from frappe.model.workflow import apply_workflow
 
 @frappe.whitelist()
 def get_healthcare_services_to_invoice(
@@ -774,13 +775,12 @@ def delete_or_cancel_draft_document():
     A routine to 
         1. Cancel open appointments after every 7 days,
         2. Delete draft vital signs after every 7 days and
-        3. Delete draft delivery note after every 45 days
-    this routine run every saturday 2:30 am at night
+        3. Cancel draft delivery note after every 2 days
+    this routine runs every day on 2:30 am at night
     """
-    from frappe.utils import nowdate, add_to_date
 
     before_7_days_date = add_to_date(nowdate(), days=-7, as_string=False)
-    before_45_days_date = add_to_date(nowdate(), days=-45, as_string=False)
+    before_2_days_date = add_to_date(nowdate(), days=-2, as_string=False)
 
     appointments = frappe.db.sql(
         """
@@ -821,23 +821,89 @@ def delete_or_cancel_draft_document():
         frappe.db.commit()
 
 
-    # delivery_documents = frappe.db.sql(
-    #     """
-    #     SELECT name FROM `tabDelivery Note` 
-    #     WHERE docstatus = 0 AND posting_date < '{before_45_days_date}'
-    # """.format(
-    #         before_45_days_date=before_45_days_date
-    #     ),
-    #     as_dict=1,
-    # )
+    delivery_documents = frappe.db.sql(
+        """
+        SELECT name FROM `tabDelivery Note` 
+        WHERE docstatus = 0
+        AND workflow_state != "Not Serviced"
+        AND posting_date < '{before_2_days_date}'
+    """.format(
+            before_2_days_date=before_2_days_date
+        ),
+        as_dict=1,
+    )
 
-    # for dn_doc in delivery_documents:
-    #     dn_del = frappe.get_doc("Delivery Note", dn_doc.name)
-    #     try:
-    #         dn_del.delete()
-    #     except Exception:
-    #         frappe.log_error(frappe.get_traceback())
-    #     frappe.db.commit()
+    for delivery_note  in delivery_documents:
+        delivery_note_doc = frappe.get_doc("Delivery Note", delivery_note.name)
+        try:
+            result = cancel_or_return_delivery_note_via_lrpmt_returns(delivery_note_doc, "Backend")
+            if result:
+                try:
+                    if delivery_note_doc.workflow_state != "Not Serviced":
+                        apply_workflow(delivery_note_doc, "Not Serviced")
+
+                except Exception:
+                    frappe.log_error(frappe.get_traceback(), str("Apply workflow error for delivery note: {0}".format(frappe.bold(delivery_note_doc.name))))
+        
+        except Exception:
+            frappe.log_error(frappe.get_traceback(), str("Error for Cancel Draft Delivery Note: {0} Via LRPMT Returns".format(frappe.bold(delivery_note_doc.name))))
+
+        frappe.db.commit()
+
+
+@frappe.whitelist()
+def cancel_or_return_delivery_note_via_lrpmt_returns(source_doc, method):
+    """Cancel draft delivery note if all items was not serviced"""
+    
+    source_doc = frappe.get_doc(frappe.parse_json(source_doc))
+
+    if len(source_doc.items) == 0:
+        frappe.throw(_("No items to cancel from this delivery note: {0}".format(frappe.bold(source_doc.name))))
+
+
+    status = ""
+    if source_doc.docstatus == 1:
+        status = "Submitted"
+    else:
+        status = "Draft"
+
+    drug_items = []
+
+    for dni_item in source_doc.items:
+        drug_items.append({
+            "drug_name": dni_item.item_code,
+            "quantity_prescribed": dni_item.qty,
+            "quantity_to_return": dni_item.qty,
+            "reason": "Not Serviced",
+            "drug_condition": "Good",
+            "encounter_no": source_doc.reference_name,
+            "delivery_note_no": source_doc.name,
+            "status": status,
+            "dn_detail": dni_item.name,
+            "child_name": dni_item.reference_name
+        })
+
+    target_doc = frappe.get_doc(
+        dict(
+            doctype = "LRPMT Returns",
+            patient = source_doc.patient,
+            patient_name = source_doc.patient_name,
+            appointment = source_doc.hms_tz_appointment_no,
+            company = source_doc.company,
+            drug_items = drug_items
+        )
+    )
+
+    target_doc.insert()
+    target_doc.reload()
+
+    if method == "From Front End":
+        return target_doc.name
+
+    else:
+        target_doc.submit()
+        if target_doc.get("name"):
+            return True
 
 
 def create_invoiced_items_if_not_created():

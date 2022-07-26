@@ -19,6 +19,34 @@ frappe.ui.form.on("Delivery Note", {
             $("*[data-fieldname='items']").find(".grid-remove-all-rows").hide();
         }
     },
+    hms_tz_lrpmt_returns: (frm) => {
+        frappe.call({
+            method: "hms_tz.nhif.api.healthcare_utils.cancel_or_return_delivery_note_via_lrpmt_returns",
+            args: {
+                source_doc: frm.doc,
+                method: "From Front End"
+            },
+            freeze: true,
+            callback: (r) => {
+                frappe.set_route("FORM", "LRPMT Returns", r.message);
+            },
+        })
+    },
+    hms_tz_medicatiion_change_request: (frm) => {
+        frappe.call({
+            method: "hms_tz.nhif.doctype.medication_change_request.medication_change_request.create_md_change_request_from_dn",
+            args: {
+                doctype: frm.doc.doctype,
+                name: frm.doc.name
+            },
+            freeze: true,
+            callback: (r) => {
+                if (r.message) {
+                    frappe.set_route("FORM", "Medication Change Request", r.message);
+                }
+            },
+        })
+    }
 });
 
 frappe.ui.form.on("Delivery Note Item", {
