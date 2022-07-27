@@ -8,7 +8,7 @@ from frappe import _
 import datetime
 
 from hms_tz.hms_tz.utils import validate_customer_created
-from frappe.utils import nowdate, nowtime, now_datetime, add_to_date
+from frappe.utils import nowdate, nowtime, now_datetime, add_to_date, add_days
 from datetime import timedelta
 import base64
 import re
@@ -947,7 +947,31 @@ def create_invoiced_items_if_not_created():
                     item.hms_tz_is_lrp_item_created = 1
                     item.db_update()
                 except Exception:
-                    traceback = frappe.get_traceback()
-                    frappe.log_error(traceback)
+                    frappe.log_error(frappe.get_traceback(), str("Error in creating pending LRP Items"))
         
+        frappe.db.commit()
+
+
+def auto_closing_delivery_note():
+    """
+    Mark delivery note closed per customer depending on the days specified on customer
+    This routine will run every day 3:30am at night
+    """
+
+    dn_list = []
+
+    customer_details = frappe.get_all("Customer", filters={"hms_tz_is_dn_outo_closed": 1}, fields=["name", "hms_tz_dn_closed_after"])
+
+    for customer in customer_details:
+        filters = {
+            "docstatus": 1,
+            "customer": customer.name,
+            "status": ["!=", "Closed"],
+            "posting_date": ["<", add_days(nowdate(), days=(-1 * customer.hms_tz_dn_closed_after))],
+        }
+        dn_list += frappe.get_all("Delivery Note", filters=filters, fields=["name"], pluck="name")
+    
+    for dn in dn_list:
+        frappe.db.set_value("Delivery Note", dn, "status", "Closed")
+
         frappe.db.commit()
