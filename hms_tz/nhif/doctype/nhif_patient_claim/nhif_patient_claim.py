@@ -854,10 +854,12 @@ class NHIFPatientClaim(Document):
         folio_doc = frappe.get_cached_doc("NHIF Folio Counter", folio_counter[0].name)
         folio_no = cint(folio_doc.folio_no) + 1
         frappe.set_value(self.doctype, self.name, "folio_no", folio_no)
+        self.relaod()
 
         folio_doc.folio_no += 1
         folio_doc.posting_date = now_datetime()
         folio_doc.save(ignore_permissions=True)
+        folio_doc.reload()
 
 
 def get_missing_patient_signature(self):
