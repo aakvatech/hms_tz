@@ -433,13 +433,13 @@ def set_follow_up(appointment_doc, method):
 
 
 def make_next_doc(doc, method):
-    if doc.inpatient_record:
-        frappe.throw(
-            _(
-                "You cannot create an appointment for a patient already admitted.<br>First <b>discharge the patient</b> and then create the appointment."
-            )
-        )
     if doc.is_new():
+        if doc.inpatient_record:
+            frappe.throw(
+                _(
+                    "You cannot create an appointment for a patient already admitted.<br>First <b>discharge the patient</b> and then create the appointment."
+                )
+            )
         return
     if doc.insurance_subscription:
         is_active, his_patient, coverage_plan = frappe.get_cached_value(
