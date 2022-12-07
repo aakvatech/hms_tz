@@ -8,7 +8,7 @@ from frappe import _
 from frappe.utils import today, now_datetime, getdate, get_datetime
 from frappe.model.document import Document
 from frappe.desk.reportview import get_match_cond
-
+from frappe.model.naming import set_new_name
 
 class InpatientRecord(Document):
     def before_insert(self):
@@ -177,6 +177,7 @@ def schedule_inpatient(args):
         inpatient_record.referring_practitioner = encounter.referring_practitioner
 
     inpatient_record.status = "Admission Scheduled"
+    set_new_name(inpatient_record)
     inpatient_record.save(ignore_permissions=True)
 
 
