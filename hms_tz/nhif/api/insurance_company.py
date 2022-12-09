@@ -11,7 +11,7 @@ import requests
 from frappe.utils.background_jobs import enqueue
 from hms_tz.nhif.doctype.nhif_product.nhif_product import add_product
 from hms_tz.nhif.doctype.nhif_scheme.nhif_scheme import add_scheme
-from frappe.utils import now
+from frappe.utils import now, get_url_to_form
 from hms_tz.nhif.doctype.nhif_response_log.nhif_response_log import add_log
 from frappe.model.naming import set_new_name
 import ast
@@ -693,3 +693,12 @@ def add_excluded_services_records(doc, rec, type):
         price_row.schemename = e.get("SchemeName")
         price_row.excludedforproducts = e.get("ExcludedForProducts")
         price_row.record = json.dumps(e)
+
+
+def before_insert(doc, methos):
+    insurance_company = frappe.get_value("Healthcare Insurance Company", {"hms_tz_business_license": doc.hms_tz_business_license}, "name")
+    if insurance_company:
+        url = get_url_to_form("Healthcare Insurance Company", insurance_company)
+        frappe.throw("Business License: {0} already used on Healthcare Insurance Company: <a href='{1}'>{2}</a>".format(
+            frappe.bold(doc.hms_tz_business_license), url, frappe.bold(insurance_company)
+        ))
