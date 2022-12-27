@@ -26,7 +26,11 @@ import calendar
 from hms_tz.nhif.api.patient_appointment import (
     get_mop_amount,
     get_discount_percent,
+<<<<<<< HEAD
     calculate_patient_age,
+=======
+    calculate_patient_age
+>>>>>>> cc4aab6f (chore: set patient age on patient encounter if it is not found espcially for direct cash encounters)
 )
 from erpnext.accounts.utils import get_balance_on
 
@@ -335,9 +339,12 @@ def on_submit_validation(doc, method):
 
     if not doc.patient_age:
         doc.patient_age = calculate_patient_age(doc.patient)
+<<<<<<< HEAD
 
     if not doc.patient_age:
         doc.patient_age = calculate_patient_age(doc.patient)
+=======
+>>>>>>> cc4aab6f (chore: set patient age on patient encounter if it is not found espcially for direct cash encounters)
     
     # Run on_submit
     validate_totals(doc)
