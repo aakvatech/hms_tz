@@ -1,5 +1,4 @@
 pull_request_rules:
-  pull_request_rules:
   - name: Assign author to review conflict and add label of 'conflict'
     conditions:
       - conflict
