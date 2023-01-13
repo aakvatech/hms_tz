@@ -1,7 +1,100 @@
 pull_request_rules:
-  - name: Automatic merge on approval
+  pull_request_rules:
+  - name: Assign author to review conflict and add label of 'conflict'
+    conditions:
+      - conflict
+    actions:
+      label:
+        add:
+          - conflict
+      assign:
+        add_users:
+          - aakvatech
+          - "{{author}}"
+      comment:
+        message: "@{{author}} this pull request is now in conflict 😩"
+  
+
+  - name: Automatic merge pull request to develop
+    conditions:
+      - and:
+          - and:
+              - base:develop
+          - or:
+              - author=aakvatech
+              - author=av-dev2
+    actions:
+      merge:
+        method: merge
+  
+
+  - name: backport to version-13-hotfix
+    conditions:
+      - label=version-13-hotfix
+    actions:
+      backport:
+        branches:
+          - version-13-hotfix
+        assignees:
+          - aakvatech
+          - "{{author}}"
+  
+
+  - name: backport to version-14-hotfix
+    conditions:
+      - label=version-14-hotfix
+    actions:
+      backport:
+        branches:
+          - version-14-hotfix
+        assignees:
+          - aakvatech
+          - "{{author}}"
+    
+
+  - name: Automatic merge after review to version-13-hotfix
     conditions:
       - "#approved-reviews-by>=1"
+      - label!=conflict
+      - base: version-13-hotfix
+    actions:
+      merge:
+        method: merge
+  
+
+  - name: Automatic merge after review to version-14-hotfix
+    conditions:
+      - "#approved-reviews-by>=1"
+      - label!=conflict
+      - base: version-14-hotfix
+    actions:
+      merge:
+        method: merge
+  
+
+  - name: Automatic merge pull request to version-13
+    conditions:
+      - and:
+          - and:
+              - base: version-13
+              - label!=conflict
+          - or:
+              - author=aakvatech
+              - author=av-dev2
+    actions:
+      merge:
+        method: merge
+  
+
+  - name: Automatic merge pull request to version-14
+    conditions:
+      - and:
+          - and:
+              - base: version-14
+              - label!=conflict
+          - or:
+              - author=aakvatech
+              - author=av-dev2
     actions:
       merge:
         method: merge
