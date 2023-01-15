@@ -1,6 +1,22 @@
 pull_request_rules:
-  - name: Automatic merge on approval
+  - name: Assign author to review conflict and add label of 'conflict'
     conditions:
+      - conflict
+    actions:
+      label:
+        add:
+          - conflict
+      assign:
+        add_users:
+          - aakvatech
+          - "{{author}}"
+      comment:
+        message: "@{{author}} this pull request is now in conflict 😩"
+  
+
+  - name: Automatic merge after review to version-14-hotfix
+    conditions:
+      - base: version-14-hotfix
       - "#approved-reviews-by>=1"
     actions:
       merge:
