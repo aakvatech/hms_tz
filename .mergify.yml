@@ -1,7 +1,28 @@
 pull_request_rules:
-  - name: Automatic merge on approval
+  - name: Assign author to review conflict and add label of 'conflict'
     conditions:
-      - "#approved-reviews-by>=1"
+      - conflict
+    actions:
+      label:
+        add:
+          - conflict
+      assign:
+        add_users:
+          - aakvatech
+          - "{{author}}"
+      comment:
+        message: "@{{author}} this pull request is now in conflict 😩"
+  
+
+  - name: Automatic merge pull request to main
+    conditions:
+      - and:
+          - and:
+              - base: main
+              - label != conflict
+          - or:
+              - author = aakvatech
+              - author = av-dev2
     actions:
       merge:
         method: merge
