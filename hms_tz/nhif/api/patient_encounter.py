@@ -146,10 +146,11 @@ def on_submit_validation(doc, method):
     
     # Run on_submit
     submitting_healthcare_practitioner = frappe.db.get_value(
-        "Healthcare Practitioner", {"user_id": frappe.session.user}, ["name"]
+        "Healthcare Practitioner", {"user_id": frappe.session.user}, ["name", "practitioner_name"]
     )
     if submitting_healthcare_practitioner:
-        doc.practitioner = submitting_healthcare_practitioner
+        doc.practitioner = submitting_healthcare_practitioner[0]
+        doc.practitioner_name = submitting_healthcare_practitioner[1]
 
     # Run on_submit?
     prescribed_list = ""
@@ -498,6 +499,7 @@ def on_submit(doc, method):
         on_submit_validation(doc, method)
         create_healthcare_docs(doc, method)
         create_delivery_note(doc, method)
+    change_practitioner_detail(doc)
     if doc.inpatient_record:
         update_inpatient_record_consultancy(doc)
 
@@ -1605,3 +1607,22 @@ def validate_maximum_number_of_claims_per_month(coverage_info, insurance_subscri
             ).format(template, days,coverage_info.maximum_number_of_claims, coverage_info.number_of_claims),
             "validate",
         )
+
+def change_practitioner_detail(self):
+    """Change practitioner detail on patient appointment when encounter is submitted
+    if encounter was submitted by a practitioner who the appointment was made to a another practitioner
+    """
+    if (
+        self.appointment and 
+        self.encounter_type == "Initial"
+    ):
+        practitioner = frappe.get_value(
+            "Patient Appointment", self.appointment, "practitioner"
+        )
+        if practitioner != self.practitioner:
+            frappe.db.set_value("Patient Appointment", self.appointment, {
+                "practitioner": self.practitioner,
+                "practitioner_name": self.practitioner_name,
+                "department": self.medical_department
+            })
+        
