@@ -16,3 +16,11 @@ hms_tz.patches.create_custom_fields_for_lrp_doctypes
 hms_tz.patches.create_custom_fields_for_delivery_note_workflow
 hms_tz.patches.property_setter.create_property_setter_for_patient_age
 hms_tz.patches.custom_fields.discount_custom_fields_for_insurance_company
+<<<<<<< HEAD
+=======
+hms_tz.patches.custom_fields.company_field_on_healthcare_practitioner
+hms_tz.patches.property_setter.property_setter_for_department_field_on_patient_appointment
+hms_tz.patches.custom_fields.custom_fields_for_lrpt_docs
+hms_tz.patches.property_setter.property_setter_for_lrpt_docs
+hms_tz.patches.property_setter.properties_for_patient
+>>>>>>> 219a5943 (chore: set date of birth mandatory and set cardno and patient_name as global search)
