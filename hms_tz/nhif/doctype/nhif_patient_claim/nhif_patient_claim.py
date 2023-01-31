@@ -124,6 +124,7 @@ class NHIFPatientClaim(Document):
         }, pluck="name")
         
         if len(appointment_documents) > 1:
+<<<<<<< HEAD
             msg = "<p style='text-align: left; font-size: 13px'>Patient: {0}-{1} has multiple appointments: ".format(
                 frappe.bold(self.patient), frappe.bold(self.patient_name)
             )
@@ -147,6 +148,12 @@ class NHIFPatientClaim(Document):
 
             if reqd_throw_count < 2:
                 frappe.throw(msg)
+=======
+            validate_hold_card_status(self, appointment_documents, claim_details, merged_appointments, caller)
+        else:
+            if caller:
+                frappe.msgprint("Release Patient Card", 20, alert=True)
+>>>>>>> 05fc923c (chore: show an alert of 'release patient card')
 
 
     def set_claim_values(self):
