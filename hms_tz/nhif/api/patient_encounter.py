@@ -1833,8 +1833,6 @@ def get_drug_quantity(drug_item):
         return 0
 
     quantity = 0
-    dosage = None
-    period = None
     strength_count = 0
     
     drug_row = frappe.parse_json(drug_item)
