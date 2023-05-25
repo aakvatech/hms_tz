@@ -148,6 +148,7 @@ def on_submit_validation(doc, method):
                     doc.insurance_subscription
                     and healthcare_doc.medication_category == "Category S Medication"
                 ):
+<<<<<<< HEAD
                     frappe.msgprint(
                         "Item: {0} is Category S Medication".format(
                             frappe.bold(row.get(child.get("item")))
@@ -168,6 +169,15 @@ def on_submit_validation(doc, method):
                         ),
                         alert=True,
                     )
+=======
+                    frappe.msgprint("Item: {0} is Category S Medication".format(
+                        frappe.bold(row.get(child.get("item")))
+                    ), alert=True)
+                
+                # auto calculating quantity
+                if not row.quantity:
+                    row.quantity = get_drug_quantity(row)
+>>>>>>> f6516cc8 (feat: enable auto calculation of drug quantity of patient encounter)
 
     # Run on_submit
     submitting_healthcare_practitioner = frappe.db.get_value(
@@ -1750,6 +1760,7 @@ def get_previous_diagnosis_and_lrpmt_items_to_reuse(kwargs, caller):
 
     return data
 
+<<<<<<< HEAD
 
 @frappe.whitelist()
 def get_encounter_cost_estimate(encounter_doc):
@@ -1811,3 +1822,47 @@ def get_encounter_cost_estimate(encounter_doc):
             total_cost += row.get("amount") or 0
 
     return {"total_cost": total_cost, "details": cost_dict}
+=======
+@frappe.whitelist()
+def get_drug_quantity(drug_item):
+    """Get drug quantity based on dosage, period, interval and interval uom
+    
+    :param drug_item: object or json string of drug item
+    """
+    if not frappe.db.get_single_value("Healthcare Settings", "enable_auto_quantity_calculation"):
+        return 0
+
+    quantity = 0
+    dosage = None
+    period = None
+    strength_count = 0
+    
+    drug_row = frappe.parse_json(drug_item)
+
+    if drug_row.dosage and drug_row.period:
+        dosage = frappe.get_doc("Prescription Dosage", drug_row.dosage)
+        period = frappe.get_doc("Prescription Duration", drug_row.period)
+        for item in dosage.dosage_strength:
+            strength_count += item.strength
+        if strength_count == 0:
+            strength_count = dosage.default_strength
+        if strength_count > 0:
+            if drug_row.interval and drug_row.interval_uom:
+                if drug_row.interval_uom == "Day" and drug_row.interval < period.get_days():
+                    quantity = strength_count * (period.get_days() / drug_row.interval)
+                elif drug_row.interval_uom == "Hour" and drug_row.interval < period.get_hours():
+                    quantity = strength_count * (period.get_hours() / drug_row.interval)
+            else:
+                quantity = strength_count * period.get_days()
+
+        elif drug_row.interval and drug_row.interval_uom:
+            if drug_row.interval_uom == "Day" and drug_row.interval < period.get_days():
+                quantity = period.get_days() / drug_row.interval
+            elif drug_row.interval_uom == "Hour" and drug_row.interval < period.get_hours():
+                quantity = period.get_hours() / drug_row.interval
+
+    if quantity > 0:
+        return quantity
+    else:
+        return 0
+>>>>>>> f6516cc8 (feat: enable auto calculation of drug quantity of patient encounter)

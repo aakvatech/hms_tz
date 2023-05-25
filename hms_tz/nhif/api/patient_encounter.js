@@ -783,14 +783,30 @@ frappe.ui.form.on('Drug Prescription', {
             validate_stock_item(frm, row.drug_code, row.quantity, row.healthcare_service_unit, "Drug Prescription");
         }
     },
-    dosage: function (frm, cdt, cdn) {
-        frappe.model.set_value(cdt, cdn, "quantity", 0);
+    dosage: (frm, cdt, cdn) => {
+        let row = locals[cdt][cdn];
+        if (row.dosage && row.period) {
+            auto_calculate_drug_quantity(frm, row);
+        } else {
+            frappe.model.set_value(cdt, cdn, "quantity", 0);
+        }
         frm.refresh_field("drug_prescription");
     },
+<<<<<<< HEAD
     drug_prescription_add: function (frm, cdt, cdn) {
         var row = frappe.get_doc(cdt, cdn);
         if (!row.healthcare_service_unit) row.healthcare_service_unit = frm.doc.default_healthcare_service_unit;
         refresh_field("drug_prescription");
+=======
+    period: (frm, cdt, cdn) => {
+        let row = locals[cdt][cdn];
+        if (row.dosage && row.period) {
+            auto_calculate_drug_quantity(frm, row);
+        } else {
+            frappe.model.set_value(cdt, cdn, "quantity", 0);
+        }
+        frm.refresh_field("drug_prescription");
+>>>>>>> f6516cc8 (feat: enable auto calculation of drug quantity of patient encounter)
     }
 });
 
@@ -1137,4 +1153,15 @@ function set_delete_button_in_child_table (frm, child_table_fields) {
         }
     }
     );
+}
+
+var auto_calculate_drug_quantity = (frm, drug_item) => {
+    frappe.call({
+        method: "hms_tz.nhif.api.patient_encounter.get_drug_quantity",
+        args: {
+            drug_item: drug_item,
+        }
+    }).then(r => {
+        frappe.model.set_value(drug_item.doctype, drug_item.name, "quantity", r.message);
+    });
 }
