@@ -1143,8 +1143,6 @@ var validate_healthcare_package_order_items = (frm) => {
         }
     }
 }
-<<<<<<< HEAD
-=======
 
 var get_auxiliaru_items = (frm, template_name, template_item) => {
     function get_field_map() {
@@ -1210,4 +1208,3 @@ var get_auxiliaru_items = (frm, template_name, template_item) => {
         });
     }
 }
->>>>>>> a7eb387f (feat: auto add auxiliary or supplimentary items on child tables of patient encounter)
