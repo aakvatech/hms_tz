@@ -2110,3 +2110,20 @@ def create_items_from_healthcare_package_orders(doc, method):
                         doc, child
                     )
     create_delivery_note(doc, method)
+
+@frappe.whitelist()
+def get_auxiliary_items(template_name, template_item):
+    """Get auxiliary items from template"""
+
+    temp_doc = frappe.get_cached_doc(template_name, template_item)
+
+    auxiliary_items = []
+    if temp_doc.hms_tz_allow_supplimentary_items:
+        if len(temp_doc.hms_tz_supplimentary_items) > 0:
+            for item in temp_doc.hms_tz_supplimentary_items:
+                auxiliary_items.append({
+                    "healthcare_service_type": item.healthcare_service_type,
+                    "healthcare_service": item.healthcare_service,
+                })
+    
+    return auxiliary_items

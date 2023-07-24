@@ -673,6 +673,7 @@ frappe.ui.form.on('Lab Prescription', {
                     frappe.model.set_value(cdt, cdn, "prescribe", 0);
                 }
             });
+        get_auxiliaru_items(frm, "Lab Test Template", row.lab_test_code);
 
     },
     is_not_available_inhouse: function (frm, cdt, cdn) {
@@ -710,6 +711,7 @@ frappe.ui.form.on('Radiology Procedure Prescription', {
                     frappe.model.set_value(cdt, cdn, "prescribe", 0);
                 }
             });
+        get_auxiliaru_items(frm, "Radiology Examination Template", row.radiology_examination_template);
 
     },
     is_not_available_inhouse: function (frm, cdt, cdn) {
@@ -747,6 +749,7 @@ frappe.ui.form.on('Procedure Prescription', {
                     frappe.model.set_value(cdt, cdn, "prescribe", 0);
                 }
             });
+        get_auxiliaru_items(frm, "Clinical Procedure Template", row.procedure);
 
     },
     is_not_available_inhouse: function (frm, cdt, cdn) {
@@ -786,6 +789,8 @@ frappe.ui.form.on('Drug Prescription', {
 
             });
         validate_stock_item(frm, row.drug_code, row.quantity, row.healthcare_service_unit, "Drug Prescription");
+
+        get_auxiliaru_items(frm, "Medication", row.drug_code);
 
         // shm rock: 169
         validate_medication_class(frm, row.drug_code);
@@ -884,6 +889,7 @@ frappe.ui.form.on('Therapy Plan Detail', {
                     frappe.model.set_value(cdt, cdn, "prescribe", 0);
                 }
             });
+        get_auxiliaru_items(frm, "Therapy Type", row.therapy_type);
 
     },
     is_not_available_inhouse: function (frm, cdt, cdn) {
@@ -1317,3 +1323,71 @@ var validate_healthcare_package_order_items = (frm) => {
         }
     }
 }
+<<<<<<< HEAD
+=======
+
+var get_auxiliaru_items = (frm, template_name, template_item) => {
+    function get_field_map() {
+        return {
+            "Lab Test Template": {
+                "item_field": "lab_test_code",
+                "table_field": "lab_test_prescription"
+            },
+            "Radiology Examination Template": {
+                "item_field": "radiology_examination_template",
+                "table_field": "radiology_procedure_prescription"
+            },
+            "Clinical Procedure Template": {
+                "item_field": "procedure",
+                "table_field": "procedure_prescription"
+            },
+            "Therapy Type": {
+                "item_field": "therapy_type",
+                "table_field": "therapies"
+            },
+            "Medication": {
+                "item_field": "drug_code",
+                "table_field": "drug_prescription"
+            }
+        }
+    }
+    if (frm.doc.docstatus != 0 || frm.doc.healthcare_package_order) {
+        return;
+    }
+    let count = 0;
+    if (count > 0) {
+        return;
+    }
+
+    if (template_name && template_item) {
+        frappe.call({
+            method: "hms_tz.nhif.api.patient_encounter.get_auxiliary_items",
+            args: {
+                template_name: template_name,
+                template_item: template_item
+            }
+        }).then(r => {
+            let data = r.message;
+            if (data && data.length > 0) {
+                data.forEach(row => {
+                    let field_map = get_field_map()[row.healthcare_service_type];
+                    let new_row = {}
+                    new_row[field_map.item_field] = row.healthcare_service;
+                    let d = frm.add_child(field_map.table_field, new_row);
+                })
+                frm.refresh_fields();
+                count++;
+
+                set_medical_code(frm, true);
+                frm.trigger("default_healthcare_service_unit");
+
+                frappe.show_alert({
+                    message: __("Auto Adding Auxiliary Items"),
+                    indicator: 'green',
+                    title: __("Success")
+                }, 20);
+            }
+        });
+    }
+}
+>>>>>>> a7eb387f (feat: auto add auxiliary or supplimentary items on child tables of patient encounter)
