@@ -27,10 +27,11 @@ frappe.ui.form.on('Patient Encounter', {
 					frm.add_custom_button(__('Schedule Discharge'), function() {
 						schedule_discharge(frm);
 					});
-				} else if (frm.doc.inpatient_status != 'Discharge Scheduled') {
+				} else if (frm.doc.inpatient_status != 'Discharge Scheduled' && !frm.doc.healthcare_package_order) {
 					frm.add_custom_button(__('Schedule Admission'), function() {
 						frappe.call("hms_tz.nhif.api.patient_encounter.validate_admission_encounter", {
-							encounter: frm.doc.name
+							encounter: frm.doc.name,
+							healthcare_package_order: frm.doc.healthcare_package_order
 						}).then(r => {
 							if (r.message) {
 								return 
