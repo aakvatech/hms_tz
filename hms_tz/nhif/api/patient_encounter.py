@@ -1771,8 +1771,15 @@ def convert_opd_encounter_to_ipd_encounter(encounter):
 
 
 @frappe.whitelist()
-def validate_admission_encounter(encounter):
-    """Validate encounter if it has duplicated = 1"""
+def validate_admission_encounter(encounter, healthcare_package_order=None):
+    """Validate encounter if it has duplicated = 1 and if it has healthcare package order"""
+
+    if healthcare_package_order:
+        frappe.msgprint(
+            f"This encounter has healhcare package order: <b>{healthcare_package_order}</b>,<br>you can't schedule Admission on it"
+        )
+        return True
+    
     duplicated_encounter = frappe.get_value(
         "Patient Encounter", {"from_encounter": encounter}, "name"
     )

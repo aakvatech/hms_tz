@@ -1,0 +1,99 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-07-25 16:47:59.014496",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_category",
+  "item_code",
+  "item_name",
+  "column_break_8jrbe",
+  "actual_price",
+  "discount_amount",
+  "amount_after_discount",
+  "references_section",
+  "sales_invoice",
+  "column_break_h3fju",
+  "si_detail"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_category",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Item Category",
+   "options": "\nLab Prescription\nRadiology Procedure Prescription\nProcedure Prescription\nDrug Prescription\nTherapy Plan\nOPD Consultation\nOther Items"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Item Code",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name"
+  },
+  {
+   "fieldname": "column_break_8jrbe",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "actual_price",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Actual Price",
+   "reqd": 1
+  },
+  {
+   "fieldname": "discount_amount",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "DIscount Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amount_after_discount",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Amount after Discount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "references_section",
+   "fieldtype": "Section Break",
+   "label": "References"
+  },
+  {
+   "fieldname": "sales_invoice",
+   "fieldtype": "Link",
+   "label": "Sales Invoice",
+   "options": "Sales Invoice"
+  },
+  {
+   "fieldname": "column_break_h3fju",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "si_detail",
+   "fieldtype": "Data",
+   "label": "Sales Invoice Item"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-07-27 00:16:40.693579",
+ "modified_by": "Administrator",
+ "module": "NHIF",
+ "name": "Patient Discount Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

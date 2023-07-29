@@ -788,7 +788,7 @@ frappe.ui.form.on('Drug Prescription', {
                 }
 
             });
-        validate_stock_item(frm, row.drug_code, row.quantity, row.healthcare_service_unit, "Drug Prescription");
+        validate_stock_item(frm, row.drug_code, row.prescribe, row.quantity, row.healthcare_service_unit, "Drug Prescription");
 
         get_auxiliaru_items(frm, "Medication", row.drug_code);
 
@@ -910,7 +910,7 @@ frappe.ui.form.on('Therapy Plan Detail', {
         let row = frappe.get_doc(cdt, cdn);
         if (row.override_subscription) {
             frappe.model.set_value(cdt, cdn, "prescribe", 0);
-        }
+    }
     },
 });
 
