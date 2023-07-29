@@ -71,7 +71,7 @@ def on_submit_validation(doc, method):
     }
     if doc.encounter_type == "Initial":
         doc.reference_encounter = doc.name
-    
+
     if not doc.healthcare_package_order:
         show_last_prescribed(doc, method)
         show_last_prescribed_for_lrpt(doc, method)
@@ -221,7 +221,7 @@ def on_submit_validation(doc, method):
                 )
                 if doc.insurance_subscription:
                     method = old_method
-            
+
     if prescribed_list and not doc.healthcare_package_order:
         msgPrint(
             _(
@@ -249,7 +249,7 @@ def on_submit_validation(doc, method):
         doc.patient_age = calculate_patient_age(doc.patient)
 
     validate_medical_code(doc, method)
-    
+
     # shm rock: 151
     set_practitioner_name(doc, method)
 
@@ -363,7 +363,11 @@ def checkـforـduplicate(doc, method):
 def duplicate_encounter(encounter):
     doc = frappe.get_doc("Patient Encounter", encounter)
     if doc.healthcare_package_order:
-        frappe.throw(_("Cannot duplicate an encounter of healthcare package order, Please let the patient to create appointment again"))
+        frappe.throw(
+            _(
+                "Cannot duplicate an encounter of healthcare package order, Please let the patient to create appointment again"
+            )
+        )
 
     if not doc.docstatus == 1 or doc.encounter_type == "Final" or doc.duplicated == 1:
         frappe.msgprint(
@@ -523,23 +527,23 @@ def validate_stock_item(
 
 def on_submit(doc, method):
     if (
-        not doc.insurance_subscription and
-        doc.inpatient_record and
-        not doc.healthcare_package_order
+        not doc.insurance_subscription
+        and doc.inpatient_record
+        and not doc.healthcare_package_order
     ):  # Cash inpatient billing
         inpatient_billing(doc, method)
     else:  # insurance patient
         on_submit_validation(doc, method)
         create_healthcare_docs(doc, method)
         create_delivery_note(doc, method)
-    
+
     if (
-        doc.healthcare_package_order and
-        not doc.insurance_subscription and
-        not doc.inpatient_record
+        doc.healthcare_package_order
+        and not doc.insurance_subscription
+        and not doc.inpatient_record
     ):
         create_items_from_healthcare_package_orders(doc, method)
-    
+
     if doc.inpatient_record:
         update_inpatient_record_consultancy(doc)
 
@@ -758,8 +762,8 @@ def create_delivery_note_per_encounter(patient_encounter_doc, method):
             not patient_encounter_doc.insurance_subscription
             and patient_encounter_doc.inpatient_record
             or (
-                patient_encounter_doc.mode_of_payment and
-                patient_encounter_doc.healthcare_package_order
+                patient_encounter_doc.mode_of_payment
+                and patient_encounter_doc.healthcare_package_order
             )
         ):
             encounter_customer = frappe.get_cached_value(
@@ -1219,6 +1223,7 @@ def before_submit(doc, method):
                     "Cannot Submit Encounter",
                 )
             )
+
 
 @frappe.whitelist()
 def undo_finalized_encounter(cur_encounter, ref_encounter=None):
@@ -1779,8 +1784,15 @@ def convert_opd_encounter_to_ipd_encounter(encounter):
 
 
 @frappe.whitelist()
-def validate_admission_encounter(encounter):
-    """Validate encounter if it has duplicated = 1"""
+def validate_admission_encounter(encounter, healthcare_package_order=None):
+    """Validate encounter if it has duplicated = 1 and if it has healthcare package order"""
+
+    if healthcare_package_order:
+        frappe.msgprint(
+            f"This encounter has healhcare package order: <b>{healthcare_package_order}</b>,<br>you can't schedule Admission on it"
+        )
+        return True
+
     duplicated_encounter = frappe.get_value(
         "Patient Encounter", {"from_encounter": encounter}, "name"
     )
@@ -1994,14 +2006,16 @@ def set_practitioner_name(doc, method):
     if submitting_healthcare_practitioner:
         doc.practitioner = submitting_healthcare_practitioner.name
         doc.practitioner_name = submitting_healthcare_practitioner.practitioner_name
-    
+
     elif (
-        doc.encounter_category == "Appointment" and
-        not doc.healthcare_package_order and
-        doc.practitioner not in ["Direct Cash","Direct Insurance"]
+        doc.encounter_category == "Appointment"
+        and not doc.healthcare_package_order
+        and doc.practitioner not in ["Direct Cash", "Direct Insurance"]
     ):
-        if method not in ("before_insert","validate"):
-            frappe.throw(_(f"Please set user id: <b>{frappe.session.user}</b>\
+        if method not in ("before_insert", "validate"):
+            frappe.throw(
+                _(
+                    f"Please set user id: <b>{frappe.session.user}</b>\
                 in Healthcare Practitioner<br>\
                 so as to set the correct practitioner, who submitting this encounter"
                 )
@@ -2074,6 +2088,7 @@ def validate_medical_code(doc, method):
                         method,
                     )
 
+
 def create_items_from_healthcare_package_orders(doc, method):
     child_tables_list = [
         "lab_test_prescription",
@@ -2089,9 +2104,7 @@ def create_items_from_healthcare_package_orders(doc, method):
                 if child.doctype == "Lab Prescription":
                     create_individual_lab_test(doc, child)
                 elif child.doctype == "Radiology Procedure Prescription":
-                    create_individual_radiology_examination(
-                        doc, child
-                    )
+                    create_individual_radiology_examination(doc, child)
                 elif child.doctype == "Procedure Prescription":
                     create_individual_procedure_prescription(
                         doc, child
@@ -2114,3 +2127,4 @@ def get_auxiliary_items(template_name, template_item):
                 })
     
     return auxiliary_items
+  

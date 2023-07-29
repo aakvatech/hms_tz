@@ -1,0 +1,308 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2023-07-25 17:30:43.963970",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "patient",
+  "patient_name",
+  "customer",
+  "inpatient_record",
+  "column_break_evi6x",
+  "company",
+  "posting_date",
+  "posting_time",
+  "section_break_8mwbz",
+  "insurance_subscription",
+  "insurance_coverage_plan",
+  "column_break_wlg77",
+  "insurance_company",
+  "section_break_usb4o",
+  "payment_type",
+  "apply_discount_on",
+  "item_category",
+  "column_break_7lz4i",
+  "appointment",
+  "sales_invoice",
+  "discount_criteria",
+  "discount_percent",
+  "discount_amount",
+  "section_break_8a11x",
+  "items",
+  "section_break_rg2bx",
+  "total_actual_amount",
+  "column_break_tqexg",
+  "total_discounted_amount",
+  "column_break_mo0qm",
+  "total_amount_after_discount",
+  "section_break_qucfw",
+  "requested_by",
+  "approved_by",
+  "naming_series",
+  "amended_from",
+  "column_break_p5kyt",
+  "discount_reason"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Data",
+   "label": "Customer"
+  },
+  {
+   "fieldname": "patient",
+   "fieldtype": "Link",
+   "label": "Patient",
+   "options": "Patient"
+  },
+  {
+   "fetch_from": "patient.patient_name",
+   "fieldname": "patient_name",
+   "fieldtype": "Data",
+   "label": "Patient Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "inpatient_record",
+   "fieldtype": "Link",
+   "label": "Inpatient Record",
+   "options": "Inpatient Record",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_evi6x",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "label": "Posting Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_usb4o",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "payment_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Payment Type",
+   "options": "\nCash\nNon NHIF Insurance",
+   "reqd": 1
+  },
+  {
+   "fieldname": "apply_discount_on",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Apply Discount on",
+   "options": "\nGrand Total\nNet Total\nSingle Items\nGroup of Items",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval: doc.apply_discount_on == \"Group of Items\"",
+   "fieldname": "item_category",
+   "fieldtype": "Select",
+   "label": "Item Category",
+   "mandatory_depends_on": "eval: doc.apply_discount_on == \"Group of Items\"",
+   "options": "\nAll Items\nAll OPD Consultations\nAll Lab Prescriptions\nAll Radiology Procedure Prescription\nAll Procedure Prescriptions\nAll Therapy Plan Details\nAll Drug Prescriptions\nAll Other Items"
+  },
+  {
+   "fieldname": "column_break_7lz4i",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval: doc.payment_type == \"Cash\"",
+   "fieldname": "sales_invoice",
+   "fieldtype": "Link",
+   "label": "Sales Invoice",
+   "mandatory_depends_on": "eval: doc.payment_type == \"Cash\"",
+   "options": "Sales Invoice"
+  },
+  {
+   "fieldname": "discount_criteria",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Discount Criteria",
+   "options": "\nDiscount Based on Percentage\nDiscount Based on Actual Amount",
+   "reqd": 1
+  },
+  {
+   "depends_on": "eval: doc.discount_criteria == \"Discount Based on Percentage\"",
+   "fieldname": "discount_percent",
+   "fieldtype": "Percent",
+   "label": "Discount (%)",
+   "mandatory_depends_on": "eval: doc.discount_criteria == \"Discount Based on Percentage\""
+  },
+  {
+   "depends_on": "eval: doc.discount_criteria == \"Discount Based on Actual Amount\"",
+   "fieldname": "discount_amount",
+   "fieldtype": "Float",
+   "label": "Discount Amount",
+   "mandatory_depends_on": "eval: doc.discount_criteria == \"Discount Based on Actual Amount\""
+  },
+  {
+   "fieldname": "section_break_8a11x",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval: doc.apply_discount_on && ![\"Grand Total\", \"Net Total\"].includes(doc.apply_discount_on)",
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "mandatory_depends_on": "eval: doc.apply_discount_on && ![\"Grand Total\", \"Net Total\", \"Group of Items\"].includes(doc.apply_discount_on)",
+   "options": "Patient Discount Item"
+  },
+  {
+   "fieldname": "section_break_rg2bx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "total_actual_amount",
+   "fieldtype": "Float",
+   "label": "Total Actual Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_tqexg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_amount_after_discount",
+   "fieldtype": "Float",
+   "label": "Total Amount After Discount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_mo0qm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_qucfw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "requested_by",
+   "fieldtype": "Data",
+   "label": "Requested by",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_p5kyt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Data",
+   "label": "Approved By",
+   "read_only": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Series",
+   "options": "HLC-PDR-.YYYY.-",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Patient Discount Request",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_8mwbz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "insurance_subscription",
+   "fieldtype": "Link",
+   "label": "Insurance Subscription",
+   "options": "Healthcare Insurance Subscription",
+   "read_only": 1
+  },
+  {
+   "fieldname": "insurance_coverage_plan",
+   "fieldtype": "Data",
+   "label": "Insurance Coverage Plan",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_wlg77",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "insurance_company",
+   "fieldtype": "Data",
+   "label": "Insurance Company",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: doc.payment_type == \"Non NHIF Insurance\"",
+   "fieldname": "appointment",
+   "fieldtype": "Link",
+   "label": "Patient Appointment",
+   "mandatory_depends_on": "eval: doc.payment_type == \"Non NHIF Insurance\"",
+   "options": "Patient Appointment"
+  },
+  {
+   "bold": 1,
+   "description": "Reason to why patient request discount",
+   "fieldname": "discount_reason",
+   "fieldtype": "Small Text",
+   "label": "Discount Reason"
+  },
+  {
+   "fieldname": "total_discounted_amount",
+   "fieldtype": "Float",
+   "label": "Total Discounted Amount",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2023-07-27 20:46:53.662887",
+ "modified_by": "Administrator",
+ "module": "NHIF",
+ "name": "Patient Discount Request",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
