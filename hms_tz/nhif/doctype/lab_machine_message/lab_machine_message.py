@@ -29,7 +29,9 @@ class LabMachineMessage(Document):
         for line in msg_lines:
             if line.startswith("OBR"):
                 fields = line.split("|")
-                if fields[2]:
+                if fields[1]:
+                    sample_collection = fields[1]
+                elif fields[2]:
                     sample_collection = fields[2]
                     break
                 elif fields[3]:
