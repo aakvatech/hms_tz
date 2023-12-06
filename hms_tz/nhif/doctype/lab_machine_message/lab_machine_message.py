@@ -27,13 +27,13 @@ class LabMachineMessage(Document):
     def get_lab_test_name(self, msg_lines):
         lab_test_name = ""
         for line in msg_lines:
-            if line.startswith("OBR"):
+            if line.startswith("OBX"):
                 fields = line.split("|")
                 if len(fields) > 3:
-                    if fields[3] and "CBC+DIFF" in fields[3]:
+                    if fields[3]:
                         lab_test_name = fields[3]
                         break
-                    elif fields[4] and "CBC+DIFF" in fields[4]:
+                    elif fields[4]:
                         lab_test_name = fields[4]
 
         if lab_test_name:
