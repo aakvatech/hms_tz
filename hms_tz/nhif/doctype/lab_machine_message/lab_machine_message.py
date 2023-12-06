@@ -21,8 +21,29 @@ class LabMachineMessage(Document):
         msg_lines = self.message.splitlines()
         self.machine_make = msg_lines[0].split('|')[2]
         self.machine_model = msg_lines[0].split('|')[3]
-        self.lab_test_name = msg_lines[3].split('|')[3]
+        self.sample_collection = msg_lines[3].split('|')[3]
+        self.lab_test_name = self.get_lab_test_name(msg_lines)
+    
+    def get_lab_test_name(self, msg_lines):
+        lab_test_name = ""
+        for line in msg_lines:
+            if line.startswith("OBR"):
+                fields = line.split("|")
+                if len(fields) > 3:
+                    if fields[3] and "CBC+DIFF" in fields[3]:
+                        lab_test_name = fields[3]
+                        break
+                    elif fields[4] and "CBC+DIFF" in fields[4]:
+                        lab_test_name = fields[4]
 
+        if lab_test_name:
+            lab_test_name_exists = frappe.db.exists(
+                "Lab Test", lab_test_name
+            )
+            if lab_test_name_exists:
+                return lab_test_name
+
+    
     def update_lab_test(self):
         if not self.message:
             return
