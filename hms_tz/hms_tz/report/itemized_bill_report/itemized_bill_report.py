@@ -40,7 +40,7 @@ def execute(filters=None):
         admitted_discharge_date = frappe.db.get_value(
             "Inpatient Record",
             {"patient_appointment": filters.patient_appointment},
-            ["admitted_datetime as admitted_date", "discharge_date"],
+            ["admitted_datetime as admitted_date", "discharge_date", "scheduled_date"],
             as_dict=True,
         )
         if not filters.get("patient_type"):
@@ -97,14 +97,16 @@ def execute(filters=None):
                 "coverage_plan_name": "",
                 "authorization_number": "",
                 "coverage_plan_card_number": "",
-                "date_admitted": admitted_discharge_date.admitted_date.strftime(
-                    "%Y-%m-%d"
-                )
-                if admitted_discharge_date
-                else "",
-                "date_discharge": admitted_discharge_date.discharge_date
-                if admitted_discharge_date
-                else "",
+                "date_admitted": (
+                    admitted_discharge_date.admitted_date.strftime("%Y-%m-%d")
+                    if admitted_discharge_date
+                    else admitted_discharge_date.scheduled_date
+                ),
+                "date_discharge": (
+                    admitted_discharge_date.discharge_date
+                    if admitted_discharge_date
+                    else ""
+                ),
                 "appointment_date": appointment_date,
             }
 
@@ -168,14 +170,16 @@ def execute(filters=None):
                 "coverage_plan_name": "",
                 "authorization_number": "",
                 "coverage_plan_card_number": "",
-                "date_admitted": admitted_discharge_date.admitted_date.strftime(
-                    "%Y-%m-%d"
-                )
-                if admitted_discharge_date
-                else "",
-                "date_discharge": admitted_discharge_date.discharge_date
-                if admitted_discharge_date
-                else "",
+                "date_admitted": (
+                    admitted_discharge_date.admitted_date.strftime("%Y-%m-%d")
+                    if admitted_discharge_date
+                    else admitted_discharge_date.scheduled_date
+                ),
+                "date_discharge": (
+                    admitted_discharge_date.discharge_date
+                    if admitted_discharge_date
+                    else ""
+                ),
                 "appointment_date": appointment_date,
             }
 
@@ -243,14 +247,16 @@ def execute(filters=None):
                 "coverage_plan_name": "",
                 "authorization_number": "",
                 "coverage_plan_card_number": "",
-                "date_admitted": admitted_discharge_date.admitted_date.strftime(
-                    "%Y-%m-%d"
-                )
-                if admitted_discharge_date
-                else "",
-                "date_discharge": admitted_discharge_date.discharge_date
-                if admitted_discharge_date
-                else "",
+                "date_admitted": (
+                    admitted_discharge_date.admitted_date.strftime("%Y-%m-%d")
+                    if admitted_discharge_date
+                    else admitted_discharge_date.scheduled_date
+                ),
+                "date_discharge": (
+                    admitted_discharge_date.discharge_date
+                    if admitted_discharge_date
+                    else ""
+                ),
                 "appointment_date": appointment_date,
             }
 
