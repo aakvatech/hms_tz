@@ -1,64 +1,93 @@
 <style>
-    .print-format {
-        padding-left: 10mm;
-        padding-right: 5mm;
-        padding-top: 0mm;
-        font-size: 10pt;
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
     }
 
-    .print-format table {
-        width: 100% !important;
-        table-layout: fixed;
+    h1 {
+        text-align: center;
+        margin-top: 0;
     }
 
-    .print-format td,
-    .print-format th {
-        vertical-align: top !important;
-        padding: 1px !important;
-    }
-    .print-format th {
-        font-weight: bold;
-        color: black;
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
     }
 
-    hr {
-        margin-top: 10px;
-        margin-bottom: 5px;
+    table, th, td {
+        border: 0px solid #333;
     }
 
-    @media screen {
-        .print-format {
-            padding-left: 10mm;
-            padding-right: 5mm;
-            padding-top: 0mm;
-            font-size: 10pt;
-            width: 8.5in;
-            height: 11in;
+    th, td {
+        padding: 10px;
+        text-align: center;
+    }
+
+    th {
+        background-color: #333 !important;
+        color: #fff !important;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    @media print {
+        h1 {
+            font-size: 17px !important;
+            color: #ffffff !important;
+            text-align: center !important;
         }
 
-        .print-format table {
-            width: 100% !important;
-            table-layout: fixed;
+        p {
+            font-size: 16px !important;
+            color: #111010 !important;
         }
 
-        .print-format td,
-        .print-format th {
-            vertical-align: top !important;
-            padding: 1px !important;
-        }
-        .print-format th {
-            font-weight: bold;
-            color: black;
+        th, td {
+            font-size: 16px !important;
         }
 
-        hr {
-            margin-top: 10px;
-            margin-bottom: 5px;
+        th {
+        background-color: #797676 !important;
+        color: #fff !important;
+        }
+
+         th {
+        background-color: #333 !important;
+        color: #fff !important;
+        } 
+
+        tr:nth-child(even) {
+        background-color: #f2f2f2;
+        } 
+
+        tr:nth-child(even) {
+        background-color: #f2f2f2;
+        }
+
+
+        /* Ensure the table headers are visible on each page */
+        thead {
+            display: table-header-group !important;
+        }
+
+        /* Add page breaks for tables */
+        table {
+            page-break-inside: auto;
         }
     }
 </style>
 
-<table cellspacing=0 cellpadding=0 style="border: 0px solid black;">
+
+<!-- <table cellspacing=0 cellpadding=0 style="border: 0px solid black;"> -->
     <colgroup>
         <col style="width: 100%" />
     </colgroup>
@@ -66,9 +95,9 @@
         <tr>
             <td>
                 <p class="manifest-header text-center">
-                    <img src="/files/SHMH Letterhead 2021-04-28.png" style="width: 100% !important;" />
+                    <!-- <img src="/files/SHMH Letterhead 2021-04-28.png" style="width: 100% !important;" />
                     <br><br>
-                    <hr>
+                    <hr> -->
                 <p style="font-size: 20pt; font-family: Arial, Helvetica, sans-serif; text-align: center;">
                     ITEMIZED BILL
                 </p>
@@ -266,4 +295,4 @@
             </td>
         </tr>
     </tbody>
-</table>
+<!-- </table> -->
