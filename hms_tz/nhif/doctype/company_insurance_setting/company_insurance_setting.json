@@ -8,27 +8,28 @@
  "engine": "InnoDB",
  "field_order": [
   "company",
+  "facility_code",
   "username",
   "password",
   "column_break_4",
-  "facility_code",
+  "api_provider",
   "enable",
-  "validate_service_approval_number_on_lrpm_documents",
+  "validate_service_approval_number_on_lrpmt_documents",
   "enable_auto_submit_of_claims",
   "auto_submit_patient_claim",
   "section_break_5",
-  "nhifservice_url",
-  "nhifservice_token",
-  "nhifservice_expiry",
+  "service_url",
+  "service_token",
+  "service_token_expiry",
   "column_break_9",
   "claimsserver_url",
   "claimsserver_token",
   "claimsserver_expiry",
   "section_break_11",
-  "nhifform_url",
-  "nhifform_expiry",
+  "form_url",
+  "form_token_expiry",
   "column_break_18",
-  "nhifform_token",
+  "form_token",
   "section_break_15",
   "update_patient_history",
   "section_break_16",
@@ -51,41 +52,27 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "User Name",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fieldname": "password",
    "fieldtype": "Password",
    "label": "Password",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "default": "0",
    "fieldname": "enable",
    "fieldtype": "Check",
    "in_list_view": 1,
-   "label": "Enable NHIF API"
+   "label": "Enable API",
+   "search_index": 1
   },
   {
    "fieldname": "section_break_5",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "nhifservice_url",
-   "fieldtype": "Data",
-   "label": "NHIF Service URL",
-   "reqd": 1
-  },
-  {
-   "fieldname": "nhifservice_token",
-   "fieldtype": "Small Text",
-   "label": "NHIF Service Token",
-   "read_only": 1
-  },
-  {
-   "fieldname": "nhifservice_expiry",
-   "fieldtype": "Datetime",
-   "label": "NHIF Service Token Expiry"
   },
   {
    "fieldname": "column_break_9",
@@ -95,7 +82,8 @@
    "fieldname": "claimsserver_url",
    "fieldtype": "Data",
    "label": "Claims Server URL",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fieldname": "claimsserver_token",
@@ -106,7 +94,8 @@
   {
    "fieldname": "claimsserver_expiry",
    "fieldtype": "Datetime",
-   "label": "Claims Server Token Expiry"
+   "label": "Claims Server Token Expiry",
+   "search_index": 1
   },
   {
    "fieldname": "column_break_4",
@@ -116,7 +105,8 @@
    "fieldname": "facility_code",
    "fieldtype": "Data",
    "label": "Facility Code",
-   "reqd": 1
+   "reqd": 1,
+   "search_index": 1
   },
   {
    "fieldname": "section_break_15",
@@ -126,7 +116,8 @@
    "default": "1",
    "fieldname": "update_patient_history",
    "fieldtype": "Check",
-   "label": "Update Patient history from Chronic records"
+   "label": "Update Patient history from Chronic records",
+   "search_index": 1
   },
   {
    "fieldname": "section_break_16",
@@ -141,29 +132,15 @@
    "bold": 1,
    "fieldname": "submit_claim_month",
    "fieldtype": "Int",
-   "label": "Submit Claim Month"
+   "label": "Submit Claim Month",
+   "search_index": 1
   },
   {
    "bold": 1,
    "fieldname": "submit_claim_year",
    "fieldtype": "Int",
-   "label": "Submit Claim Year"
-  },
-  {
-   "fieldname": "nhifform_url",
-   "fieldtype": "Data",
-   "label": "NHIF Form URL"
-  },
-  {
-   "fieldname": "nhifform_token",
-   "fieldtype": "Small Text",
-   "label": "NHIF Form Token",
-   "read_only": 1
-  },
-  {
-   "fieldname": "nhifform_expiry",
-   "fieldtype": "Datetime",
-   "label": "NHIF Form Token Expiry"
+   "label": "Submit Claim Year",
+   "search_index": 1
   },
   {
    "fieldname": "section_break_11",
@@ -178,7 +155,8 @@
    "depends_on": "eval: doc.enable",
    "fieldname": "enable_auto_submit_of_claims",
    "fieldtype": "Check",
-   "label": "Enable Auto Submit of Claims"
+   "label": "Enable Auto Submit of Claims",
+   "search_index": 1
   },
   {
    "depends_on": "eval: doc.enable && doc.enable_auto_submit_of_claims",
@@ -189,17 +167,62 @@
   {
    "default": "1",
    "depends_on": "eval: doc.enable",
-   "fieldname": "validate_service_approval_number_on_lrpm_documents",
+   "fieldname": "validate_service_approval_number_on_lrpmt_documents",
    "fieldtype": "Check",
-   "label": "Validate Service Approval number on LRPM Documents"
+   "label": "Validate Service Approval number on LRPMT Documents",
+   "search_index": 1
+  },
+  {
+   "fieldname": "service_url",
+   "fieldtype": "Data",
+   "label": "Service URL",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "service_token",
+   "fieldtype": "Small Text",
+   "label": "Service Token",
+   "read_only": 1
+  },
+  {
+   "fieldname": "service_token_expiry",
+   "fieldtype": "Datetime",
+   "label": "Service Token Expiry",
+   "search_index": 1
+  },
+  {
+   "fieldname": "form_url",
+   "fieldtype": "Data",
+   "label": "Form URL",
+   "search_index": 1
+  },
+  {
+   "fieldname": "form_token_expiry",
+   "fieldtype": "Datetime",
+   "label": "Form Token Expiry",
+   "search_index": 1
+  },
+  {
+   "fieldname": "form_token",
+   "fieldtype": "Small Text",
+   "label": "Form Token",
+   "read_only": 1
+  },
+  {
+   "fieldname": "api_provider",
+   "fieldtype": "Select",
+   "label": "API Provider",
+   "options": "\nNHIF\nJubilee\nStrategis\nAssemble",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-17 17:20:12.085065",
+ "modified": "2024-04-17 18:08:51.344756",
  "modified_by": "Administrator",
  "module": "NHIF",
- "name": "Company NHIF Settings",
+ "name": "Company Insurance Setting",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [

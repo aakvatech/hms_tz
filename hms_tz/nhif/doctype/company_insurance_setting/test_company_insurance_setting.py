@@ -7,5 +7,5 @@ from __future__ import unicode_literals
 import unittest
 
 
-class TestCompanyNHIFSettings(unittest.TestCase):
+class TestCompanyInsuranceSetting(unittest.TestCase):
     pass

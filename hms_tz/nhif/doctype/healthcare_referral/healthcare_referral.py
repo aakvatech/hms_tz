@@ -20,22 +20,20 @@ class HealthcareReferral(Document):
 def get_referral_no(name):
     doc = frappe.get_doc("Healthcare Referral", name)
     validate_required_fields(doc)
-    
-    nhifservice_url = frappe.get_cached_value(
-		"Company NHIF Settings", 
-		doc.source_facility, 
-		"nhifservice_url"
-	)
+
+    service_url = frappe.get_cached_value(
+        "Company NHIF Settings", doc.source_facility, "service_url"
+    )
 
     token = get_nhifservice_token(doc.source_facility)
 
-    url = str(nhifservice_url) + "/nhifservice/breeze/verification/AddReferral"
-    
+    url = str(service_url) + "/nhifservice/breeze/verification/AddReferral"
+
     qualificationid = frappe.get_cached_value(
-		"NHIF Physician Qualification", 
-		doc.nhif_physician_qualification, 
-		"physicianqualificationid"
-	)
+        "NHIF Physician Qualification",
+        doc.nhif_physician_qualification,
+        "physicianqualificationid",
+    )
 
     payload = json.dumps(
         {

@@ -61,20 +61,20 @@ def make_token_request(doc, url, headers, payload, fields):
 def get_nhifservice_token(company):
     setting_doc = frappe.get_cached_doc("Company NHIF Settings", company)
     if (
-        setting_doc.nhifservice_expiry
-        and setting_doc.nhifservice_expiry > now_datetime()
+        setting_doc.service_token_expiry
+        and setting_doc.service_token_expiry > now_datetime()
     ):
-        return setting_doc.nhifservice_token
+        return setting_doc.service_token
 
     username = setting_doc.username
     password = get_decrypted_password("Company NHIF Settings", company, "password")
     payload = "grant_type=password&username={0}&password={1}".format(username, password)
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    url = str(setting_doc.nhifservice_url) + "/nhifservice/Token"
+    url = str(setting_doc.service_url) + "/nhifservice/Token"
 
     nhifservice_fields = {
-        "token": "nhifservice_token",
-        "expiry": "nhifservice_expiry",
+        "token": "service_token",
+        "expiry": "service_token_expiry",
     }
 
     return make_token_request(setting_doc, url, headers, payload, nhifservice_fields)
@@ -108,21 +108,21 @@ def get_formservice_token(company):
         frappe.throw(_("Company {0} not enabled for NHIF Integration".format(company)))
 
     if (
-        company_nhif_doc.nhifform_expiry
-        and company_nhif_doc.nhifform_expiry > now_datetime()
+        company_nhif_doc.form_token_expiry
+        and company_nhif_doc.form_token_expiry > now_datetime()
     ):
-        return company_nhif_doc.nhifform_token
+        return company_nhif_doc.form_token
 
     username = company_nhif_doc.username
     password = get_decrypted_password("Company NHIF Settings", company, "password")
     payload = "grant_type=password&username={0}&password={1}".format(username, password)
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    url = cstr(company_nhif_doc.nhifform_url) + "/formposting/Token"
+    url = cstr(company_nhif_doc.form_url) + "/formposting/Token"
 
     nhifform_fields = {
-        "token": "nhifform_token",
-        "expiry": "nhifform_expiry",
+        "token": "form_token",
+        "expiry": "form_token_expiry",
     }
 
     return make_token_request(company_nhif_doc, url, headers, payload, nhifform_fields)

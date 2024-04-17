@@ -69,12 +69,12 @@ def get_patient_info(card_no=None):
         frappe.throw(_("No companies found to connect to NHIF"))
     token = get_nhifservice_token(company)
 
-    nhifservice_url = frappe.get_cached_value(
-        "Company NHIF Settings", company, "nhifservice_url"
+    service_url = frappe.get_cached_value(
+        "Company NHIF Settings", company, "service_url"
     )
     headers = {"Authorization": "Bearer " + token}
     url = (
-        str(nhifservice_url)
+        str(service_url)
         + "/nhifservice/breeze/verification/GetCardDetails?CardNo="
         + str(card_no)
     )

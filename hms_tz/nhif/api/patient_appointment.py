@@ -357,8 +357,8 @@ def get_authorization_num(
     referral_no="",
     remarks="",
 ):
-    enable_nhif_api, nhifservice_url = frappe.get_cached_value(
-        "Company NHIF Settings", company, ["enable", "nhifservice_url"]
+    enable_nhif_api, service_url = frappe.get_cached_value(
+        "Company NHIF Settings", company, ["enable", "service_url"]
     )
     if not enable_nhif_api:
         frappe.msgprint(
@@ -389,7 +389,7 @@ def get_authorization_num(
 
     headers = {"Content-Type": "application/json", "Authorization": "Bearer " + token}
     url = (
-        str(nhifservice_url)
+        str(service_url)
         + "/nhifservice/breeze/verification/AuthorizeCard?"
         + card_no
         + visit_type_id

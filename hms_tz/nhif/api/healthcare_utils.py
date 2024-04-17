@@ -1501,15 +1501,15 @@ def verify_service_approval_number_for_LRPMT(
 
     (
         enable_nhif_api,
-        nhifservice_url,
+        service_url,
         validate_service_approval_no,
     ) = frappe.get_cached_value(
         "Company NHIF Settings",
         company,
         [
             "enable",
-            "nhifservice_url",
-            "validate_service_approval_number_on_lrpm_documents",
+            "service_url",
+            "validate_service_approval_number_on_lrpmt_documents",
         ],
     )
     if not enable_nhif_api:
@@ -1523,7 +1523,7 @@ def verify_service_approval_number_for_LRPMT(
     item_code = get_item_ref_code(template_doctype, template_name)
 
     url = (
-        str(nhifservice_url)
+        str(service_url)
         + f"/nhifservice/breeze/verification/GetReferenceNoStatus?CardNo={cardno}&ReferenceNo={approval_number}&ItemCode={item_code}"
     )
 
