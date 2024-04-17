@@ -1,0 +1,146 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2024-04-17 19:47:17.483482",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "timestamp",
+  "request_type",
+  "request_url",
+  "request_header",
+  "column_break_6",
+  "user_id",
+  "status_code",
+  "ref_doctype",
+  "ref_docname",
+  "request_section",
+  "request_body",
+  "section_break_8",
+  "response_data",
+  "naming_series"
+ ],
+ "fields": [
+  {
+   "default": "Now",
+   "fieldname": "timestamp",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Timestamp",
+   "read_only": 1
+  },
+  {
+   "fieldname": "request_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Request Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "request_url",
+   "fieldtype": "Data",
+   "label": "Request URL",
+   "length": 1000,
+   "read_only": 1
+  },
+  {
+   "fieldname": "status_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Response Status Code",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "column_break_6",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "user_id",
+   "fieldtype": "Data",
+   "label": "User ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "request_header",
+   "fieldtype": "Small Text",
+   "label": "Request Header",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "request_section",
+   "fieldtype": "Section Break",
+   "label": "Request Body"
+  },
+  {
+   "fieldname": "request_body",
+   "fieldtype": "Long Text",
+   "label": "Request Body",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "section_break_8",
+   "fieldtype": "Section Break",
+   "label": "Response Data"
+  },
+  {
+   "fieldname": "response_data",
+   "fieldtype": "Long Text",
+   "label": "Response Data"
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "JUB-RES-.YY.-.########",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ref_doctype",
+   "fieldtype": "Data",
+   "label": "Ref Doctype",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ref_docname",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Ref Docname",
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-04-17 19:55:34.807520",
+ "modified_by": "Administrator",
+ "module": "Jubilee",
+ "name": "Jubilee Response Log",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
