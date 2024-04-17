@@ -21,6 +21,7 @@ from hms_tz.nhif.doctype.nhif_custom_excluded_services.nhif_custom_excluded_serv
 
 from time import sleep
 
+
 @frappe.whitelist()
 def enqueue_get_nhif_price_package(company):
     enqueue(
@@ -38,7 +39,7 @@ def get_nhif_price_package(kwargs):
     user = frappe.session.user
     token = get_claimsservice_token(company)
     claimsserver_url, facility_code = frappe.get_cached_value(
-        "Company NHIF Settings", company, ["claimsserver_url", "facility_code"]
+        "Company Insurance Setting", company, ["claimsserver_url", "facility_code"]
     )
     headers = {"Authorization": "Bearer " + token}
     url = (
@@ -53,13 +54,15 @@ def get_nhif_price_package(kwargs):
             request_url=url,
             request_header=headers,
             response_data=r.text,
-            status_code=r.status_code
+            status_code=r.status_code,
         )
         frappe.throw(json.loads(r.text))
     else:
         if json.loads(r.text):
             frappe.db.sql(
-                """DELETE FROM `tabNHIF Price Package` WHERE company = '{0}' """.format(company)
+                """DELETE FROM `tabNHIF Price Package` WHERE company = '{0}' """.format(
+                    company
+                )
             )
             frappe.db.sql(
                 """DELETE FROM `tabNHIF Excluded Services` WHERE company = '{0}' """.format(
@@ -76,7 +79,7 @@ def get_nhif_price_package(kwargs):
                 request_url=url,
                 request_header=headers,
                 response_data=r.text,
-                status_code=r.status_code
+                status_code=r.status_code,
             )
             time_stamp = now()
             data = json.loads(r.text)
@@ -190,7 +193,9 @@ def process_nhif_records(company):
 
 def process_prices_list(kwargs):
     company = kwargs
-    facility_code = frappe.get_cached_value("Company NHIF Settings", company, "facility_code")
+    facility_code = frappe.get_cached_value(
+        "Company Insurance Setting", company, "facility_code"
+    )
     currency = frappe.get_cached_value("Company", company, "default_currency")
     schemeid_list = frappe.db.sql(
         """
@@ -257,13 +262,11 @@ def process_prices_list(kwargs):
                     )
                     if len(item_price_list) > 0:
                         for price in item_price_list:
-                            #2023-05-16 
+                            # 2023-05-16
                             # remove condition for isactive
                             # if package.isactive and int(package.isactive) == 1:
-                            
-                            if float(price.price_list_rate) != float(
-                                package.unitprice
-                            ):
+
+                            if float(price.price_list_rate) != float(package.unitprice):
                                 # delete Item Price if no package.unitprice or it is 0
                                 if (
                                     not float(package.unitprice)
@@ -278,7 +281,7 @@ def process_prices_list(kwargs):
                                         float(package.unitprice),
                                     )
                             # else:
-                                # frappe.delete_doc("Item Price", price.name)
+                            # frappe.delete_doc("Item Price", price.name)
 
                     # elif package.isactive and int(package.isactive) == 1:
                     else:
@@ -363,7 +366,9 @@ def get_insurance_coverage_items(company):
                 WHERE icd.customer_name = 'NHIF'
                 AND npp.company = {company}
                 GROUP BY dt, m.name, icd.ref_code , icd.parent, npp.schemeid
-        """.format(company=frappe.db.escape(company)),
+        """.format(
+            company=frappe.db.escape(company)
+        ),
         as_dict=1,
     )
     return items_list
@@ -487,12 +492,12 @@ def process_insurance_coverages(kwargs):
         if insert_data:
             if plan.name:
                 frappe.db.sql(
-                        "DELETE FROM `tabHealthcare Service Insurance Coverage` WHERE is_auto_generated = 1 AND healthcare_insurance_coverage_plan = '{0}'".format(
-                            plan.name
-                        )
+                    "DELETE FROM `tabHealthcare Service Insurance Coverage` WHERE is_auto_generated = 1 AND healthcare_insurance_coverage_plan = '{0}'".format(
+                        plan.name
                     )
+                )
                 frappe.db.commit()
-                
+
             # wait for 60 seconds before creating HSIC records again
             sleep(60)
 

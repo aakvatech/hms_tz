@@ -1,263 +1,263 @@
 {
- "actions": [],
- "allow_rename": 1,
- "autoname": "naming_series:",
- "creation": "2022-06-29 17:17:49.625315",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "appointment",
-  "patient_name",
-  "gender",
-  "status_column_break",
-  "referral_status",
-  "card_no",
-  "authorization_number",
-  "posting_date",
-  "facility_section_break",
-  "source_facility",
-  "source_facility_code",
-  "facility_column_break",
-  "referrer_facility",
-  "referrer_facility_code",
-  "practitioner_section_break",
-  "practitioner",
-  "mobile_no",
-  "qualification_column_break",
-  "nhif_physician_qualification",
-  "reason_section",
-  "reason_for_referral",
-  "reason_column_break",
-  "referring_diagnosis",
-  "referral_section_break",
-  "referral_no",
-  "referralid",
-  "referringdate_column_break",
-  "referringdate",
-  "naming_series",
-  "amended_from"
- ],
- "fields": [
-  {
-   "fieldname": "appointment",
-   "fieldtype": "Link",
-   "in_standard_filter": 1,
-   "label": "Patient Appointment",
-   "options": "Patient Appointment",
-   "reqd": 1
-  },
-  {
-   "fetch_from": "appointment.patient_name",
-   "fieldname": "patient_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Patient Name",
-   "read_only": 1
-  },
-  {
-   "fetch_from": "appointment.patient_sex",
-   "fieldname": "gender",
-   "fieldtype": "Select",
-   "label": "Gender",
-   "options": "\nFemale\nMale",
-   "read_only": 1
-  },
-  {
-   "fetch_from": "appointment.coverage_plan_card_number",
-   "fieldname": "card_no",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "CardNo",
-   "read_only": 1
-  },
-  {
-   "fetch_from": "appointment.authorization_number",
-   "fieldname": "authorization_number",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "AuthorizationNo",
-   "read_only": 1
-  },
-  {
-   "fetch_from": "source_facility.facility_code",
-   "fieldname": "source_facility_code",
-   "fieldtype": "Data",
-   "label": "Source Facility Code",
-   "read_only": 1
-  },
-  {
-   "fieldname": "practitioner",
-   "fieldtype": "Link",
-   "in_standard_filter": 1,
-   "label": "Healthcare Practitioner",
-   "options": "Healthcare Practitioner",
-   "reqd": 1
-  },
-  {
-   "fieldname": "mobile_no",
-   "fieldtype": "Data",
-   "label": "Practitioner MobileNo"
-  },
-  {
-   "fieldname": "posting_date",
-   "fieldtype": "Datetime",
-   "in_standard_filter": 1,
-   "label": "Posting Date",
-   "read_only": 1
-  },
-  {
-   "fieldname": "reason_for_referral",
-   "fieldtype": "Small Text",
-   "label": "Reason For Referral",
-   "reqd": 1
-  },
-  {
-   "fieldname": "reason_column_break",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "referring_diagnosis",
-   "fieldtype": "Small Text",
-   "label": "Referring Diagnosis",
-   "reqd": 1
-  },
-  {
-   "fieldname": "referral_section_break",
-   "fieldtype": "Section Break",
-   "label": "Referral Info"
-  },
-  {
-   "bold": 1,
-   "fieldname": "referral_no",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "ReferralNo",
-   "read_only": 1
-  },
-  {
-   "fieldname": "referralid",
-   "fieldtype": "Data",
-   "label": "ReferralID",
-   "read_only": 1
-  },
-  {
-   "fieldname": "referringdate",
-   "fieldtype": "Date",
-   "label": "ReferringDate",
-   "read_only": 1
-  },
-  {
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "Series",
-   "options": "HLC-.R-.YYYY.-",
-   "read_only": 1
-  },
-  {
-   "fieldname": "status_column_break",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "referral_status",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Referal Status",
-   "options": "Pending\nSuccess",
-   "read_only": 1
-  },
-  {
-   "fieldname": "facility_section_break",
-   "fieldtype": "Section Break",
-   "label": "Health Facility info"
-  },
-  {
-   "fetch_from": "appointment.company",
-   "fieldname": "source_facility",
-   "fieldtype": "Link",
-   "in_standard_filter": 1,
-   "label": "Source Facility",
-   "options": "Company NHIF Settings",
-   "read_only": 1
-  },
-  {
-   "fieldname": "facility_column_break",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "practitioner_section_break",
-   "fieldtype": "Section Break",
-   "label": "Practitioner Info"
-  },
-  {
-   "fieldname": "qualification_column_break",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "reason_section",
-   "fieldtype": "Section Break",
-   "label": "Referring Reason &Diagnosis"
-  },
-  {
-   "fieldname": "referringdate_column_break",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "referrer_facility",
-   "fieldtype": "Link",
-   "label": "Referrer Facility",
-   "options": "Healthcare External Referrer",
-   "reqd": 1
-  },
-  {
-   "fetch_from": "referrer_facility.facility_code",
-   "fieldname": "referrer_facility_code",
-   "fieldtype": "Data",
-   "label": "Referrer Facility Code",
-   "read_only": 1
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "Healthcare Referral",
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
-   "fetch_from": "practitioner.nhif_physician_qualification",
-   "fieldname": "nhif_physician_qualification",
-   "fieldtype": "Data",
-   "label": "NHIF Physician Qualifiaction",
-   "read_only": 1
-  }
- ],
- "index_web_pages_for_search": 1,
- "is_submittable": 1,
- "links": [],
- "modified": "2022-06-30 12:18:38.471974",
- "modified_by": "Administrator",
- "module": "NHIF",
- "name": "Healthcare Referral",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "sort_field": "modified",
- "sort_order": "DESC"
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "naming_series:",
+    "creation": "2022-06-29 17:17:49.625315",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "appointment",
+        "patient_name",
+        "gender",
+        "status_column_break",
+        "referral_status",
+        "card_no",
+        "authorization_number",
+        "posting_date",
+        "facility_section_break",
+        "source_facility",
+        "source_facility_code",
+        "facility_column_break",
+        "referrer_facility",
+        "referrer_facility_code",
+        "practitioner_section_break",
+        "practitioner",
+        "mobile_no",
+        "qualification_column_break",
+        "nhif_physician_qualification",
+        "reason_section",
+        "reason_for_referral",
+        "reason_column_break",
+        "referring_diagnosis",
+        "referral_section_break",
+        "referral_no",
+        "referralid",
+        "referringdate_column_break",
+        "referringdate",
+        "naming_series",
+        "amended_from"
+    ],
+    "fields": [
+        {
+            "fieldname": "appointment",
+            "fieldtype": "Link",
+            "in_standard_filter": 1,
+            "label": "Patient Appointment",
+            "options": "Patient Appointment",
+            "reqd": 1
+        },
+        {
+            "fetch_from": "appointment.patient_name",
+            "fieldname": "patient_name",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Patient Name",
+            "read_only": 1
+        },
+        {
+            "fetch_from": "appointment.patient_sex",
+            "fieldname": "gender",
+            "fieldtype": "Select",
+            "label": "Gender",
+            "options": "\nFemale\nMale",
+            "read_only": 1
+        },
+        {
+            "fetch_from": "appointment.coverage_plan_card_number",
+            "fieldname": "card_no",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "CardNo",
+            "read_only": 1
+        },
+        {
+            "fetch_from": "appointment.authorization_number",
+            "fieldname": "authorization_number",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "AuthorizationNo",
+            "read_only": 1
+        },
+        {
+            "fetch_from": "source_facility.facility_code",
+            "fieldname": "source_facility_code",
+            "fieldtype": "Data",
+            "label": "Source Facility Code",
+            "read_only": 1
+        },
+        {
+            "fieldname": "practitioner",
+            "fieldtype": "Link",
+            "in_standard_filter": 1,
+            "label": "Healthcare Practitioner",
+            "options": "Healthcare Practitioner",
+            "reqd": 1
+        },
+        {
+            "fieldname": "mobile_no",
+            "fieldtype": "Data",
+            "label": "Practitioner MobileNo"
+        },
+        {
+            "fieldname": "posting_date",
+            "fieldtype": "Datetime",
+            "in_standard_filter": 1,
+            "label": "Posting Date",
+            "read_only": 1
+        },
+        {
+            "fieldname": "reason_for_referral",
+            "fieldtype": "Small Text",
+            "label": "Reason For Referral",
+            "reqd": 1
+        },
+        {
+            "fieldname": "reason_column_break",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "referring_diagnosis",
+            "fieldtype": "Small Text",
+            "label": "Referring Diagnosis",
+            "reqd": 1
+        },
+        {
+            "fieldname": "referral_section_break",
+            "fieldtype": "Section Break",
+            "label": "Referral Info"
+        },
+        {
+            "bold": 1,
+            "fieldname": "referral_no",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "label": "ReferralNo",
+            "read_only": 1
+        },
+        {
+            "fieldname": "referralid",
+            "fieldtype": "Data",
+            "label": "ReferralID",
+            "read_only": 1
+        },
+        {
+            "fieldname": "referringdate",
+            "fieldtype": "Date",
+            "label": "ReferringDate",
+            "read_only": 1
+        },
+        {
+            "fieldname": "naming_series",
+            "fieldtype": "Select",
+            "label": "Series",
+            "options": "HLC-.R-.YYYY.-",
+            "read_only": 1
+        },
+        {
+            "fieldname": "status_column_break",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "referral_status",
+            "fieldtype": "Select",
+            "in_list_view": 1,
+            "label": "Referal Status",
+            "options": "Pending\nSuccess",
+            "read_only": 1
+        },
+        {
+            "fieldname": "facility_section_break",
+            "fieldtype": "Section Break",
+            "label": "Health Facility info"
+        },
+        {
+            "fetch_from": "appointment.company",
+            "fieldname": "source_facility",
+            "fieldtype": "Link",
+            "in_standard_filter": 1,
+            "label": "Source Facility",
+            "options": "Company Insurance Setting",
+            "read_only": 1
+        },
+        {
+            "fieldname": "facility_column_break",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "practitioner_section_break",
+            "fieldtype": "Section Break",
+            "label": "Practitioner Info"
+        },
+        {
+            "fieldname": "qualification_column_break",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "reason_section",
+            "fieldtype": "Section Break",
+            "label": "Referring Reason &Diagnosis"
+        },
+        {
+            "fieldname": "referringdate_column_break",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "referrer_facility",
+            "fieldtype": "Link",
+            "label": "Referrer Facility",
+            "options": "Healthcare External Referrer",
+            "reqd": 1
+        },
+        {
+            "fetch_from": "referrer_facility.facility_code",
+            "fieldname": "referrer_facility_code",
+            "fieldtype": "Data",
+            "label": "Referrer Facility Code",
+            "read_only": 1
+        },
+        {
+            "fieldname": "amended_from",
+            "fieldtype": "Link",
+            "label": "Amended From",
+            "no_copy": 1,
+            "options": "Healthcare Referral",
+            "print_hide": 1,
+            "read_only": 1
+        },
+        {
+            "fetch_from": "practitioner.nhif_physician_qualification",
+            "fieldname": "nhif_physician_qualification",
+            "fieldtype": "Data",
+            "label": "NHIF Physician Qualifiaction",
+            "read_only": 1
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "is_submittable": 1,
+    "links": [],
+    "modified": "2022-06-30 12:18:38.471974",
+    "modified_by": "Administrator",
+    "module": "NHIF",
+    "name": "Healthcare Referral",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC"
 }

@@ -59,7 +59,7 @@ def make_token_request(doc, url, headers, payload, fields):
 
 
 def get_nhifservice_token(company):
-    setting_doc = frappe.get_cached_doc("Company NHIF Settings", company)
+    setting_doc = frappe.get_cached_doc("Company Insurance Setting", company)
     if (
         setting_doc.service_token_expiry
         and setting_doc.service_token_expiry > now_datetime()
@@ -67,7 +67,7 @@ def get_nhifservice_token(company):
         return setting_doc.service_token
 
     username = setting_doc.username
-    password = get_decrypted_password("Company NHIF Settings", company, "password")
+    password = get_decrypted_password("Company Insurance Setting", company, "password")
     payload = "grant_type=password&username={0}&password={1}".format(username, password)
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     url = str(setting_doc.service_url) + "/nhifservice/Token"
@@ -81,7 +81,7 @@ def get_nhifservice_token(company):
 
 
 def get_claimsservice_token(company):
-    setting_doc = frappe.get_cached_doc("Company NHIF Settings", company)
+    setting_doc = frappe.get_cached_doc("Company Insurance Setting", company)
     if (
         setting_doc.claimsserver_expiry
         and setting_doc.claimsserver_expiry > now_datetime()
@@ -89,7 +89,7 @@ def get_claimsservice_token(company):
         return setting_doc.claimsserver_token
 
     username = setting_doc.username
-    password = get_decrypted_password("Company NHIF Settings", company, "password")
+    password = get_decrypted_password("Company Insurance Setting", company, "password")
     payload = "grant_type=password&username={0}&password={1}".format(username, password)
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     url = str(setting_doc.claimsserver_url) + "/claimsserver/Token"
@@ -103,7 +103,7 @@ def get_claimsservice_token(company):
 
 
 def get_formservice_token(company):
-    company_nhif_doc = frappe.get_cached_doc("Company NHIF Settings", company)
+    company_nhif_doc = frappe.get_cached_doc("Company Insurance Setting", company)
     if not company_nhif_doc.enable:
         frappe.throw(_("Company {0} not enabled for NHIF Integration".format(company)))
 
@@ -114,7 +114,7 @@ def get_formservice_token(company):
         return company_nhif_doc.form_token
 
     username = company_nhif_doc.username
-    password = get_decrypted_password("Company NHIF Settings", company, "password")
+    password = get_decrypted_password("Company Insurance Setting", company, "password")
     payload = "grant_type=password&username={0}&password={1}".format(username, password)
 
     headers = {"Content-Type": "application/x-www-form-urlencoded"}

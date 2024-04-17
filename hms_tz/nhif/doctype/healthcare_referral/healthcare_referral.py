@@ -22,7 +22,7 @@ def get_referral_no(name):
     validate_required_fields(doc)
 
     service_url = frappe.get_cached_value(
-        "Company NHIF Settings", doc.source_facility, "service_url"
+        "Company Insurance Setting", doc.source_facility, "service_url"
     )
 
     token = get_nhifservice_token(doc.source_facility)

@@ -1,149 +1,149 @@
 {
- "actions": [],
- "allow_rename": 1,
- "autoname": "NCR-.#######",
- "creation": "2022-08-22 13:22:02.826140",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "company",
-  "claim_year",
-  "claim_month",
-  "status_column_break",
-  "status",
-  "posting_date",
-  "get_detail",
-  "section_break_ts",
-  "number_of_submitted_claims",
-  "column_break_ac",
-  "total_amount_claimed",
-  "section_break_cards",
-  "claim_details",
-  "amended_from"
- ],
- "fields": [
-  {
-   "fieldname": "company",
-   "fieldtype": "Link",
-   "in_global_search": 1,
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Company",
-   "options": "Company NHIF Settings",
-   "reqd": 1,
-   "search_index": 1
-  },
-  {
-   "fieldname": "claim_year",
-   "fieldtype": "Data",
-   "in_global_search": 1,
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Claim Year",
-   "reqd": 1,
-   "search_index": 1
-  },
-  {
-   "fieldname": "claim_month",
-   "fieldtype": "Int",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Claim Month",
-   "reqd": 1,
-   "search_index": 1
-  },
-  {
-   "fieldname": "section_break_ts",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "column_break_ac",
-   "fieldtype": "Column Break"
-  },
-  {
-   "bold": 1,
-   "fieldname": "total_amount_claimed",
-   "fieldtype": "Currency",
-   "label": "Total Amount Claimed",
-   "read_only": 1
-  },
-  {
-   "fieldname": "section_break_cards",
-   "fieldtype": "Section Break",
-   "label": "Claimed Cards"
-  },
-  {
-   "fieldname": "claim_details",
-   "fieldtype": "Table",
-   "options": "NHIF Claim Reconciliation Detail",
-   "read_only": 1
-  },
-  {
-   "fieldname": "amended_from",
-   "fieldtype": "Link",
-   "label": "Amended From",
-   "no_copy": 1,
-   "options": "NHIF Claim Reconciliation",
-   "print_hide": 1,
-   "read_only": 1
-  },
-  {
-   "fieldname": "status_column_break",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "label": "Status",
-   "options": "Pending\nSuccessful",
-   "read_only": 1
-  },
-  {
-   "fieldname": "posting_date",
-   "fieldtype": "Date",
-   "label": "Posting Date",
-   "read_only": 1
-  },
-  {
-   "bold": 1,
-   "fieldname": "number_of_submitted_claims",
-   "fieldtype": "Int",
-   "label": "Number of Submitted  Claims",
-   "read_only": 1
-  },
-  {
-   "depends_on": "eval: doc.docstatus==0",
-   "fieldname": "get_detail",
-   "fieldtype": "Button",
-   "label": "Get Detail"
-  }
- ],
- "index_web_pages_for_search": 1,
- "is_submittable": 1,
- "links": [],
- "modified": "2022-08-27 13:04:56.427583",
- "modified_by": "Administrator",
- "module": "NHIF",
- "name": "NHIF Claim Reconciliation",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "sort_field": "modified",
- "sort_order": "DESC",
- "track_changes": 1,
- "track_seen": 1,
- "track_views": 1
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "NCR-.#######",
+    "creation": "2022-08-22 13:22:02.826140",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "company",
+        "claim_year",
+        "claim_month",
+        "status_column_break",
+        "status",
+        "posting_date",
+        "get_detail",
+        "section_break_ts",
+        "number_of_submitted_claims",
+        "column_break_ac",
+        "total_amount_claimed",
+        "section_break_cards",
+        "claim_details",
+        "amended_from"
+    ],
+    "fields": [
+        {
+            "fieldname": "company",
+            "fieldtype": "Link",
+            "in_global_search": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Company",
+            "options": "Company Insurance Setting",
+            "reqd": 1,
+            "search_index": 1
+        },
+        {
+            "fieldname": "claim_year",
+            "fieldtype": "Data",
+            "in_global_search": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Claim Year",
+            "reqd": 1,
+            "search_index": 1
+        },
+        {
+            "fieldname": "claim_month",
+            "fieldtype": "Int",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Claim Month",
+            "reqd": 1,
+            "search_index": 1
+        },
+        {
+            "fieldname": "section_break_ts",
+            "fieldtype": "Section Break"
+        },
+        {
+            "fieldname": "column_break_ac",
+            "fieldtype": "Column Break"
+        },
+        {
+            "bold": 1,
+            "fieldname": "total_amount_claimed",
+            "fieldtype": "Currency",
+            "label": "Total Amount Claimed",
+            "read_only": 1
+        },
+        {
+            "fieldname": "section_break_cards",
+            "fieldtype": "Section Break",
+            "label": "Claimed Cards"
+        },
+        {
+            "fieldname": "claim_details",
+            "fieldtype": "Table",
+            "options": "NHIF Claim Reconciliation Detail",
+            "read_only": 1
+        },
+        {
+            "fieldname": "amended_from",
+            "fieldtype": "Link",
+            "label": "Amended From",
+            "no_copy": 1,
+            "options": "NHIF Claim Reconciliation",
+            "print_hide": 1,
+            "read_only": 1
+        },
+        {
+            "fieldname": "status_column_break",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "status",
+            "fieldtype": "Select",
+            "label": "Status",
+            "options": "Pending\nSuccessful",
+            "read_only": 1
+        },
+        {
+            "fieldname": "posting_date",
+            "fieldtype": "Date",
+            "label": "Posting Date",
+            "read_only": 1
+        },
+        {
+            "bold": 1,
+            "fieldname": "number_of_submitted_claims",
+            "fieldtype": "Int",
+            "label": "Number of Submitted  Claims",
+            "read_only": 1
+        },
+        {
+            "depends_on": "eval: doc.docstatus==0",
+            "fieldname": "get_detail",
+            "fieldtype": "Button",
+            "label": "Get Detail"
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "is_submittable": 1,
+    "links": [],
+    "modified": "2022-08-27 13:04:56.427583",
+    "modified_by": "Administrator",
+    "module": "NHIF",
+    "name": "NHIF Claim Reconciliation",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "track_changes": 1,
+    "track_seen": 1,
+    "track_views": 1
 }

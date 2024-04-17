@@ -194,7 +194,7 @@ class NHIFPatientClaim(Document):
         if not self.folio_id:
             self.folio_id = str(uuid.uuid1())
         self.facility_code = frappe.get_cached_value(
-            "Company NHIF Settings", self.company, "facility_code"
+            "Company Insurance Setting", self.company, "facility_code"
         )
         self.posting_date = nowdate()
         self.serial_no = int(self.name[-9:])
@@ -584,7 +584,7 @@ class NHIFPatientClaim(Document):
                         for row in encounter_doc.get(child.get("table")):
                             if row.prescribe or row.is_cancelled:
                                 continue
-                            
+
                             item_code = frappe.get_value(
                                 child.get("doctype"),
                                 row.get(child.get("item")),
@@ -597,9 +597,9 @@ class NHIFPatientClaim(Document):
                                     row.get("quantity_returned") or 0
                                 )
                             elif row.get("doctype") == "Therapy Plan Detail":
-                                delivered_quantity = (row.get("no_of_sessions") or 0) - (
-                                    row.get("sessions_cancelled") or 0
-                                )
+                                delivered_quantity = (
+                                    row.get("no_of_sessions") or 0
+                                ) - (row.get("sessions_cancelled") or 0)
                             else:
                                 delivered_quantity = 1
 
@@ -782,7 +782,7 @@ class NHIFPatientClaim(Document):
         json_data, json_data_wo_files = self.get_folio_json_data()
         token = get_claimsservice_token(self.company)
         claimsserver_url = frappe.get_value(
-            "Company NHIF Settings", self.company, "claimsserver_url"
+            "Company Insurance Setting", self.company, "claimsserver_url"
         )
         headers = {
             "Authorization": "Bearer " + token,
@@ -1023,7 +1023,7 @@ def validate_submit_date(self):
     import calendar
 
     submit_claim_month, submit_claim_year = frappe.get_value(
-        "Company NHIF Settings",
+        "Company Insurance Setting",
         self.company,
         ["submit_claim_month", "submit_claim_year"],
     )
@@ -1032,14 +1032,14 @@ def validate_submit_date(self):
         frappe.throw(
             frappe.bold(
                 "Submit Claim Month or Submit Claim Year not found,\
-                please inform IT department to set it on Company NHIF Settings"
+                please inform IT department to set it on Company Insurance Setting"
             )
         )
 
     if self.claim_month != submit_claim_month or self.claim_year != submit_claim_year:
         frappe.throw(
             "Claim Month: {0} or Claim Year: {1} of this document is not same to Submit Claim Month: {2}\
-                or Submit Claim Year: {3} on Company NHIF Settings".format(
+                or Submit Claim Year: {3} on Company Insurance Setting".format(
                 frappe.bold(calendar.month_name[self.claim_month]),
                 frappe.bold(self.claim_year),
                 frappe.bold(calendar.month_name[submit_claim_month]),

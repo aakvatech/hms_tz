@@ -1376,7 +1376,7 @@ def auto_submit_nhif_patient_claim(setting_dict=None):
 
     if not setting_dict:
         company_setting_detail = frappe.get_all(
-            "Company NHIF Settings",
+            "Company Insurance Setting",
             filters={"enable": 1, "enable_auto_submit_of_claims": 1},
             fields=["company", "submit_claim_year", "submit_claim_month"],
         )
@@ -1504,7 +1504,7 @@ def verify_service_approval_number_for_LRPMT(
         service_url,
         validate_service_approval_no,
     ) = frappe.get_cached_value(
-        "Company NHIF Settings",
+        "Company Insurance Setting",
         company,
         [
             "enable",

@@ -358,7 +358,7 @@ def get_authorization_num(
     remarks="",
 ):
     enable_nhif_api, service_url = frappe.get_cached_value(
-        "Company NHIF Settings", company, ["enable", "service_url"]
+        "Company Insurance Setting", company, ["enable", "service_url"]
     )
     if not enable_nhif_api:
         frappe.msgprint(
