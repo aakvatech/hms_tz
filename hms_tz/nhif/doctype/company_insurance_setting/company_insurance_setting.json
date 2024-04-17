@@ -1,18 +1,20 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:company",
+ "autoname": "format:{api_provider}-{abbr}",
  "creation": "2020-11-10 16:52:35.894771",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
   "company",
-  "facility_code",
+  "abbr",
   "username",
   "password",
   "column_break_4",
+  "facility_code",
   "api_provider",
+  "providerid",
   "enable",
   "validate_service_approval_number_on_lrpmt_documents",
   "enable_auto_submit_of_claims",
@@ -44,8 +46,7 @@
    "in_list_view": 1,
    "label": "Company",
    "options": "Company",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
   },
   {
    "fieldname": "username",
@@ -215,15 +216,30 @@
    "label": "API Provider",
    "options": "\nNHIF\nJubilee\nStrategis\nAssemble",
    "reqd": 1
+  },
+  {
+   "fetch_from": "company.abbr",
+   "fetch_if_empty": 1,
+   "fieldname": "abbr",
+   "fieldtype": "Data",
+   "label": "Abbr",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: doc.api_provider == \"Jubilee\"",
+   "fieldname": "providerid",
+   "fieldtype": "Data",
+   "label": "ProviderID",
+   "mandatory_depends_on": "eval: doc.api_provider == \"Jubilee\""
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-17 18:08:51.344756",
+ "modified": "2024-04-17 19:24:32.362279",
  "modified_by": "Administrator",
  "module": "NHIF",
  "name": "Company Insurance Setting",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
