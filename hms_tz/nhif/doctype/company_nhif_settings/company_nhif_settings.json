@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_rename": 1,
  "autoname": "field:company",
  "creation": "2020-11-10 16:52:35.894771",
  "doctype": "DocType",
@@ -195,10 +196,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-28 23:11:07.972344",
+ "modified": "2024-04-17 17:20:12.085065",
  "modified_by": "Administrator",
  "module": "NHIF",
  "name": "Company NHIF Settings",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
@@ -216,5 +218,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }
