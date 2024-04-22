@@ -2531,7 +2531,7 @@ def execute():
             },
             {
                 "fieldtype": "Section Break",
-                "label": "NHIF Details",
+                "label": "Insurance Details",
                 "fieldname": "insurance_details",
                 
             },
