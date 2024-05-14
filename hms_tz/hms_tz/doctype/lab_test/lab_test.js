@@ -89,6 +89,22 @@ frappe.ui.form.on('Lab Test', {
 				}
 			};
 		});
+		if (frm.doc.workflow_state === "Sample Analyzed") {
+            if (frm.doc.descriptive_test_items && frm.doc.descriptive_test_items.length > 0) {
+                frm.doc.descriptive_test_items.forEach(function(row) {
+                    if (!row.result_component_option) {
+                        frappe.throw(`Error: Result value is missing for <b>${row.lab_test_particulars}</b>`);
+                    }
+                });
+            }
+            else if (frm.doc.normal_test_items && frm.doc.normal_test_items.length > 0) {
+                frm.doc.normal_test_items.forEach(function(row) {
+                    if (!row.result_value) {
+                        frappe.throw(`Error: Result value is missing for <b>${row.lab_test_name}</b>`);
+                    }
+                });
+            }
+        }
 	},
 
 	source: function (frm) {
