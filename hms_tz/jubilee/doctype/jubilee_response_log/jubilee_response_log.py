@@ -4,6 +4,7 @@
 import frappe
 from frappe.model.document import Document
 
+
 class JubileeResponseLog(Document):
     pass
 
@@ -17,6 +18,7 @@ def add_jubilee_log(
     status_code=None,
     ref_doctype=None,
     ref_docname=None,
+    company=None,
 ):
     doc = frappe.new_doc("Jubilee Response Log")
     doc.request_type = str(request_type)
@@ -28,6 +30,7 @@ def add_jubilee_log(
     doc.status_code = status_code or ""
     doc.ref_doctype = ref_doctype or ""
     doc.ref_docname = ref_docname or ""
+    doc.company = company
     doc.save(ignore_permissions=True)
     frappe.db.commit()
     return doc.name

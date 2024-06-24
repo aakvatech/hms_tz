@@ -24,6 +24,7 @@ def make_jubilee_token_request(doc, url, headers, payload, fields):
                     request_body=payload,
                     response_data=data,
                     status_code=r.status_code,
+                    company=doc.company,
                 )
 
             if (
@@ -46,6 +47,7 @@ def make_jubilee_token_request(doc, url, headers, payload, fields):
                     request_body=payload,
                     response_data=data,
                     status_code=r.status_code,
+                    company=doc.company,
                 )
                 frappe.throw(data)
 

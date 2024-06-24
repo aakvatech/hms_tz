@@ -16,6 +16,7 @@
   "status_code",
   "ref_doctype",
   "ref_docname",
+  "company",
   "request_section",
   "request_body",
   "section_break_8",
@@ -115,11 +116,18 @@
    "label": "Ref Docname",
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Company",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-17 19:55:34.807520",
+ "modified": "2024-06-18 09:28:58.023706",
  "modified_by": "Administrator",
  "module": "Jubilee",
  "name": "Jubilee Response Log",

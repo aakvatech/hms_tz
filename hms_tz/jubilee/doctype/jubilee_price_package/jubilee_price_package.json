@@ -1,0 +1,135 @@
+{
+ "actions": [],
+ "autoname": "JPP-.YY.-.MM.-.DD.-.#####",
+ "creation": "2024-06-14 16:02:14.924451",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "providerid",
+  "log_name",
+  "column_break_4",
+  "company",
+  "time_stamp",
+  "section_break_3",
+  "itemcode",
+  "itemprice",
+  "strength",
+  "dosage",
+  "column_break_12",
+  "itemname",
+  "cleanname"
+ ],
+ "fields": [
+  {
+   "fieldname": "log_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Log Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "time_stamp",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Time Stamp",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Company",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "itemcode",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "ItemCode",
+   "read_only": 1
+  },
+  {
+   "fieldname": "itemname",
+   "fieldtype": "Small Text",
+   "in_standard_filter": 1,
+   "label": "ItemName",
+   "read_only": 1
+  },
+  {
+   "fieldname": "strength",
+   "fieldtype": "Data",
+   "label": "Strength",
+   "read_only": 1
+  },
+  {
+   "fieldname": "dosage",
+   "fieldtype": "Data",
+   "label": "Dosage",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "providerid",
+   "fieldtype": "Data",
+   "label": "ProviderID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "itemprice",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "ItemPrice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cleanname",
+   "fieldtype": "Small Text",
+   "in_standard_filter": 1,
+   "label": "CleanName",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-06-18 18:11:06.535715",
+ "modified_by": "Administrator",
+ "module": "Jubilee",
+ "name": "Jubilee Price Package",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "itemname",
+ "track_changes": 1
+}
