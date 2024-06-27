@@ -89,7 +89,7 @@ def enqueue_get_jubilee_price_packages(company):
         method=get_jubilee_price_packages,
         job_name="get_jubilee_price_packages",
         queue="default",
-        timeout=None,
+        timeout=10000000,
         is_async=True,
         company=company,
     )

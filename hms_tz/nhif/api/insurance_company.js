@@ -66,9 +66,9 @@ var add_jubilee_get_price_btn = function (frm) {
             method: 'hms_tz.jubilee.api.api.enqueue_get_jubilee_price_packages',
             args: { company: frm.doc.company },
             callback: function (data) {
-                if (data.message) {
-                    console.log(data.message)
-                }
+                // if (data.message) {
+                //     console.log(data.message)
+                // }
             }
         });
     });
@@ -79,12 +79,12 @@ var add_jubilee_get_price_btn = function (frm) {
         }, 10);
 
         frappe.call({
-            method: 'hms_tz.jubilee.api.api.enqueue_get_jubilee_price_packages',
+            method: 'hms_tz.jubilee.api.price_package.process_jubilee_records',
             args: { company: frm.doc.company },
             callback: function (data) {
-                if (data.message) {
-                    console.log(data.message)
-                }
+                // if (data.message) {
+                //     console.log(data.message)
+                // }
             }
         });
     });
