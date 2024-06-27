@@ -1,4 +1,16 @@
 pull_request_rules:
+  - name: Auto-close PRs on stable branch
+    conditions:
+       - author!=aakvatech
+       - author!=av-dev2
+       - author!=mergify[bot]
+       - base=version-14
+    actions:
+      close:
+      comment:
+          message: |
+            @{{author}}, thanks for the contribution, but we do not accept pull requests on a stable branch. Please raise PR on an appropriate hotfix branch.
+
   - name: Assign author to review conflict and add label of 'conflict'
     conditions:
       - conflict
@@ -12,9 +24,32 @@ pull_request_rules:
           - "{{author}}"
       comment:
         message: "@{{author}} this pull request is now in conflict 😩"
-  
 
-    - name: Automatic merge after review to version-14-hotfix
+  - name: Automatic merge pull request to develop
+    conditions:
+      - and:
+          - and:
+              - base = develop
+              - label != conflict
+          - or:
+              - author = aakvatech
+              - author = av-dev2
+    actions:
+      merge:
+        method: merge
+
+  - name: backport to version-14-hotfix
+    conditions:
+      - label = version-14-hotfix
+    actions:
+      backport:
+        branches:
+          - version-14-hotfix
+        assignees:
+          - aakvatech
+          - "{{author}}"
+
+  - name: Automatic merge after review to version-14-hotfix
     conditions:
       - base = version-14-hotfix
       - label != conflict
