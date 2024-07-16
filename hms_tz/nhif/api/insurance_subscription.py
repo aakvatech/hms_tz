@@ -5,6 +5,7 @@
 from __future__ import unicode_literals
 import frappe
 from frappe import _
+from time import sleep
 
 # from frappe import _
 from hms_tz.nhif.api.patient import get_patient_info
@@ -41,6 +42,8 @@ def set_insurance_card_detail_in_patient(doc):
             card_count += 1
             str_coverage_plan_card_number += card.coverage_plan_card_number + ", "
 
+    # wait for 30 seconds to avoid an Error of 'Document is already modified'
+    sleep(30)
     frappe.db.set_value(
         "Patient",
         doc.patient,
