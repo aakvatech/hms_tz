@@ -84,6 +84,67 @@ def get_member_card_detials(card_no, insurance_provider):
 
 
 @frappe.whitelist()
+def create_jubilee_subscription(patient_id, card_no, insurance_provider):
+    if not insurance_provider or insurance_provider != "Jubilee":
+        return
+
+    subscription_list = frappe.get_list(
+        "Healthcare Insurance Subscription",
+        filters={"patient": patient_id, "is_active": 1},
+    )
+    if len(subscription_list) > 0:
+        frappe.msgprint(
+            _(
+                "Existing Patient HIS was found. Create the Healthcare Insurance Subscription manually!"
+            )
+        )
+        return
+
+    plan_filters = {
+        "is_active": 1,
+        "insurance_company": ["like", "Jubilee%"],
+    }
+    company = get_default_company()
+    if company:
+        plan_filters["company"] = company
+
+    # Assumed that company is filtered based on user permissions
+    plan = frappe.db.get_list(
+        "Healthcare Insurance Coverage Plan",
+        filters=plan_filters,
+        fields=["name", "insurance_company", "company"],
+    )
+
+    if not plan or len(plan) == 0:
+        frappe.msgprint(
+            _("No active Healthcare Insurance Coverage Plan found for Jubilee")
+        )
+        return
+
+    if len(plan) > 1:
+        frappe.msgprint(
+            _(
+                "Multiple active Healthcare Insurance Coverage Plan found for Jubilee,\
+                    <br><br>please create the healthcare Insurance Subscription manually"
+            )
+        )
+        return
+
+    sub_doc = frappe.new_doc("Healthcare Insurance Subscription")
+    sub_doc.patient = patient_id
+    sub_doc.insurance_company = plan[0].insurance_company
+    sub_doc.healthcare_insurance_coverage_plan = plan[0].name
+    sub_doc.coverage_plan_card_number = card_no
+    sub_doc.save(ignore_permissions=True)
+    sub_doc.submit()
+    frappe.msgprint(
+        _(
+            f"<h3>AUTO</h3> Healthcare Insurance Subscription: {sub_doc.name} is created for {plan[0].name}"
+        )
+    )
+
+
+@frappe.whitelist()
 def enqueue_get_jubilee_price_packages(company):
     enqueue(
         method=get_jubilee_price_packages,

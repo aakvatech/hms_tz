@@ -17,7 +17,7 @@ from hms_tz.nhif.doctype.nhif_response_log.nhif_response_log import add_log
 from hms_tz.nhif.api.healthcare_utils import remove_special_characters
 from datetime import date
 from frappe.utils.background_jobs import enqueue
-from hms_tz.nhif.doctype.nhif_product.nhif_product import add_product
+from hms_tz.jubilee.api.api import create_jubilee_subscription
 
 
 def validate(doc, method):
@@ -53,7 +53,10 @@ def validate_mobile_number(doc_name, mobile=None):
 
 
 @frappe.whitelist()
-def get_patient_info(card_no=None):
+def get_patient_info(card_no=None, insurance_provider=None):
+    if not insurance_provider or insurance_provider != "NHIF":
+        return
+
     if not card_no:
         frappe.msgprint(_("Please set Card No"))
         return
@@ -282,8 +285,14 @@ def get_coverage_plan(doc=None, card=None, company=None):
 def after_insert(doc, method):
     if not doc.card_no:
         return
+
     doc.insurance_card_detail = (doc.card_no or "") + ", "
-    create_subscription(doc)
+
+    if doc.insurance_provider and doc.insurance_provider == "NHIF":
+        create_subscription(doc)
+
+    if doc.insurance_provider and doc.insurance_provider == "Jubilee":
+        create_jubilee_subscription(doc.name, doc.card_no, doc.insurance_provider)
 
 
 @frappe.whitelist()

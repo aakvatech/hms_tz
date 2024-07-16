@@ -305,6 +305,11 @@ function get_jubilee_patient_info(frm) {
 }
 
 function update_jubilee_patient_info(frm, cardinfo) {
+    frappe.msgprint(cardinfo.Status);
+    if (cardinfo.Status != "ERROR") {
+        frappe.msgprint(cardinfo.Description);
+        return;
+    }
     frm.set_value("first_name", cardinfo.FirstName);
     frm.set_value("middle_name", cardinfo.MiddleName);
     frm.set_value("last_name", cardinfo.LastName);
