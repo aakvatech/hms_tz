@@ -306,7 +306,7 @@ function get_jubilee_patient_info(frm) {
 
 function update_jubilee_patient_info(frm, cardinfo) {
     frappe.msgprint(cardinfo.Status);
-    if (cardinfo.Status != "ERROR") {
+    if (cardinfo.Status == "ERROR") {
         frappe.msgprint(cardinfo.Description);
         return;
     }

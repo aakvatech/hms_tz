@@ -255,16 +255,17 @@ frappe.ui.form.on('Patient Appointment', {
             frappe.msgprint("Appointment is already cancelled")
             return
         }
-        frm.trigger("get_authorization_num");
-    },
-    get_authorization_num: function (frm) {
-        if (!frm.doc.insurance_company.includes("NHIF")) {
-            frappe.show_alert({
-                message: __("This feature is not applicable for non NHIF insurance"),
-                indicator: 'orange'
-            }, 5);
-            return;
+
+        if (frm.doc.insurance_company.includes("NHIF")) {
+            // get auth number for NHIF Patients
+            frm.trigger("get_nhif_authorization_num");
         }
+        if (frm.doc.insurance_company.includes("Jubilee")) {
+            // get auth number for Jubilee Patients
+            frm.trigger("get_jubilee_authorization_number");
+        }
+    },
+    get_nhif_authorization_num: function (frm) {
         if (!frm.doc.insurance_subscription) {
             frappe.msgprint("Select Insurance Subscription to get authorization number");
             return;
@@ -292,6 +293,49 @@ frappe.ui.form.on('Patient Appointment', {
                         frm.set_value("coverage_plan_name", card.CoveragePlanName);
                         frm.set_value("authorization_number", card.AuthorizationNo);
                         frm.set_value("nhif_employer_name", card.EmployerName);
+                        frm.save();
+                        frappe.show_alert({
+                            message: __("Authorization Number is updated"),
+                            indicator: 'green'
+                        }, 5);
+                    } else {
+                        frm.set_value("insurance_subscription", "");
+                        frm.set_value("authorization_number", "");
+                    }
+                }
+                else {
+                    frm.set_value("insurance_subscription", "");
+                    frm.set_value("authorization_number", "");
+                }
+            }
+        });
+    },
+    get_jubilee_authorization_number: (frm) => {
+        if (!frm.doc.insurance_subscription) {
+            frappe.msgprint("Select Insurance Subscription to get authorization number");
+            return;
+        }
+        if (frm.is_dirty()) {
+            frm.save();
+        }
+        frappe.call({
+            method: 'hms_tz.jubilee.api.api.get_authorization_number',
+            args: {
+                'company': frm.doc.company,
+                'card_no': frm.doc.coverage_plan_card_number,
+                "appointment_no": frm.doc.name,
+                'insurance_subscription': frm.doc.insurance_subscription,
+                "insurance_provider": "Jubilee"
+            },
+            async: true,
+            freeze: true,
+            freeze_message: __('<i class="fa fa-spinner fa-spin fa-4x"></i>'),
+            callback: function (data) {
+                console.log(data);
+                if (data.message) {
+                    const card = data.message;
+                    if (card.Status == 'OK') {
+                        frm.set_value("authorization_number", card.AuthorizationNo);
                         frm.save();
                         frappe.show_alert({
                             message: __("Authorization Number is updated"),

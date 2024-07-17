@@ -64,12 +64,12 @@ def make_jubilee_token_request(doc, url, headers, payload, fields):
 def get_jubilee_service_token(company, api_provider):
     setting_name = frappe.get_cached_value(
         "Company Insurance Setting",
-        {"company": company, "api_provider": api_provider},
+        {"company": company, "api_provider": api_provider, "enable": 1},
         "name",
     )
     if not setting_name:
         frappe.throw(
-            f"Company Insurance Setting not found for company: {company} and API Provider: {api_provider}, please create one."
+            f"Company Insurance Setting not found for company: {company} and API Provider: {api_provider}, please Create or Enable one."
         )
 
     setting_doc = frappe.get_cached_doc("Company Insurance Setting", setting_name)
@@ -103,12 +103,12 @@ def get_jubilee_service_token(company, api_provider):
 def get_jubilee_claimsservice_token(company, api_provider):
     setting_name = frappe.get_cached_value(
         "Company Insurance Setting",
-        {"company": company, "api_provider": api_provider},
+        {"company": company, "api_provider": api_provider, "enable": 1},
         "name",
     )
     if not setting_name:
         frappe.throw(
-            f"Company Insurance Setting not found for company: {company} and API Provider: {api_provider}, please create one."
+            f"Company Insurance Setting not found for company: {company} and API Provider: {api_provider}, please Create or Enable one."
         )
 
     setting_doc = frappe.get_cached_doc("Company Insurance Setting", setting_name)

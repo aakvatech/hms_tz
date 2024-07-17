@@ -145,6 +145,73 @@ def create_jubilee_subscription(patient_id, card_no, insurance_provider):
 
 
 @frappe.whitelist()
+def get_authorization_number(
+    company,
+    card_no,
+    appointment_no,
+    insurance_subscription,
+    insurance_provider="Jubilee",
+):
+    if insurance_provider != "Jubilee":
+        return
+    
+    setting_name, service_url = frappe.get_cached_value(
+        "Company Insurance Setting",
+        {"company": company, "api_provider": insurance_provider, "enable": 1},
+        ["name", "service_url"],
+    )
+    if not setting_name:
+        frappe.throw(
+            f"Company Insurance Setting not found for company: {company} and API Provider: {insurance_provider}, please Create or Enable one."
+        )
+
+    if not card_no:
+        frappe.msgprint(
+            _(
+                f"Please set Card No in Healthcare Insurance Subscription {insurance_subscription}"
+            )
+        )
+        return
+
+    token = get_jubilee_service_token(company, insurance_provider)
+
+    headers = {"Content-Type": "application/json", "Authorization": "Bearer " + token}
+    url = str(service_url) + "/jubileeapi/CheckVerification?MemberNo=" + str(card_no)
+
+    r = requests.get(url, headers=headers, timeout=5)
+    r.raise_for_status()
+    frappe.logger().debug({"webhook_success": r.text})
+    if json.loads(r.text):
+        add_jubilee_log(
+            request_type="AuthorizeCard",
+            request_url=url,
+            request_header=headers,
+            response_data=json.loads(r.text),
+            status_code=r.status_code,
+            ref_doctype="Patient Appointment",
+            ref_docname=appointment_no,
+            company=company,
+        )
+        card = json.loads(r.text)
+        if card.get("Status") != "OK":
+            frappe.throw(title=card.get("Status"), msg=card["Description"])
+        frappe.msgprint(_(card["Description"]), alert=True)
+        return card
+    else:
+        add_jubilee_log(
+            request_type="AuthorizeCard",
+            request_url=url,
+            request_header=headers,
+            response_data=json.loads(r.text),
+            status_code=r.status_code,
+            ref_doctype="Patient Appointment",
+            ref_docname=appointment_no,
+            company=company,
+        )
+        frappe.throw(json.loads(r.text))
+
+
+@frappe.whitelist()
 def enqueue_get_jubilee_price_packages(company):
     enqueue(
         method=get_jubilee_price_packages,
