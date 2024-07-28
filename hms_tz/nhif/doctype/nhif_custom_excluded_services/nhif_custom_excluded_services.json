@@ -25,7 +25,7 @@
             "fieldtype": "Link",
             "in_standard_filter": 1,
             "label": "Company",
-            "options": "Company Insurance Setting",
+            "options": "Company",
             "reqd": 1
         },
         {

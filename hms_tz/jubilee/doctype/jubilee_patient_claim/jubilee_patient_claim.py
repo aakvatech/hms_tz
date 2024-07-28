@@ -450,9 +450,6 @@ class JubileePatientClaim(Document):
             self.folio_id = str(uuid.uuid1())
 
         self.facility_code = frappe.get_cached_value(
-            "Company Insurance Setting", self.company, "facility_code"
-        )
-        self.facility_code = frappe.get_cached_value(
             "Company Insurance Setting",
             {"enable": 1, "insurance_provider": "Jubilee", "company": self.company},
             "facility_code",

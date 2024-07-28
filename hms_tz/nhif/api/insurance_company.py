@@ -37,9 +37,11 @@ def enqueue_get_nhif_price_package(company):
 def get_nhif_price_package(kwargs):
     company = kwargs
     user = frappe.session.user
-    token = get_claimsservice_token(company)
+    token = get_claimsservice_token(company, "NHIF")
     claimsserver_url, facility_code = frappe.get_cached_value(
-        "Company Insurance Setting", company, ["claimsserver_url", "facility_code"]
+        "Company Insurance Setting",
+        {"company": company, "insurance_provider": "NHIF"},
+        ["claimsserver_url", "facility_code"],
     )
     headers = {"Authorization": "Bearer " + token}
     url = (
@@ -194,7 +196,9 @@ def process_nhif_records(company):
 def process_prices_list(kwargs):
     company = kwargs
     facility_code = frappe.get_cached_value(
-        "Company Insurance Setting", company, "facility_code"
+        "Company Insurance Setting",
+        {"company": company, "insurance_provider": "NHIF"},
+        "facility_code",
     )
     currency = frappe.get_cached_value("Company", company, "default_currency")
     schemeid_list = frappe.db.sql(

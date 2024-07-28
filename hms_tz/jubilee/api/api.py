@@ -25,7 +25,7 @@ def get_member_card_detials(card_no, insurance_provider):
         company = frappe.get_list(
             "Company Insurance Setting",
             fields=["company"],
-            filters={"enable": 1, "api_provider": insurance_provider},
+            filters={"enable": 1, "insurance_provider": insurance_provider},
         )[0].company
     if not company:
         frappe.throw(_("No companies found to connect to Jubilee"))
@@ -34,7 +34,7 @@ def get_member_card_detials(card_no, insurance_provider):
 
     service_url = frappe.get_cached_value(
         "Company Insurance Setting",
-        {"company": company, "api_provider": insurance_provider},
+        {"company": company, "insurance_provider": insurance_provider},
         "service_url",
     )
     headers = {"Authorization": "Bearer " + token}
@@ -56,8 +56,6 @@ def get_member_card_detials(card_no, insurance_provider):
                 )
                 card = json.loads(r.text)
                 frappe.msgprint(_(card["Status"]), alert=True)
-                # add_scheme(card.get("SchemeID"), card.get("SchemeName"))
-                # add_product(card.get("ProductCode"), card.get("ProductName"))
                 return card
             else:
                 add_jubilee_log(
@@ -154,10 +152,10 @@ def get_authorization_number(
 ):
     if insurance_provider != "Jubilee":
         return
-    
+
     setting_name, service_url = frappe.get_cached_value(
         "Company Insurance Setting",
-        {"company": company, "api_provider": insurance_provider, "enable": 1},
+        {"company": company, "insurance_provider": insurance_provider, "enable": 1},
         ["name", "service_url"],
     )
     if not setting_name:
@@ -232,7 +230,7 @@ def get_jubilee_price_packages(company, insurance_provider="Jubilee"):
 
     service_url = frappe.get_cached_value(
         "Company Insurance Setting",
-        {"company": company, "api_provider": insurance_provider},
+        {"company": company, "insurance_provider": insurance_provider},
         "service_url",
     )
     headers = {"Authorization": "Bearer " + token}

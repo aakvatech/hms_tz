@@ -358,11 +358,13 @@ def get_authorization_num(
     remarks="",
 ):
     enable_nhif_api, service_url = frappe.get_cached_value(
-        "Company Insurance Setting", company, ["enable", "service_url"]
+        "Company Insurance Setting",
+        {"company": company, "insurance_provider": "NHIF"},
+        ["enable", "service_url"],
     )
     if not enable_nhif_api:
         frappe.msgprint(
-            _("Company {0} not enabled for NHIF Integration".format(company))
+            _(f"Company {company} not enabled for NHIF Integration")
         )
         return
 
@@ -385,7 +387,7 @@ def get_authorization_num(
     referral_no = "&ReferralNo=" + str(referral_no)
     remarks = "&Remarks=" + str(remarks)
 
-    token = get_nhifservice_token(company)
+    token = get_nhifservice_token(company, "NHIF")
 
     headers = {"Content-Type": "application/json", "Authorization": "Bearer " + token}
     url = (

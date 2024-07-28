@@ -58,8 +58,18 @@ def make_token_request(doc, url, headers, payload, fields):
                 raise e
 
 
-def get_nhifservice_token(company):
-    setting_doc = frappe.get_cached_doc("Company Insurance Setting", company)
+def get_nhifservice_token(company, insurance_provider="NHIF"):
+    setting_name = frappe.get_cached_value(
+        "Company Insurance Setting",
+        {"company": company, "insurance_provider": insurance_provider, "enable": 1},
+        "name",
+    )
+    if not setting_name:
+        frappe.throw(
+            f"Company Insurance Setting not found for company: {company} and Insurance Provider: {insurance_provider}, please Create or Enable one."
+        )
+
+    setting_doc = frappe.get_cached_doc("Company Insurance Setting", setting_name)
     if (
         setting_doc.service_token_expiry
         and setting_doc.service_token_expiry > now_datetime()
@@ -80,8 +90,18 @@ def get_nhifservice_token(company):
     return make_token_request(setting_doc, url, headers, payload, nhifservice_fields)
 
 
-def get_claimsservice_token(company):
-    setting_doc = frappe.get_cached_doc("Company Insurance Setting", company)
+def get_claimsservice_token(company, insurance_provider="NHIF"):
+    setting_name = frappe.get_cached_value(
+        "Company Insurance Setting",
+        {"company": company, "insurance_provider": insurance_provider, "enable": 1},
+        "name",
+    )
+    if not setting_name:
+        frappe.throw(
+            f"Company Insurance Setting not found for company: {company} and Insurance Provider: {insurance_provider}, please Create or Enable one."
+        )
+
+    setting_doc = frappe.get_cached_doc("Company Insurance Setting", setting_name)
     if (
         setting_doc.claimsserver_expiry
         and setting_doc.claimsserver_expiry > now_datetime()
@@ -102,8 +122,18 @@ def get_claimsservice_token(company):
     return make_token_request(setting_doc, url, headers, payload, claimserver_fields)
 
 
-def get_formservice_token(company):
-    company_nhif_doc = frappe.get_cached_doc("Company Insurance Setting", company)
+def get_formservice_token(company, insurance_provider="NHIF"):
+    setting_name = frappe.get_cached_value(
+        "Company Insurance Setting",
+        {"company": company, "insurance_provider": insurance_provider, "enable": 1},
+        "name",
+    )
+    if not setting_name:
+        frappe.throw(
+            f"Company Insurance Setting not found for company: {company} and Insurance Provider: {insurance_provider}, please Create or Enable one."
+        )
+
+    company_nhif_doc = frappe.get_cached_doc("Company Insurance Setting", setting_name)
     if not company_nhif_doc.enable:
         frappe.throw(_("Company {0} not enabled for NHIF Integration".format(company)))
 

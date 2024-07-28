@@ -91,7 +91,7 @@ def process_jubilee_coverage(company, coverage_plan=None):
             "Healthcare Insurance Coverage Plan",
             fields={"name"},
             filters={
-                "insurance_company": ["like", "Jubilee%"],
+                "insurance_company": ["like", "%Jubilee%"],
                 "company": company,
                 "is_active": 1,
             },
@@ -204,7 +204,7 @@ def process_jubilee_price_list(company, item=None):
                         # update Item Price with the new price
                         frappe.qb.update(itp).set(
                             itp.price_list_rate, flt(item.itemprice)
-                        ).where(itp.name == price.name)
+                        ).where(itp.name == price.name).run()
         else:
             item_price_doc = frappe.new_doc("Item Price")
             item_price_doc.update(

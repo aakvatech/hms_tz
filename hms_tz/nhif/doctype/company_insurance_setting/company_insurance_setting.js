@@ -10,7 +10,7 @@ frappe.ui.form.on('Company Insurance Setting', {
 			frappe.msgprint("Please set submit claim year or submit claim month}");
 			return
 		}
-		if (frm.doc.api_provider == "NHIF") {
+		if (frm.doc.insurance_provider == "NHIF") {
 			frappe.call("hms_tz.nhif.api.healthcare_utils.auto_submit_nhif_patient_claim", {
 				setting_dict: {
 					"company": frm.doc.name,

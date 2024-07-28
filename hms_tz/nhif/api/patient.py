@@ -66,14 +66,18 @@ def get_patient_info(card_no=None, insurance_provider=None):
         company = frappe.defaults.get_user_default("Company")
     if not company:
         company = frappe.get_list(
-            "Company Insurance Setting", fields=["company"], filters={"enable": 1}
+            "Company Insurance Setting",
+            fields=["company"],
+            filters={"enable": 1, "insurance_provider": "NHIF"},
         )[0].company
     if not company:
         frappe.throw(_("No companies found to connect to NHIF"))
-    token = get_nhifservice_token(company)
+    token = get_nhifservice_token(company, "NHIF")
 
     service_url = frappe.get_cached_value(
-        "Company Insurance Setting", company, "service_url"
+        "Company Insurance Setting",
+        {"company": company, "insurance_provider": "NHIF"},
+        "service_url",
     )
     headers = {"Authorization": "Bearer " + token}
     url = (
@@ -123,7 +127,7 @@ def update_patient_history(doc):
     # Remarked till multi company setting is required and feasible from Patient doctype 2021-03-20 19:57:14
     # company = get_default_company()
     # update_history = frappe.get_cached_value(
-    #     "Company Insurance Setting", company, "update_patient_history")
+    #     "Company Insurance Setting", {"company": company, "insurance_provider": "NHIF"}, "update_patient_history")
     # if not update_history:
     #     return
 

@@ -138,10 +138,10 @@ def get_data(filters):
 
 
 def get_nhif_data(filters):
-    token = get_claimsservice_token(filters.company)
+    token = get_claimsservice_token(filters.company, "NHIF")
     claimsserver_url, facility_code = frappe.get_value(
         "Company Insurance Setting",
-        filters.company,
+        {"company": filters.company, "insurance_provider": "NHIF"},
         ["claimsserver_url", "facility_code"],
     )
     headers = {"Authorization": "Bearer " + token, "Content-Type": "application/json"}

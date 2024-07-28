@@ -194,7 +194,7 @@ class NHIFPatientClaim(Document):
         if not self.folio_id:
             self.folio_id = str(uuid.uuid1())
         self.facility_code = frappe.get_cached_value(
-            "Company Insurance Setting", self.company, "facility_code"
+            "Company Insurance Setting", {"company": self.company, "insurance_provider": "NHIF"}, "facility_code"
         )
         self.posting_date = nowdate()
         self.serial_no = int(self.name[-9:])
@@ -780,9 +780,9 @@ class NHIFPatientClaim(Document):
 
     def send_nhif_claim(self):
         json_data, json_data_wo_files = self.get_folio_json_data()
-        token = get_claimsservice_token(self.company)
+        token = get_claimsservice_token(self.company, "NHIF")
         claimsserver_url = frappe.get_value(
-            "Company Insurance Setting", self.company, "claimsserver_url"
+            "Company Insurance Setting", {"company": self.company, "insurance_provider": "NHIF"}, "claimsserver_url"
         )
         headers = {
             "Authorization": "Bearer " + token,
@@ -1025,7 +1025,7 @@ def validate_submit_date(self):
 
     submit_claim_month, submit_claim_year = frappe.get_value(
         "Company Insurance Setting",
-        self.company,
+        {"company": self.company, "insurance_provider": "NHIF"},
         ["submit_claim_month", "submit_claim_year"],
     )
 
@@ -1039,13 +1039,9 @@ def validate_submit_date(self):
 
     if self.claim_month != submit_claim_month or self.claim_year != submit_claim_year:
         frappe.throw(
-            "Claim Month: {0} or Claim Year: {1} of this document is not same to Submit Claim Month: {2}\
-                or Submit Claim Year: {3} on Company Insurance Setting".format(
-                frappe.bold(calendar.month_name[self.claim_month]),
-                frappe.bold(self.claim_year),
-                frappe.bold(calendar.month_name[submit_claim_month]),
-                frappe.bold(submit_claim_year),
-            )
+            f"Claim Month: {frappe.bold(calendar.month_name[self.claim_month])} or Claim Year: {frappe.bold(self.claim_year)} \
+            of this document is not same to Submit Claim Month: {frappe.bold(calendar.month_name[submit_claim_month])} \
+            or Submit Claim Year: {frappe.bold(submit_claim_year)} on Company Insurance Setting"
         )
 
 

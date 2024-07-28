@@ -1370,14 +1370,14 @@ def create_invoiced_items_if_not_created():
 def auto_submit_nhif_patient_claim(setting_dict=None):
     """Routine to submit patient claims and will be triggered:
     1. Every 00:01 am at night by cron job
-    2. By a button called 'Auto Submit Patient Claim' which is on Company NHIF settings
+    2. By a button called 'Auto Submit Patient Claim' which is on Company Insurance setting
     """
     company_setting_detail = []
 
     if not setting_dict:
         company_setting_detail = frappe.get_all(
             "Company Insurance Setting",
-            filters={"enable": 1, "enable_auto_submit_of_claims": 1},
+            filters={"insurance_provider": "NHIF", "enable": 1, "enable_auto_submit_of_claims": 1},
             fields=["company", "submit_claim_year", "submit_claim_month"],
         )
     else:
@@ -1505,7 +1505,7 @@ def verify_service_approval_number_for_LRPMT(
         validate_service_approval_no,
     ) = frappe.get_cached_value(
         "Company Insurance Setting",
-        company,
+        {"company": company, "insurance_provider": "NHIF"},
         [
             "enable",
             "service_url",
@@ -1527,7 +1527,7 @@ def verify_service_approval_number_for_LRPMT(
         + f"/nhifservice/breeze/verification/GetReferenceNoStatus?CardNo={cardno}&ReferenceNo={approval_number}&ItemCode={item_code}"
     )
 
-    token = get_nhifservice_token(company)
+    token = get_nhifservice_token(company, "NHIF")
 
     headers = {"Content-Type": "application/json", "Authorization": "Bearer " + token}
 

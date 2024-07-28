@@ -8,7 +8,7 @@ frappe.query_reports["NHIF Tracking Claim Change Report"] = {
 			"fieldname": "company",
 			"label": __("Company"),
 			"fieldtype": "Link",
-			"options": "Company Insurance Setting",
+			"options": "Company",
 			"reqd": 1,
 		},
 		{

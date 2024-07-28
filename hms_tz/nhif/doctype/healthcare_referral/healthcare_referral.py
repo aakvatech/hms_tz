@@ -22,10 +22,10 @@ def get_referral_no(name):
     validate_required_fields(doc)
 
     service_url = frappe.get_cached_value(
-        "Company Insurance Setting", doc.source_facility, "service_url"
+        "Company Insurance Setting", {"company": doc.source_facility, "insurance_provider": "NHIF"}, "service_url"
     )
 
-    token = get_nhifservice_token(doc.source_facility)
+    token = get_nhifservice_token(doc.source_facility, "NHIF")
 
     url = str(service_url) + "/nhifservice/breeze/verification/AddReferral"
 

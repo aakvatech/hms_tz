@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{api_provider}-{abbr}",
+ "autoname": "format:{insurance_provider}-{abbr}",
  "creation": "2020-11-10 16:52:35.894771",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -13,7 +13,7 @@
   "password",
   "column_break_4",
   "facility_code",
-  "api_provider",
+  "insurance_provider",
   "providerid",
   "enable",
   "validate_service_approval_number_on_lrpmt_documents",
@@ -211,13 +211,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "api_provider",
-   "fieldtype": "Select",
-   "label": "API Provider",
-   "options": "\nNHIF\nJubilee\nStrategis\nAssemble",
-   "reqd": 1
-  },
-  {
    "fetch_from": "company.abbr",
    "fetch_if_empty": 1,
    "fieldname": "abbr",
@@ -226,16 +219,23 @@
    "read_only": 1
   },
   {
-   "depends_on": "eval: doc.api_provider == \"Jubilee\"",
+   "depends_on": "eval: doc.insurance_provider == \"Jubilee\"",
    "fieldname": "providerid",
    "fieldtype": "Data",
    "label": "ProviderID",
-   "mandatory_depends_on": "eval: doc.api_provider == \"Jubilee\""
+   "mandatory_depends_on": "eval: doc.insurance_provider == \"Jubilee\""
+  },
+  {
+   "fieldname": "insurance_provider",
+   "fieldtype": "Select",
+   "label": "Insurance Provider",
+   "options": "\nNHIF\nJubilee\nStrategis\nAssemble",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-17 19:24:32.362279",
+ "modified": "2024-07-26 16:36:20.427208",
  "modified_by": "Administrator",
  "module": "NHIF",
  "name": "Company Insurance Setting",

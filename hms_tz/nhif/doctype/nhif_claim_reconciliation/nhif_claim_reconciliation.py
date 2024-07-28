@@ -30,11 +30,11 @@ def get_submitted_claims(self):
     doc = frappe.get_doc(frappe.parse_json(self))
     doc.validate_reqd_fields()
 
-    token = get_claimsservice_token(doc.get("company"))
+    token = get_claimsservice_token(doc.get("company", "NHIF"))
     headers = {"Content-Type": "application/json", "Authorization": "Bearer " + token}
 
     facility_code, base_url = frappe.get_cached_value(
-        "Company Insurance Setting", doc.company, ["facility_code", "claimsserver_url"]
+        "Company Insurance Setting", {"company": doc.company, "insurance_provider": "NHIF"}, ["facility_code", "claimsserver_url"]
     )
     params = "FacilityCode={0}&ClaimYear={1}&ClaimMonth={2}".format(
         facility_code, doc.claim_year, doc.claim_month
