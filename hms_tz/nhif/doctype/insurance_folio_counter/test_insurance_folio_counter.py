@@ -4,5 +4,5 @@
 # import frappe
 import unittest
 
-class TestNHIFFolioCounter(unittest.TestCase):
+class TestInsuranceFolioCounter(unittest.TestCase):
 	pass

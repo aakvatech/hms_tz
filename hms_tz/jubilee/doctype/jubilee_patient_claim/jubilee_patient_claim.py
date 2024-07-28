@@ -30,8 +30,9 @@ from frappe.utils import (
     getdate,
     get_time,
     date_diff,
-    get_fullname,
+    now_datetime,
     get_datetime,
+    get_fullname,
     get_url_to_form,
     time_diff_in_seconds,
 )
@@ -60,6 +61,41 @@ class JubileePatientClaim(Document):
         self.validate_multiple_appointments_per_authorization_no("before_insert")
 
     def after_insert(self):
+        folio_counter = frappe.db.get_all(
+            "Insurance Folio Counter",
+            filters={
+                "company": self.company,
+                "claim_year": self.claim_year,
+                "claim_month": self.claim_month,
+                "insurance_provider": "Jubilee"
+            },
+            fields=["name", "folio_no"],
+            page_length=1,
+        )
+
+        folio_no = 1
+        if len(folio_counter) == 0:
+            new_folio_doc = frappe.get_doc(
+                {
+                    "doctype": "Insurance Folio Counter",
+                    "company": self.company,
+                    "claim_year": self.claim_year,
+                    "claim_month": self.claim_month,
+                    "posting_date": now_datetime(),
+                    "insurance_provider": "Jubilee",
+                    "folio_no": folio_no,
+                }
+            ).insert(ignore_permissions=True)
+            new_folio_doc.reload()
+        else:
+            folio_no = cint(folio_counter[0].folio_no) + 1
+            frappe.set_value("Insurance Folio Counter", folio_counter[0].name, {
+                    "folio_no": folio_no,
+                    "posting_date": now_datetime()
+                }
+            )
+        frappe.set_value(self.doctype, self.name, "folio_no", folio_no)
+
         items = []
         for row in self.jubilee_patient_claim_item:
             new_row = row.as_dict()
@@ -109,8 +145,8 @@ class JubileePatientClaim(Document):
             ).run()
 
     def before_submit(self):
-        start_datetime = get_datetime()
-        frappe.msgprint("Submit process started: " + str(get_datetime()))
+        start_datetime = now_datetime()
+        frappe.msgprint("Submit process started: " + str(now_datetime()))
 
         # validation
         self.validate_claim_items_and_claim_diseases()
@@ -125,11 +161,11 @@ class JubileePatientClaim(Document):
             get_missing_patient_signature(self)
 
         # self.claim_file_mem = get_claim_pdf_file(self)
-        frappe.msgprint("Sending Jubilee Claim: " + str(get_datetime()))
+        frappe.msgprint("Sending Jubilee Claim: " + str(now_datetime()))
 
         self.send_jubilee_claim()
-        frappe.msgprint("Got response from Jubilee: " + str(get_datetime()))
-        end_datetime = get_datetime()
+        frappe.msgprint("Got response from Jubilee: " + str(now_datetime()))
+        end_datetime = now_datetime()
         time_in_seconds = time_diff_in_seconds(str(end_datetime), str(start_datetime))
         frappe.msgprint(
             "Total time to complete the process in seconds = " + str(time_in_seconds)
@@ -946,7 +982,7 @@ class JubileePatientClaim(Document):
             frappe.throw(
                 "This folio was NOT submitted due to the error above!. \
                 Please retry after resolving the problem. "
-                + str(get_datetime())
+                + str(now_datetime())
             )
 
     def get_folio_json_data(self):
@@ -1002,7 +1038,7 @@ class JubileePatientClaim(Document):
         entities.CreatedBy = self.item_crt_by
         entities.DateCreated = str(self.posting_date)
         entities.LastModifiedBy = get_fullname(frappe.session.user)
-        entities.LastModified = str(get_datetime())
+        entities.LastModified = str(now_datetime())
         entities.PatientFile = generate_pdf(self)
         entities.ClaimFile = get_claim_pdf_file(self)
 

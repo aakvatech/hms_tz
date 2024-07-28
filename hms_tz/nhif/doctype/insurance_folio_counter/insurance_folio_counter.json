@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "NHIF-FC-.#####",
+ "autoname": "IFC-.#####",
  "creation": "2022-11-28 09:02:31.862037",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -9,10 +9,11 @@
  "field_order": [
   "company",
   "claim_year",
-  "folio_no",
+  "claim_month",
   "column_break_4",
+  "insurance_provider",
   "posting_date",
-  "claim_month"
+  "folio_no"
  ],
  "fields": [
   {
@@ -43,14 +44,21 @@
    "fieldname": "claim_month",
    "fieldtype": "Int",
    "label": "Claim Month"
+  },
+  {
+   "fieldname": "insurance_provider",
+   "fieldtype": "Select",
+   "label": "Insurance Provider",
+   "options": "\nNHIF\nJubilee\nStrategies"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-11-28 10:29:01.447147",
+ "modified": "2024-07-28 19:20:09.176230",
  "modified_by": "Administrator",
  "module": "NHIF",
- "name": "NHIF Folio Counter",
+ "name": "Insurance Folio Counter",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
@@ -68,5 +76,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }

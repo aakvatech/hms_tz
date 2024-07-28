@@ -928,14 +928,15 @@ class NHIFPatientClaim(Document):
         self.validate_multiple_appointments_per_authorization_no("before_insert")
 
     def after_insert(self):
-        folio_counter = frappe.get_all(
-            "NHIF Folio Counter",
+        folio_counter = frappe.db.get_all(
+            "Insurance Folio Counter",
             filters={
                 "company": self.company,
                 "claim_year": self.claim_year,
                 "claim_month": self.claim_month,
+                "insurance_provider": "NHIF",
             },
-            fields=["name"],
+            fields=["name", "folio_no"],
             page_length=1,
         )
 
@@ -943,22 +944,22 @@ class NHIFPatientClaim(Document):
         if not folio_counter:
             new_folio_doc = frappe.get_doc(
                 {
-                    "doctype": "NHIF Folio Counter",
+                    "doctype": "Insurance Folio Counter",
                     "company": self.company,
                     "claim_year": self.claim_year,
                     "claim_month": self.claim_month,
                     "posting_date": now_datetime(),
+                    "insurance_provider": "NHIF",
                     "folio_no": folio_no,
                 }
             ).insert(ignore_permissions=True)
             new_folio_doc.reload()
         else:
-            folio_doc = frappe.get_doc("NHIF Folio Counter", folio_counter[0].name)
-            folio_no = cint(folio_doc.folio_no) + 1
-
-            folio_doc.folio_no += 1
-            folio_doc.posting_date = now_datetime()
-            folio_doc.save(ignore_permissions=True)
+            folio_no = cint(folio_counter[0].folio_no) + 1
+            frappe.set_value("Insurance Folio Counter", folio_counter[0].name, {
+                "folio_no": folio_no,
+                "posting_date": now_datetime()
+            })
         frappe.set_value(self.doctype, self.name, "folio_no", folio_no)
 
         items = []
