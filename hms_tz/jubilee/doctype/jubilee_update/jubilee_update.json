@@ -1,0 +1,92 @@
+{
+ "actions": [],
+ "autoname": "JU-.YY.-.#########",
+ "creation": "2024-06-18 09:47:39.160869",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "datetime",
+  "column_break_lln7e",
+  "current_log",
+  "previous_log",
+  "jubilee_price_packages_section",
+  "price_package"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "label": "company",
+   "read_only": 1
+  },
+  {
+   "default": "Now",
+   "fieldname": "datetime",
+   "fieldtype": "Datetime",
+   "label": "DateTime",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_lln7e",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "current_log",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Current Log",
+   "options": "Jubilee Response Log",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "previous_log",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Previous Log",
+   "options": "Jubilee Response Log",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "jubilee_price_packages_section",
+   "fieldtype": "Section Break",
+   "label": "Jubilee Price Packages"
+  },
+  {
+   "fieldname": "price_package",
+   "fieldtype": "Table",
+   "label": "Price Packages",
+   "options": "Jubilee Update Item",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-06-18 09:47:39.160869",
+ "modified_by": "Administrator",
+ "module": "Jubilee",
+ "name": "Jubilee Update",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

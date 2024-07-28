@@ -1,7 +1,7 @@
 // Copyright (c) 2020, Aakvatech and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on('Company NHIF Settings', {
+frappe.ui.form.on('Company Insurance Setting', {
 	// refresh: function(frm) {
 
 	// }
@@ -10,7 +10,8 @@ frappe.ui.form.on('Company NHIF Settings', {
 			frappe.msgprint("Please set submit claim year or submit claim month}");
 			return
 		}
-		frappe.call("hms_tz.nhif.api.healthcare_utils.auto_submit_nhif_patient_claim", {
+		if (frm.doc.insurance_provider == "NHIF") {
+			frappe.call("hms_tz.nhif.api.healthcare_utils.auto_submit_nhif_patient_claim", {
 				setting_dict: {
 					"company": frm.doc.name,
 					"submit_claim_year": frm.doc.submit_claim_year,
@@ -19,5 +20,6 @@ frappe.ui.form.on('Company NHIF Settings', {
 			}).then(r => {
 				// do nothing
 			})
+		}
 	}
 });

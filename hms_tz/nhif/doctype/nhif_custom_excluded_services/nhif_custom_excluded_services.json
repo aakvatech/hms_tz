@@ -1,117 +1,117 @@
 {
- "actions": [],
- "allow_rename": 1,
- "autoname": "NCXS-.YY.-.MM.-.DD.-.#####",
- "creation": "2022-04-08 16:04:53.235211",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "company",
-  "time_stamp",
-  "column_break_1",
-  "facilitycode",
-  "title",
-  "section_break_1",
-  "item",
-  "column_break_2",
-  "itemcode",
-  "section_break_2",
-  "excludedforproducts"
- ],
- "fields": [
-  {
-   "fieldname": "company",
-   "fieldtype": "Link",
-   "in_standard_filter": 1,
-   "label": "Company",
-   "options": "Company NHIF Settings",
-   "reqd": 1
-  },
-  {
-   "fieldname": "time_stamp",
-   "fieldtype": "Datetime",
-   "in_standard_filter": 1,
-   "label": "Time Stamp",
-   "read_only": 1
-  },
-  {
-   "fieldname": "column_break_1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fetch_from": "company.facility_code",
-   "fieldname": "facilitycode",
-   "fieldtype": "Data",
-   "label": "FacilityCode",
-   "read_only": 1
-  },
-  {
-   "fieldname": "section_break_1",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "item",
-   "fieldtype": "Link",
-   "label": "Item",
-   "options": "Item",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_2",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "itemcode",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "ItemCode"
-  },
-  {
-   "fieldname": "section_break_2",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "excludedforproducts",
-   "fieldtype": "Small Text",
-   "in_list_view": 1,
-   "label": "ExcludedForProducts",
-   "reqd": 1
-  },
-  {
-   "fieldname": "title",
-   "fieldtype": "Data",
-   "hidden": 1,
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Title",
-   "read_only": 1
-  }
- ],
- "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2022-04-09 21:14:50.842195",
- "modified_by": "Administrator",
- "module": "NHIF",
- "name": "NHIF Custom Excluded Services",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "sort_field": "modified",
- "sort_order": "DESC",
- "title_field": "title",
- "track_changes": 1
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "NCXS-.YY.-.MM.-.DD.-.#####",
+    "creation": "2022-04-08 16:04:53.235211",
+    "doctype": "DocType",
+    "editable_grid": 1,
+    "engine": "InnoDB",
+    "field_order": [
+        "company",
+        "time_stamp",
+        "column_break_1",
+        "facilitycode",
+        "title",
+        "section_break_1",
+        "item",
+        "column_break_2",
+        "itemcode",
+        "section_break_2",
+        "excludedforproducts"
+    ],
+    "fields": [
+        {
+            "fieldname": "company",
+            "fieldtype": "Link",
+            "in_standard_filter": 1,
+            "label": "Company",
+            "options": "Company",
+            "reqd": 1
+        },
+        {
+            "fieldname": "time_stamp",
+            "fieldtype": "Datetime",
+            "in_standard_filter": 1,
+            "label": "Time Stamp",
+            "read_only": 1
+        },
+        {
+            "fieldname": "column_break_1",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fetch_from": "company.facility_code",
+            "fieldname": "facilitycode",
+            "fieldtype": "Data",
+            "label": "FacilityCode",
+            "read_only": 1
+        },
+        {
+            "fieldname": "section_break_1",
+            "fieldtype": "Section Break"
+        },
+        {
+            "fieldname": "item",
+            "fieldtype": "Link",
+            "label": "Item",
+            "options": "Item",
+            "reqd": 1
+        },
+        {
+            "fieldname": "column_break_2",
+            "fieldtype": "Column Break"
+        },
+        {
+            "fieldname": "itemcode",
+            "fieldtype": "Data",
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "ItemCode"
+        },
+        {
+            "fieldname": "section_break_2",
+            "fieldtype": "Section Break"
+        },
+        {
+            "fieldname": "excludedforproducts",
+            "fieldtype": "Small Text",
+            "in_list_view": 1,
+            "label": "ExcludedForProducts",
+            "reqd": 1
+        },
+        {
+            "fieldname": "title",
+            "fieldtype": "Data",
+            "hidden": 1,
+            "in_list_view": 1,
+            "in_standard_filter": 1,
+            "label": "Title",
+            "read_only": 1
+        }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2022-04-09 21:14:50.842195",
+    "modified_by": "Administrator",
+    "module": "NHIF",
+    "name": "NHIF Custom Excluded Services",
+    "owner": "Administrator",
+    "permissions": [
+        {
+            "create": 1,
+            "delete": 1,
+            "email": 1,
+            "export": 1,
+            "print": 1,
+            "read": 1,
+            "report": 1,
+            "role": "System Manager",
+            "share": 1,
+            "write": 1
+        }
+    ],
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "title_field": "title",
+    "track_changes": 1
 }

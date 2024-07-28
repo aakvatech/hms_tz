@@ -1,0 +1,91 @@
+{
+ "actions": [],
+ "creation": "2024-06-18 09:41:52.551063",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "type",
+  "section_break_3",
+  "itemcode",
+  "itemprice",
+  "strength",
+  "dosage",
+  "column_break_12",
+  "itemname",
+  "cleanname",
+  "record"
+ ],
+ "fields": [
+  {
+   "fieldname": "type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Change Type"
+  },
+  {
+   "fieldname": "section_break_3",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "itemcode",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "ItemCode"
+  },
+  {
+   "fieldname": "itemname",
+   "fieldtype": "Small Text",
+   "in_standard_filter": 1,
+   "label": "ItemName"
+  },
+  {
+   "fieldname": "strength",
+   "fieldtype": "Data",
+   "label": "Strength"
+  },
+  {
+   "fieldname": "dosage",
+   "fieldtype": "Data",
+   "label": "Dosage"
+  },
+  {
+   "fieldname": "column_break_12",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "record",
+   "fieldtype": "Small Text",
+   "label": "Record"
+  },
+  {
+   "fieldname": "itemprice",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "ItemPrice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "cleanname",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "CleanName",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-06-18 18:56:42.770935",
+ "modified_by": "Administrator",
+ "module": "Jubilee",
+ "name": "Jubilee Update Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "itemname"
+}

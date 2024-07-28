@@ -1,7 +1,7 @@
-// Copyright (c) 2022, Aakvatech and contributors
+// Copyright (c) 2024, Aakvatech and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on('NHIF Folio Counter', {
+frappe.ui.form.on('Jubilee Update', {
 	// refresh: function(frm) {
 
 	// }

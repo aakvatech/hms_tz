@@ -8,7 +8,7 @@ Features in ERPNext can be categorized into several key areas:
 
 2. **Healthcare Provider and Facility Management**: Managing information about healthcare providers, facilities, and practitioner availability.
 
-3. **Insurance and Financial Management**: This involves managing NHIF claims, tracking changes, setting up company NHIF settings, and handling patient discount requests.
+3. **Insurance and Financial Management**: This involves managing NHIF claims, tracking changes, setting up company Insurance settings, and handling patient discount requests.
 
 4. **Patient Care and Services**: This covers healthcare package orders, referral management, and tracking of patient care services.
 

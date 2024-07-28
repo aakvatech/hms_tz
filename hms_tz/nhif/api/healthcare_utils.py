@@ -1370,14 +1370,14 @@ def create_invoiced_items_if_not_created():
 def auto_submit_nhif_patient_claim(setting_dict=None):
     """Routine to submit patient claims and will be triggered:
     1. Every 00:01 am at night by cron job
-    2. By a button called 'Auto Submit Patient Claim' which is on Company NHIF settings
+    2. By a button called 'Auto Submit Patient Claim' which is on Company Insurance setting
     """
     company_setting_detail = []
 
     if not setting_dict:
         company_setting_detail = frappe.get_all(
-            "Company NHIF Settings",
-            filters={"enable": 1, "enable_auto_submit_of_claims": 1},
+            "Company Insurance Setting",
+            filters={"insurance_provider": "NHIF", "enable": 1, "enable_auto_submit_of_claims": 1},
             fields=["company", "submit_claim_year", "submit_claim_month"],
         )
     else:
@@ -1501,15 +1501,15 @@ def verify_service_approval_number_for_LRPMT(
 
     (
         enable_nhif_api,
-        nhifservice_url,
+        service_url,
         validate_service_approval_no,
     ) = frappe.get_cached_value(
-        "Company NHIF Settings",
-        company,
+        "Company Insurance Setting",
+        {"company": company, "insurance_provider": "NHIF"},
         [
             "enable",
-            "nhifservice_url",
-            "validate_service_approval_number_on_lrpm_documents",
+            "service_url",
+            "validate_service_approval_number_on_lrpmt_documents",
         ],
     )
     if not enable_nhif_api:
@@ -1523,11 +1523,11 @@ def verify_service_approval_number_for_LRPMT(
     item_code = get_item_ref_code(template_doctype, template_name)
 
     url = (
-        str(nhifservice_url)
+        str(service_url)
         + f"/nhifservice/breeze/verification/GetReferenceNoStatus?CardNo={cardno}&ReferenceNo={approval_number}&ItemCode={item_code}"
     )
 
-    token = get_nhifservice_token(company)
+    token = get_nhifservice_token(company, "NHIF")
 
     headers = {"Content-Type": "application/json", "Authorization": "Bearer " + token}
 

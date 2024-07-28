@@ -1,0 +1,174 @@
+{
+ "actions": [],
+ "creation": "2024-07-26 13:05:14.116544",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "ref_doctype",
+  "item_name",
+  "item_code",
+  "item_quantity",
+  "unit_price",
+  "amount_claimed",
+  "created_by",
+  "item_crt_by",
+  "column_break_8",
+  "status",
+  "patient_encounter",
+  "ref_docname",
+  "approval_ref_no",
+  "folio_item_id",
+  "folio_id",
+  "date_created",
+  "section_break_15",
+  "reference_doctype",
+  "reference_docname"
+ ],
+ "fields": [
+  {
+   "fieldname": "ref_doctype",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Ref DocType",
+   "permlevel": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Code",
+   "read_only": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "item_quantity",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Item Quantity"
+  },
+  {
+   "columns": 1,
+   "fieldname": "unit_price",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Unit Price",
+   "permlevel": 1
+  },
+  {
+   "columns": 1,
+   "fieldname": "amount_claimed",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Amount Claimed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "created_by",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Old Created By",
+   "read_only": 1
+  },
+  {
+   "default": "None",
+   "fieldname": "item_crt_by",
+   "fieldtype": "Data",
+   "label": "Created By"
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break",
+   "read_only": 1
+  },
+  {
+   "bold": 1,
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Status"
+  },
+  {
+   "fieldname": "patient_encounter",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Patient Encounter",
+   "read_only": 1
+  },
+  {
+   "fieldname": "ref_docname",
+   "fieldtype": "Small Text",
+   "label": "Ref DocName",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_ref_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Approval Ref No",
+   "permlevel": 1
+  },
+  {
+   "fieldname": "folio_item_id",
+   "fieldtype": "Data",
+   "label": "Folio Item ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "folio_id",
+   "fieldtype": "Data",
+   "label": "Folio ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "date_created",
+   "fieldtype": "Date",
+   "label": "Date Created",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_15",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference DocType",
+   "options": "DocType",
+   "permlevel": 2
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "reference_docname",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference DocName",
+   "options": "reference_doctype",
+   "permlevel": 2
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-07-26 13:13:11.956151",
+ "modified_by": "Administrator",
+ "module": "Jubilee",
+ "name": "Original Jubilee Patient Claim Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
