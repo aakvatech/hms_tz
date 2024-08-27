@@ -236,3 +236,11 @@ def reset_invoiced_status(doc):
                         "sales_invoice_number": "",
                     },
                 )
+
+@frappe.whitelist()
+def get_pos_profile(current_user):
+    pos = frappe.db.get_value("POS Profile User", {"user": current_user},["parent"])
+    if pos:
+        modes = frappe.db.get_all("POS Payment Method",filters={"parent": pos},fields=["mode_of_payment"])
+        
+        return modes

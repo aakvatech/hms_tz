@@ -2,6 +2,16 @@ frappe.ui.form.on('Sales Invoice', {
 	onload: function (frm) {
 		frm.trigger('add_get_info_btn');
 	},
+    is_pos: function(frm) {
+        if (frm.doc.is_pos) {
+            load_pos_profile(frm);
+        }
+    },
+    pos_profile: function(frm) {
+        if (frm.doc.pos_profile) {
+            load_pos_profile(frm);
+        }
+    },
 	// patient: function (frm) {
 	// 	frm.clear_table("items")
 	// },
@@ -697,4 +707,31 @@ var get_patient_discount_request = (frm, data, items = null) => {
 			});
 		}
 	});
+};
+
+var load_pos_profile = (frm) => {
+    frappe.call({
+        method: "hms_tz.nhif.api.sales_invoice.get_pos_profile",
+        args: {
+            current_user: frappe.session.user
+        },
+        callback: function(modes) {
+            if (modes && modes.message) {
+                let existing_modes = frm.doc.payments.map(row => row.mode_of_payment);
+
+                // Check if any of the modes in modes.message are already in existing_modes
+                let modes_found = modes.message.some(mode => existing_modes.includes(mode.mode_of_payment));
+
+                // If no modes are found, insert the new modes
+                if (!modes_found) {
+                    modes.message.forEach(function(mode) {
+                        let new_row = frm.add_child('payments');
+                        new_row.mode_of_payment = mode.mode_of_payment;
+                    });
+
+                    frm.refresh_field('payments');
+                }
+            }
+        }
+    });
 };
